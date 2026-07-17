@@ -1,0 +1,27 @@
+/* Repris tel quel du <style> inline d'index.html.
+   overflow/height sont gérés dynamiquement par RootApp.jsx selon le mode. */
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+}
+
+/* Contenu de secours pour les crawlers (voir src/app/page.js) — remplace
+   le <noscript> d'index.html par du vrai HTML toujours rendu côté serveur,
+   donc lu de façon fiable par Google même sans exécution JS. Visuellement
+   masqué une fois l'app interactive montée, mais présent dans le DOM et
+   lisible par les lecteurs d'écran (pattern standard "sr-only", pas
+   display:none — ce n'est pas du cloaking, juste de l'amélioration
+   progressive). */
+.seo-fallback {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

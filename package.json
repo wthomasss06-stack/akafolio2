@@ -1,0 +1,49 @@
+{
+  "name": "elvis-portfolio",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "scripts": {
+    "predev": "node scripts/compile-mode-styles.mjs",
+    "dev": "next dev",
+    "prebuild": "node scripts/compile-mode-styles.mjs",
+    "build": "next build",
+    "start": "next start",
+    "preview": "next start"
+  },
+  "dependencies": {
+    "@fontsource/lora": "^5.2.8",
+    "@fontsource/outfit": "^5.2.8",
+    "@fontsource/plus-jakarta-sans": "^5.2.8",
+    "@fontsource/silkscreen": "^5.2.8",
+    "@fontsource/space-mono": "^5.2.9",
+    "@fontsource/syne": "^5.2.7",
+    "@fortawesome/fontawesome-free": "^6.7.2",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
+    "@react-three/rapier": "^2.2.0",
+    "face-api.js": "^0.22.2",
+    "framer-motion": "^12.34.1",
+    "gl-matrix": "^3.4.3",
+    "gsap": "^3.15.0",
+    "lucide-react": "^0.469.0",
+    "meshline": "^3.3.1",
+    "motion": "^11.18.2",
+    "next": "^16.2.10",
+    "ogl": "^1.0.11",
+    "postprocessing": "^6.39.2",
+    "react": ">=19.0.0 <19.3.0",
+    "react-dom": ">=19.0.0 <19.3.0",
+    "resend": "^4.0.0",
+    "three": "^0.184.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.18",
+    "autoprefixer": "^10.4.24",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^4.1.18"
+  },
+  "engines": {
+    "node": "22.x"
+  }
+}

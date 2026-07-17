@@ -1,0 +1,26 @@
+# M'Bollo aka — akaTech
+
+> Développeur web full stack à Abidjan, Côte d'Ivoire (React, Next.js, Django, Flask). Sites vitrines, e-commerce et applications sur mesure, livrés en 3 à 30 jours.
+
+M'Bollo aka (Elvis) conçoit des sites et applications web modernes pour des clients en Côte d'Ivoire et en Afrique de l'Ouest, sous le nom akaTech. Portfolio interactif avec animations GSAP/Three.js, disponible en mode desktop, mobile et un mode rétro Windows 95.
+
+## Services & tarifs
+- Portfolio — à partir de 100 000 FCFA, livré en 3 à 10 jours
+- Site Vitrine — à partir de 220 000 FCFA, livré en 5 à 14 jours
+- E-commerce (paiement Mobile Money : Orange Money, MTN, Wave) — à partir de 450 000 FCFA, livré en 14 à 30 jours
+- Application Web / SaaS — sur devis, après diagnostic gratuit sous 48h
+- Fiche Google Business Profile — création (20 000 FCFA), optimisation (12 000 FCFA) ou suivi mensuel (10 000 FCFA/mois)
+
+## Projets réalisés
+- [ShopCI](https://shop-ci.vercel.app/): marketplace e-commerce multi-vendeurs — React, Django
+- [TerraSafe](https://wthomassss06.pythonanywhere.com): marketplace foncière sécurisée — Flask, MySQL
+- [New Horizon Service](https://new-horizonservice.vercel.app/): location de résidences meublées — Next.js, Flask
+- [Tati](https://tatii.vercel.app/): portfolio personnel animé — React, Framer Motion
+- [TechFlow](https://techflow-ten.vercel.app/): site vitrine professionnel — Tailwind CSS
+
+## Contact
+- Email: wthomasss06@gmail.com
+- WhatsApp: https://wa.me/2250142507750
+- GitHub: https://github.com/wthomasss06-stack
+- LinkedIn: https://www.linkedin.com/in/m-bollo-aka
+- akaTech (agence): https://akatech.vercel.app/

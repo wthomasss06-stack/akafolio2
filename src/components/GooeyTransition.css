@@ -1,0 +1,24 @@
+/* ════════════════════════════════════════════════
+   GooeyTransition.css — variante DESKTOP
+   Transition "Volets Lignes Fines" (effet 10, 30 lignes) — version App.jsx
+   Couleur des lignes : orange akaFOLIO (#FF5500)
+   ════════════════════════════════════════════════ */
+
+.gooey-layer--desktop {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: flex;
+  overflow: hidden;
+  pointer-events: none;
+  touch-action: none;
+}
+
+.gooey-line--desktop {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  background: #FF5500;
+  transform: scaleY(0);
+  will-change: transform;
+}

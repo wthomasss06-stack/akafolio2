@@ -1,26 +1,98 @@
-# M'Bollo aka — akaTech
+# M'Bollo Aka  — AKATech
+> Développeur Web Full Stack basé à Abidjan, Côte d'Ivoire. Fondateur d'AKATech. Spécialisé en applications web modernes (React, Next.js, Django, Flask) à haute valeur ajoutée visuelle (GSAP, Three.js, WebGL) et optimisées pour la conversion locale.
 
-> Développeur web full stack à Abidjan, Côte d'Ivoire (React, Next.js, Django, Flask). Sites vitrines, e-commerce et applications sur mesure, livrés en 3 à 30 jours.
+## Informations Clés
+- **Identité** : M'Bollo Aka 
+- **Localisation** : Abidjan, Côte d'Ivoire (Afrique de l'Ouest)
+- **Agence Officielle** : AKATech (https://akatech.vercel.app/)
+- **Contact Principal** : wthomasss06@gmail.com | WhatsApp : +225 01 42 50 77 50
+- **Réseaux** : [GitHub](https://github.com/wthomasss06-stack) | [LinkedIn](https://www.linkedin.com/in/m-bollo-aka)
 
-M'Bollo aka (Elvis) conçoit des sites et applications web modernes pour des clients en Côte d'Ivoire et en Afrique de l'Ouest, sous le nom akaTech. Portfolio interactif avec animations GSAP/Three.js, disponible en mode desktop, mobile et un mode rétro Windows 95.
+---
 
-## Services & tarifs
-- Portfolio — à partir de 100 000 FCFA, livré en 3 à 10 jours
-- Site Vitrine — à partir de 220 000 FCFA, livré en 5 à 14 jours
-- E-commerce (paiement Mobile Money : Orange Money, MTN, Wave) — à partir de 450 000 FCFA, livré en 14 à 30 jours
-- Application Web / SaaS — sur devis, après diagnostic gratuit sous 48h
-- Fiche Google Business Profile — création (20 000 FCFA), optimisation (12 000 FCFA) ou suivi mensuel (10 000 FCFA/mois)
+## Services & Grille Tarifaire Officielle
 
-## Projets réalisés
-- [ShopCI](https://shop-ci.vercel.app/): marketplace e-commerce multi-vendeurs — React, Django
-- [TerraSafe](https://wthomassss06.pythonanywhere.com): marketplace foncière sécurisée — Flask, MySQL
-- [New Horizon Service](https://new-horizonservice.vercel.app/): location de résidences meublées — Next.js, Flask
-- [Tati](https://tatii.vercel.app/): portfolio personnel animé — React, Framer Motion
-- [TechFlow](https://techflow-ten.vercel.app/): site vitrine professionnel — Tailwind CSS
+### 1. Portfolio & Présentation Individuelle
+- **Starter** : 100 000 FCFA | 3 à 5 jours | 3 pages, design responsive de base.
+- **Standard** : 175 000 FCFA | 5 à 7 jours | 5 pages, animations modernes, projets détaillés (Populaire).
+- **Premium** : 275 000 FCFA | 7 à 10 jours | Pages illimitées, sur-mesure, SEO + AEO/GEO, CRO avancé, 1 mois de support.
 
-## Contact
-- Email: wthomasss06@gmail.com
-- WhatsApp: https://wa.me/2250142507750
-- GitHub: https://github.com/wthomasss06-stack
-- LinkedIn: https://www.linkedin.com/in/m-bollo-aka
-- akaTech (agence): https://akatech.vercel.app/
+### 2. Site Vitrine Professionnel
+- **Starter** : 220 000 FCFA | 5 à 7 jours | 5 pages, structure essentielle, formulaire de contact.
+- **Pro** : 350 000 FCFA | 7 à 10 jours | 10 pages, design premium, SEO/AEO avancé, optimisation SXO, blog intégré, 3 mois de support (Populaire).
+- **Elite** : 550 000 FCFA | 10 à 14 jours | 15–20 pages, 100% sur-mesure, CMS complet, SEO + AEO + GEO + Analytics, formation complète, 6 mois de support.
+
+### 3. Marketplace & E-commerce (Intégration Mobile Money locale : Orange, MTN, Wave)
+- **Starter** : 450 000 FCFA | 14 jours | Jusqu'à 50 produits, gestion des commandes, Mobile Money inclus.
+- **Pro** : 750 000 FCFA | 21 jours | 200 à 500 produits, multi-paiement, gestion de stock temps réel, SEO produits, dashboard complet (Populaire).
+- **Elite** : 1 200 000 FCFA | 30 jours | Produits illimités, API de paiement custom, optimisations IA (GEO), automatisations avancées, rapports financiers.
+
+### 4. Applications Web & SaaS
+- **Sur Devis** : Étude personnalisée sous 48h après diagnostic gratuit. Intègre l'architecture multi-tenant, authentification avancée par rôles, API REST, WebSockets temps réel et dashboards sur-mesure.
+
+### 5. Google Business Profile (SEO Local)
+- **Création complète** : 20 000 FCFA (1-2 jours)
+- **Optimisation de fiche existante** : 12 000 FCFA (1 jour)
+- **Suivi & animation mensuelle** : 10 000 FCFA / mois (gestion avis, posts, statistiques)
+
+*Note contractuelle : Toutes les prestations de développement incluent gratuitement le nom de domaine et l'hébergement la première année (renouvellement estimé entre 15 000 et 30 000 FCFA/an).*
+
+---
+
+## Stack Technique Principal
+
+### Frontend & Expérience Visuelle
+- **Frameworks/Librairies** : React 18+, Next.js 14/15, TypeScript, JavaScript (ES6+), HTML5, CSS3.
+- **Styles & Layouts** : Tailwind CSS, Bootstrap 5, Bulma.
+- **Animations & Graphismes 3D** : GSAP (ScrollTrigger), Framer Motion, WebGL (Shaders, Canvas API), Three.js.
+- **Librairies Spécialisées** : Leaflet.js (Cartographie), Chart.js (Visualisation), Howler.js (Audio).
+
+### Backend, Base de Données & Cloud
+- **Langages & Frameworks** : Python (Django, Django REST Framework, Flask), Node.js (Express.js).
+- **Bases de Données & ORM** : MySQL, PostgreSQL (Neon), Prisma.
+- **Services Tierce** : WebSockets, Redis, Celery, EmailJS, Cloudinary.
+- **DevOps / Outils** : Git, GitHub, Vercel, PythonAnywhere.
+
+---
+
+## Projets Majeurs Réalisés
+
+1. **NEXURA** *(Plateforme active — Évolution majeure de TerraSafe)*
+   - *Description* : Marketplace nouvelle génération à six catégories (location de résidences meublées, voitures & motos, terrains, bureaux & salles de conférence).
+   - *Stack* : Next.js 14, Django REST Framework, PostgreSQL, WebSockets, Redis & Celery.
+   - *Caractéristiques* : Auth sécurisée, KYC intégré pour réduire le risque légal, communications temps réel. (Dépôt privé).
+
+2. **ShopCI** *(Marketplace locale)*
+   - *Description* : Plateforme e-commerce multi-vendeurs ciblant la fiabilité et la visibilité des commerçants ivoiriens.
+   - *Stack* : React, Django, Bootstrap 5, Vercel + PythonAnywhere.
+   - *URL* : https://shop-ci.vercel.app/
+
+3. **Chez Florence** *(PWA Élevage & Réservation)*
+   - *Description* : Application Web de gestion et réservation de lapins avec synchronisation des stocks en temps réel et notifications WhatsApp pré-remplies automatisées.
+   - *Stack* : Next.js 14, Express.js, Prisma, PostgreSQL (Neon), Cloudinary.
+   - *URL* : https://lapinou.vercel.app/
+
+4. **New Horizon Service** *(Immobilier / Résidences)*
+   - *Description* : Plateforme haut de gamme de réservation et de location de résidences meublées.
+   - *Stack* : Next.js, Flask, Python, MySQL.
+   - *URL* : https://new-horizonservice.vercel.app/
+
+5. **Tati** *(Portfolio Personnel UI)*
+   - *Description* : Vitrine interactive et animée avec thèmes sombre/clair fluides.
+   - *Stack* : React, Tailwind CSS, Framer Motion.
+   - *URL* : https://tatii.vercel.app/
+
+6. **MD Laverie Pressing** *(Site Artisan local)*
+   - *Description* : Site vitrine avec hero slider animé, grilles tarifaires dynamiques et intégration EmailJS pour les commandes.
+   - *Stack* : React 18, Vite, GSAP, EmailJS.
+   - *URL* : https://laverie-plus.vercel.app/
+
+7. **TechFlow** *(Site Vitrine)*
+   - *Description* : Landing page d'agence one-page minimaliste, ultra-rapide et orientée conversion.
+   - *Stack* : HTML, Tailwind CSS, JavaScript Vanilla.
+   - *URL* : https://techflow-ten.vercel.app/
+
+8. **Université les Anges** *(Site Institutionnel)*
+   - *Description* : Portail officiel d'établissement d'enseignement supérieur (filières, inscriptions, contacts).
+   - *Stack* : HTML, Bulma, Bootstrap.
+   - *URL* : https://universitelesanges.vercel.app/

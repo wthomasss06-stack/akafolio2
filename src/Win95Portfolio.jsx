@@ -924,17 +924,17 @@ const ICON_SVGS = {
 // ═══════════════════════════════════════════════════════════════
 
 const BOOT_LINES = [
-  { t: 300, cls: 'white', txt: 'akaFOLIO BIOS v3.0 — Copyright akaTech 2025' },
+  { t: 300, cls: 'white', txt: 'AKAFOLIO BIOS v3.0 — Copyright AKATech 2025' },
   { t: 600, cls: 'white', txt: 'CPU: Elvis K. Fullstack Dev @ 3.6GHz' },
   { t: 900, cls: 'ok', txt: '[OK] RAM Check ............. 14 Projets détectés' },
   { t: 1100, cls: 'ok', txt: '[OK] Frontend drivers ....... React 18 ✓' },
   { t: 1300, cls: 'ok', txt: '[OK] Backend services ........ Flask/Django ✓' },
   { t: 1500, cls: 'ok', txt: '[OK] Deployment module ....... Vercel ✓' },
-  { t: 1700, cls: 'ok', txt: '[OK] akaTech Agency .......... En ligne ✓' },
+  { t: 1700, cls: 'ok', txt: '[OK] AKATech Agency .......... En ligne ✓' },
   { t: 1900, cls: 'warn', txt: '[WARN] Café restant ........... Critique' },
   { t: 2100, cls: 'ok', txt: '[OK] Windows XP Wallpaper .... Chargé ✓' },
   { t: 2300, cls: 'info', txt: '[INFO] Localisation ........... Abidjan, CI' },
-  { t: 2600, cls: 'ok', txt: '[OK] Système prêt ............ akaFOLIO OS' },
+  { t: 2600, cls: 'ok', txt: '[OK] Système prêt ............ AKAFOLIO OS' },
 ];
 
 function useBootWebGL(canvasRef, active) {
@@ -948,7 +948,7 @@ function useBootWebGL(canvasRef, active) {
     window.addEventListener('resize', resize);
     const cols = Math.floor(canvas.width / 14);
     const drops = Array(cols).fill(1);
-    const chars = 'akaTECH01010FULLSTACK REACT DJANGO FLASK NEXT PYTHON WEBGL'.split('');
+    const chars = 'AKATECH01010FULLSTACK REACT DJANGO FLASK NEXT PYTHON WEBGL'.split('');
     let raf;
     const draw = () => {
       ctx.fillStyle = 'rgba(0,0,0,0.05)';
@@ -991,7 +991,7 @@ function BootScreen({ onDone }) {
     <div className="w95-boot">
       <canvas ref={canvasRef} className="w95-boot-canvas" style={{ pointerEvents: 'none' }} />
       <div className="w95-boot-content">
-        <div className="w95-boot-title">akafolio OS v3</div>
+        <div className="w95-boot-title">AKAfolio OS v3</div>
         {lines.map((l, i) => (
           <div key={i} className={`w95-boot-line ${l.cls}`}>{l.txt}</div>
         ))}
@@ -1414,7 +1414,7 @@ function AboutContent() {
           </div>
           {/* Boutons ligne 1 */}
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 4 }}>
-            <a href={ME.site} target="_blank" rel="noreferrer"><button className="w95-btn primary" style={{ fontSize: 10 }}><Fa icon="globe" style={{ marginRight: 4 }} />akaTech</button></a>
+            <a href={ME.site} target="_blank" rel="noreferrer"><button className="w95-btn primary" style={{ fontSize: 10 }}><Fa icon="globe" style={{ marginRight: 4 }} />AKATech</button></a>
             <a href={ME.github} target="_blank" rel="noreferrer"><button className="w95-btn" style={{ fontSize: 10 }}><Fa icon="code-branch" style={{ marginRight: 4 }} />GitHub</button></a>
             <a href={ME.linkedin} target="_blank" rel="noreferrer"><button className="w95-btn" style={{ fontSize: 10 }}><Fa icon="user-tie" style={{ marginRight: 4 }} />LinkedIn</button></a>
           </div>
@@ -1451,7 +1451,7 @@ function AboutContent() {
           À l'aise avec <strong>Django, Flask, React, Next.js</strong> et <strong>MySQL</strong>, je développe aussi des solutions orientées <strong>Data &amp; Cartographie</strong> : dashboards, visualisations interactives et intégration de cartes (Leaflet, OpenStreetMap).
         </div>
         <div style={{ fontSize: 11, lineHeight: 1.7, color: 'var(--text-main)', marginBottom: 8 }}>
-          Via mon agence <strong>akaTech</strong>, j'ai livré plus de <strong>10 applications web</strong> — SaaS, e-commerce, plateformes — avec une approche orientée produit, sécurité et usages réels.
+          Via mon agence <strong>AKATech</strong>, j'ai livré plus de <strong>10 applications web</strong> — SaaS, e-commerce, plateformes — avec une approche orientée produit, sécurité et usages réels.
         </div>
         {/* Soft skills */}
         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
@@ -1512,7 +1512,7 @@ function AboutContent() {
           <div><Fa icon="map-marker-alt" style={{ marginRight: 6, color: 'var(--navy)', width: 14 }} />{ME.location}</div>
           <div><Fa icon="globe" style={{ marginRight: 6, color: 'var(--navy)', width: 14 }} /><a href={ME.site} target="_blank" rel="noreferrer" style={{ color: 'var(--navy)' }}>{ME.site}</a></div>
           <div><Fa icon="code" style={{ marginRight: 6, color: 'var(--navy)', width: 14 }} /><a href={ME.github} target="_blank" rel="noreferrer" style={{ color: 'var(--navy)' }}>{ME.github}</a></div>
-          <div><Fa icon="thumbs-up" style={{ marginRight: 6, color: 'var(--navy)', width: 14 }} /><a href={ME.facebook} target="_blank" rel="noreferrer" style={{ color: 'var(--navy)' }}>Facebook akaTech</a></div>
+          <div><Fa icon="thumbs-up" style={{ marginRight: 6, color: 'var(--navy)', width: 14 }} /><a href={ME.facebook} target="_blank" rel="noreferrer" style={{ color: 'var(--navy)' }}>Facebook AKATech</a></div>
         </div>
       </div>
 
@@ -1835,7 +1835,7 @@ function ContactContent({ onAlert }) {
           <div><Fa icon="globe" style={{ width: 16, marginRight: 6, color: 'var(--navy)' }} /><a href={ME.site} target="_blank" rel="noreferrer" style={{ color: 'var(--navy)' }}>{ME.site}</a></div>
           <div><Fa icon="code" style={{ width: 16, marginRight: 6, color: 'var(--navy)' }} /><a href={ME.github} target="_blank" rel="noreferrer" style={{ color: 'var(--navy)' }}>{ME.github}</a></div>
           <div><Fa icon="user-tie" style={{ width: 16, marginRight: 6, color: 'var(--navy)' }} /><a href={ME.linkedin} target="_blank" rel="noreferrer" style={{ color: 'var(--navy)' }}>LinkedIn</a></div>
-          <div><Fa icon="thumbs-up" style={{ width: 16, marginRight: 6, color: '#1877F2' }} /><a href={ME.facebook} target="_blank" rel="noreferrer" style={{ color: 'var(--navy)' }}>Facebook akaTech</a></div>
+          <div><Fa icon="thumbs-up" style={{ width: 16, marginRight: 6, color: '#1877F2' }} /><a href={ME.facebook} target="_blank" rel="noreferrer" style={{ color: 'var(--navy)' }}>Facebook AKATech</a></div>
           <div><Fa icon="file-pdf" style={{ width: 16, marginRight: 6, color: '#c00' }} /><a href={ME.cv} download style={{ color: 'var(--navy)' }}>Télécharger CV PDF</a></div>
         </div>
       </div>
@@ -1982,7 +1982,7 @@ function StartMenu({ onOpen, onClose }) {
   };
   return (
     <div className="w95-startmenu" onClick={e => e.stopPropagation()}>
-      <div className="w95-sm-sidebar"><div className="w95-sm-sidetext">akaTech OS</div></div>
+      <div className="w95-sm-sidebar"><div className="w95-sm-sidetext">AKATech OS</div></div>
       <div className="w95-sm-items">
         {items.map((item, i) =>
           item === null

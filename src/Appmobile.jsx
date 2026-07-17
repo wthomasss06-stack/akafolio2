@@ -1668,14 +1668,14 @@ const Hero = ({ dark }) => {
           <div className="hv4-left" ref={leftRef}>
 
 
-            <h1 className="hv4-name" aria-label="M'Bollo aka">
+            <h1 className="hv4-name" aria-label="M'Bollo Aka">
               <ScrambleText text="M'BOLLO" tag="span" className="hv4-name-line" style={{ '--d': '0.12s' }} speed={30} step={0.6} threshold={0.15} once={true} />
-              <ScrambleText text="aka" tag="span" className="hv4-name-line hv4-name-line--u" style={{ "--d": "0.26s" }} speed={28} step={0.5} threshold={0.15} once={true} />
+              <ScrambleText text="Aka" tag="span" className="hv4-name-line hv4-name-line--u" style={{ "--d": "0.26s" }} speed={28} step={0.5} threshold={0.15} once={true} />
             </h1>
 
             <div className="hv4-photo-mob hv4-rv" style={{ '--d': '0.3s' }}>
               <div className="hv4-photo-mob-inner">
-                <img src="/assets/images/IMG_20250124_124101KK.webp" alt="M'Bollo aka" className={`hv4-photo photo-bw ${heroPhotoColor ? 'photo-bw--on' : ''}`} />
+                <img src="/assets/images/IMG_20250124_124101KK.webp" alt="M'Bollo Aka" className={`hv4-photo photo-bw ${heroPhotoColor ? 'photo-bw--on' : ''}`} />
                 <div className="hv4-photo-mob-badge"><span className="hero-dot" /><span>disponible</span></div>
               </div>
             </div>
@@ -1718,7 +1718,7 @@ const Hero = ({ dark }) => {
           {/* ════ RIGHT ════ */}
           <div className="hv4-right hv4-rv" style={{ '--d': '0.32s' }} ref={rightRef}>
             <div className="hv4-photo-wrap hv4-photo-wrap--full">
-              <img src="/assets/images/IMG_20250124_124101KK.webp" alt="M'Bollo aka" className={`hv4-photo hv4-photo--portrait photo-bw ${heroPhotoColor ? 'photo-bw--on' : ''}`} />
+              <img src="/assets/images/IMG_20250124_124101KK.webp" alt="M'Bollo Aka" className={`hv4-photo hv4-photo--portrait photo-bw ${heroPhotoColor ? 'photo-bw--on' : ''}`} />
               <div className="hv4-photo-overlay">
                 <span><LI name="map-marker-alt" color={dark ? "#aaa" : "#666"} size={12} /> Abidjan, CI</span>
                 <span><LI name="code" color="#ff5500" size={12} /> Full-Stack Dev</span>

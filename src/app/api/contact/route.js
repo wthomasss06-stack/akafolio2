@@ -150,7 +150,7 @@ export async function POST(request) {
 
   try {
     const resend = getResendClient()
-    const result = await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       /* Resend impose un domaine vérifié en from.
          Si ton domaine n'est pas vérifié, garde onboarding@resend.dev
          pour les tests, puis passe à noreply@tondomaine.com en prod.   */
@@ -195,7 +195,23 @@ export async function POST(request) {
       `,
     })
 
-    console.log('[Contact] Email envoyé :', result?.data?.id ?? result)
+    /* Le SDK Resend NE THROW PAS sur les erreurs API (clé invalide,
+       domaine non vérifié, destinataire refusé...) — il les renvoie
+       dans { error }. Sans ce check explicite, une clé invalide en
+       prod aurait continué à répondre success:true côté formulaire
+       alors qu'aucun email n'était réellement envoyé. */
+    if (error) {
+      console.error('[Contact] Erreur Resend (API) :', error)
+      return NextResponse.json(
+        {
+          error: "Erreur lors de l'envoi. Réessayez ou contactez-moi directement.",
+          detail: error.message,
+        },
+        { status: 500, headers: CORS_HEADERS }
+      )
+    }
+
+    console.log('[Contact] Email envoyé :', data?.id)
     return NextResponse.json({ success: true }, { status: 200, headers: CORS_HEADERS })
 
   } catch (error) {

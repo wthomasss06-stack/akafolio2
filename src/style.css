@@ -584,6 +584,14 @@
      color: #0A0A0A;
      text-shadow: 0 0 10px rgba(0,0,0,.18);
    }
+   /* Même bug que sh-title-particle ci-dessus, jamais corrigé pour le
+      panel StaggeredMenu : .ascii-ripple[data-variant="ghost"]:hover
+      force du blanc en dur, invisible sur le fond clair du panel en
+      mode clair. */
+   body.light-mode .sm-panel-item-ghost-overlay:hover {
+     color: #0A0A0A;
+     text-shadow: 0 0 10px rgba(0,0,0,.18);
+   }
 
    /* ════════════════════════════════════════════
       PORTRAIT — nom en sandwich (fond plein + contour)

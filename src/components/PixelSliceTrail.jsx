@@ -174,9 +174,6 @@ class PixelSliceTrailEngine {
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: '14px',
-        background: 'rgba(255,85,0,.07)',
-        border: '2px solid rgba(255,85,0,.4)',
-        boxShadow: '3px 3px 0 rgba(255,85,0,.4)',
         transform: 'translateZ(0)',
         backfaceVisibility: 'hidden',
       })

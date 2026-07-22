@@ -42,7 +42,7 @@ export const CONTACT = {
   linkedin: 'https://www.linkedin.com/in/m-bollo-aka',
   facebook: 'https://web.facebook.com/profile.php?id=61577494705852',
   photo: '/assets/images/IMG_20250124_124101KK.webp',
-  cv: '/assets/CV_MBOLLO_aka_ELVIS.pdf',
+  cv: '/assets/CV_MBOLLO_AKA_ELVIS.pdf',
 }
 
 // ─── Projets ────────────────────────────────────────────────────

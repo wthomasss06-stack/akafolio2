@@ -1669,7 +1669,7 @@ const Hero = ({ dark }) => {
 
 
             <h1 className="hv4-name" aria-label="M'Bollo Aka">
-              <ScrambleText text="M'BOLLO" tag="span" className="hv4-name-line" style={{ '--d': '0.12s' }} speed={30} step={0.6} threshold={0.15} once={true} />
+              <ScrambleText text="M'Bollo" tag="span" className="hv4-name-line" style={{ '--d': '0.12s' }} speed={30} step={0.6} threshold={0.15} once={true} />
               <ScrambleText text="Aka" tag="span" className="hv4-name-line hv4-name-line--u" style={{ "--d": "0.26s" }} speed={28} step={0.5} threshold={0.15} once={true} />
             </h1>
 

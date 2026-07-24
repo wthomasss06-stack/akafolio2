@@ -1,6 +1,6 @@
 ﻿'use client'
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo, Children, isValidElement, cloneElement } from 'react'
 import './style.css'
 import Shuffle from './components/Shuffle.jsx'
 import AnimatedCounter from './components/AnimatedCounter.jsx'
@@ -490,6 +490,7 @@ const AnimIcon = ({ type, size = 15, color = '#FF5500', className = '' }) => {
     github: <svg width={size} height={size} viewBox="0 0 24 24" fill={color} className={`anim-icon ${className}`}><path d="M12 .5C5.73.5.98 5.24.98 11.52c0 5.02 3.26 9.28 7.78 10.78.57.1.78-.25.78-.55 0-.27-.01-1.16-.02-2.1-3.17.69-3.84-1.36-3.84-1.36-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.75 1.18 1.75 1.18 1.02 1.75 2.68 1.24 3.33.95.1-.74.4-1.24.72-1.53-2.53-.29-5.19-1.27-5.19-5.63 0-1.24.44-2.26 1.17-3.06-.12-.29-.51-1.45.11-3.02 0 0 .96-.31 3.14 1.17a10.9 10.9 0 0 1 5.72 0c2.18-1.48 3.14-1.17 3.14-1.17.62 1.57.23 2.73.11 3.02.73.8 1.17 1.82 1.17 3.06 0 4.37-2.67 5.34-5.21 5.62.41.36.77 1.06.77 2.14 0 1.55-.01 2.79-.01 3.17 0 .3.2.66.79.55 4.52-1.51 7.77-5.77 7.77-10.79C23.02 5.24 18.27.5 12 .5z" /></svg>,
     lock: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={`anim-icon ${className}`}><rect x="3" y="11" width="18" height="10" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>,
     flip: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={`anim-icon ${className}`}><path d="M17 2.1l4 4-4 4" /><path d="M3 12.6v-2a4 4 0 0 1 4-4h14" /><path d="M7 21.9l-4-4 4-4" /><path d="M21 11.4v2a4 4 0 0 1-4 4H3" /></svg>,
+    compass: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={`anim-icon ${className}`}><circle cx="12" cy="12" r="10" /><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" /></svg>,
   }
   return icons[type] || null
 }
@@ -715,7 +716,7 @@ function useScrollAnimations() {
     const initAnimations = () => {
       if (killed) return
       const hasElements = document.querySelector(
-        '.gs-reveal, .gs-stagger, .gs-skill, .gs-title, .gs-card, .gs-timeline-item, .gs-counter, .gs-line, .about-text, .about-text-lg'
+        '.gs-reveal, .gs-stagger, .gs-skill, .gs-title, .gs-card, .gs-timeline-item, .gs-counter, .gs-line, .about-text-lg'
       )
       if (!hasElements) {
         setTimeout(() => { if (!killed) initAnimations() }, 500)
@@ -804,8 +805,15 @@ function useScrollAnimations() {
           }
         )
       })
-      /* ── About-text ScrollReveal — texte qui s'illumine au scroll ── */
-      document.querySelectorAll('.about-text, .about-text-lg').forEach(el => {
+      /* ── About-text-lg ScrollReveal — texte qui s'illumine au scroll ──
+         :not(.nf-flicker) : les paragraphes About passés dans
+         NeonFlickerText gèrent déjà leur propre reveal (letter-by-
+         letter, scrubbé) ; sans cette exclusion, ce vieux système en
+         background-position tournerait pour rien dessus (le CSS
+         bypass .nf-flicker a de toute façon retiré le background-image
+         qui rendrait ce scrub visible, mais autant ne pas monter un
+         ScrollTrigger scrub inutile). */
+      document.querySelectorAll('.about-text-lg:not(.nf-flicker)').forEach(el => {
         if (el.dataset.srReveal) return
         el.dataset.srReveal = '1'
 
@@ -1185,7 +1193,7 @@ const FAQ_ITEMS = [
 /* ════════════════════════════════════════════
  NAVBAR
  ════════════════════════════════════════════ */
-function Navbar({ theme, onToggleTheme }) {
+function Navbar({ theme, onToggleTheme, onToggleExplorer, isExplorerOpen }) {
   const [activeSection, setActiveSection] = useState('hero')
   const [clock, setClock] = useState({ date: '', time: '' })
   const [scrolled, setScrolled] = useState(false)
@@ -1414,6 +1422,10 @@ function Navbar({ theme, onToggleTheme }) {
 
         {/* Droite */}
         <div className="nb-topbar-right">
+          <button type="button" className="nb-explore-btn" onClick={onToggleExplorer} aria-pressed={isExplorerOpen}>
+            <AnimIcon type={isExplorerOpen ? 'x' : 'compass'} size={13} color="currentColor" />
+            <span>{isExplorerOpen ? 'Fermer' : 'Explorer'}</span>
+          </button>
           <AnimatedThemeToggler theme={theme} onClick={onToggleTheme} />
           <StaggeredMenu
             items={SM_ITEMS}
@@ -1770,181 +1782,382 @@ function HeroZoomSection() {
 }
 
 
-/* ════════════════════════════════════════════
- FEATURED CREATION — desktop
- Auto-slide entre KokoEat (16) et Chez Florence (19)
- Pas de tabs — slide auto toutes les 6 s
- ════════════════════════════════════════════ */
-
-/* Ids des projets à présenter dans la section hero-projet,
- dans l'ordre souhaité. On s'appuie sur PROJECTS.responsive
- pour le mockup mobile, et PROJECTS.img pour le desktop. */
-const FC_PROJECT_IDS = [16, 19]
-
-/* Résout l'URL de la barre du navigateur mockup */
-function fcBarUrl(proj) {
-  if (!proj.url || proj.url === '#') return proj.title.toLowerCase().replace(/\s+/g, '') + '.vercel.app'
-  const m = /^https?:\/\/([^/]+)/.exec(proj.url)
-  return m ? m[1] : proj.url
-}
-
-function FeaturedCreationDesktop() {
-  const sectionRef = useRef(null)
-  /* Index du projet affiché */
-  const [projIdx, setProjIdx] = useState(0)
-  /* Slide mobile auto (alterne entre preview et responsive) */
-  const [mobileSlide, setMobileSlide] = useState(0)
-  /* Fade entre projets */
-  const [fading, setFading] = useState(false)
-
-  /* Intersection observer → .vis */
-  useEffect(() => {
-    const el = sectionRef.current
-    if (!el) return
-    const entries = el.querySelectorAll('.fc-entry')
-    const obs = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) { entries.forEach(en => en.classList.add('vis')); obs.disconnect() }
-    }, { threshold: 0.1 })
-    obs.observe(el)
-  }, [])
-
-  /* Auto-slide mobile : alterne preview ↔ responsive toutes les 3,5 s */
-  useEffect(() => {
-    setMobileSlide(0)
-    const t = setInterval(() => setMobileSlide(s => (s + 1) % 2), 3500)
-    return () => clearInterval(t)
-  }, [projIdx])
-
-  /* Auto-switch projet toutes les 7 s */
-  useEffect(() => {
-    const t = setInterval(() => {
-      setFading(true)
-      setTimeout(() => {
-        setProjIdx(i => (i + 1) % FC_PROJECT_IDS.length)
-        setMobileSlide(0)
-        setFading(false)
-      }, 380)
-    }, 7000)
-    return () => clearInterval(t)
-  }, [])
-
-  const proj = PROJECTS.find(p => p.id === FC_PROJECT_IDS[projIdx])
-  if (!proj) return null
-
-  /* Les deux images mobiles : responsive (slide 0) puis preview (slide 1) */
-  const mobileImgs = [
-    proj.responsive || proj.img,
-    proj.img,
-  ]
-  const barUrl = fcBarUrl(proj)
-
+function ProjectDetailModal({ project, caseFlipped, onFlip, onClose }) {
+  if (!project) return null
   return (
-    <section id="projets-section" className="featured-creation" ref={sectionRef}>
-      <SectionHeading num="01" title="Projets" sub="En production · Dernières créations" />
-      <h3 className="about-text" style={{ maxWidth: '640px', marginBottom: '4rem' }}>
-        Voici mes <strong>dernières réalisations en production</strong>, pensées du desktop
-        au mobile avec une vraie attention portée aux détails.
-      </h3>
+    <div className="tunnel-modal-backdrop" onClick={onClose}>
+      <div className="tunnel-modal" onClick={e => e.stopPropagation()}>
+        <button type="button" className="tunnel-modal-close" onClick={onClose} aria-label="Fermer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+            <line x1="5" y1="5" x2="19" y2="19" />
+            <line x1="19" y1="5" x2="5" y2="19" />
+          </svg>
+        </button>
 
-      <div className={`fc-grid fc-proj-body${fading ? ' fc-proj-fade' : ''}`}>
-        {/* ── Mockups ── */}
-        <div className="fc-mockups fc-entry">
-          <div className="fc-desktop-wrap">
-            <div className="fc-desktop-shell">
-              <div className="fc-desktop-bar">
-                <span className="fc-dot fc-dot--r" />
-                <span className="fc-dot fc-dot--y" />
-                <span className="fc-dot fc-dot--g" />
-                <span className="fc-bar-url">{barUrl}</span>
-              </div>
-              <div className="fc-desktop-screen">
-                <img
-                  key={proj.img}
-                  src={proj.img}
-                  alt={`${proj.title} desktop`}
-                  className="fc-screen-img"
-                  loading="lazy"
-                  onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
-                />
-                <div className="fc-screen-ph" style={{ display: 'none' }}>
-                  <AnimIcon type="monitor" size={40} color="rgba(255,255,255,.2)" />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="fc-mobile-wrap">
-            <div className="fc-mobile-shell">
-              <div className="fc-mobile-notch" />
-              <div className="fc-mobile-screen">
-                <div
-                  className="fc-slide-track"
-                  style={{
-                    transform: `translateY(-${mobileSlide * 50}%)`,
-                    transition: 'transform .6s cubic-bezier(.4,0,.2,1)',
-                    willChange: 'transform',
-                  }}
-                >
-                  {mobileImgs.map((src, i) => (
-                    <img
-                      key={src + i}
-                      src={src}
-                      alt={`${proj.title} mobile ${i + 1}`}
-                      className="fc-screen-img fc-slide-img"
-                      loading="lazy"
-                    />
-                  ))}
-                </div>
-              </div>
-              <div className="fc-mobile-home" />
-            </div>
-            <div className="fc-resp-badge">
-              <AnimIcon type="check" size={12} color="#FF5500" /> 100% Responsive
-            </div>
-          </div>
-          <div className="fc-glow" />
+        <div className="tunnel-modal-image">
+          <img src={project.img} alt={project.title} loading="lazy" />
         </div>
-        {/* ── Info panel ── */}
-        <div className="fc-info fc-entry">
-          <div>
-            <h3 className="fc-name">{proj.title}</h3>
-            <h3 className="fc-sub">{proj.sub}</h3>
+
+        <div className="tunnel-modal-info">
+          <div className={`fc-flip${caseFlipped ? ' is-flipped' : ''}`}>
+            <div className="fc-flip-inner">
+
+              <div className="fc-flip-face fc-flip-face--front">
+                <h3 className="fc-name">{project.title}</h3>
+                <h3 className="fc-sub">{project.sub}</h3>
+                <div className="fc-meta">
+                  <div className="fc-meta-row"><span className="fc-ml">Marché</span><span className="fc-mv">Côte d'Ivoire</span></div>
+                  <div className="fc-meta-row"><span className="fc-ml">Rôle</span><span className="fc-mv">Conception & Développement</span></div>
+                  <div className="fc-meta-row"><span className="fc-ml">Année</span><span className="fc-mv">{project.year}</span></div>
+                </div>
+                <div className="fc-tags">
+                  {project.tech.map(t => <TechTag key={t} label={t} />)}
+                </div>
+                <h3 className="fc-desc">{project.desc}</h3>
+                <div className="fc-actions">
+                  <a
+                    href={project.url && project.url !== '#' ? project.url : '#'}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={`fc-cta ${(!project.url || project.url === '#') ? 'fc-cta--disabled' : ''}`}
+                    onClick={e => { if (!project.url || project.url === '#') e.preventDefault() }}
+                  >
+                    <AnimIcon type="globe" size={15} color="currentColor" /> Voir le projet
+                    <span className="btn-arr" aria-hidden="true">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" />
+                      </svg>
+                    </span>
+                  </a>
+                  {project.github ? (
+                    <a href={project.github} target="_blank" rel="noreferrer" className="fc-cta-ghost">
+                      <AnimIcon type="github" size={15} color="currentColor" /> Code source
+                    </a>
+                  ) : (
+                    <span className="fc-cta-private">
+                      <AnimIcon type="lock" size={12} color="currentColor" /> Code privé
+                    </span>
+                  )}
+                </div>
+                {(project.problem || project.result) && (
+                  <button type="button" className="fc-flip-btn" onClick={() => onFlip(true)}>
+                    <AnimIcon type="flip" size={14} color="currentColor" /> Détails du projet
+                  </button>
+                )}
+              </div>
+
+              <div className="fc-flip-face fc-flip-face--back">
+                <h3 className="fc-sub fc-case-label">Cas d'étude</h3>
+                <div className="fc-case">
+                  <div className="fc-case-block">
+                    <span className="fc-case-tag">Problème</span>
+                    <p>{project.problem}</p>
+                  </div>
+                  <div className="fc-case-block">
+                    <span className="fc-case-tag">Solution</span>
+                    <p>{project.solution}</p>
+                  </div>
+                  <div className="fc-case-block fc-case-block--result">
+                    <span className="fc-case-tag">Résultat</span>
+                    <p>{project.result}</p>
+                  </div>
+                </div>
+                <button type="button" className="fc-flip-btn" onClick={() => onFlip(false)}>
+                  <AnimIcon type="flip" size={14} color="currentColor" /> Retour au projet
+                </button>
+              </div>
+
+            </div>
           </div>
-          <div className="fc-meta">
-            <div className="fc-meta-row"><span className="fc-ml">Type</span><span className="fc-mv">Application Web Full-Stack</span></div>
-            <div className="fc-meta-row"><span className="fc-ml">Marché</span><span className="fc-mv">Côte d'Ivoire</span></div>
-            <div className="fc-meta-row"><span className="fc-ml">Mon rôle</span><span className="fc-mv">Conception & Développement</span></div>
-            <div className="fc-meta-row"><span className="fc-ml">Année</span><span className="fc-mv">{proj.year}</span></div>
-          </div>
-          <div className="fc-tags">
-            {proj.tech.map(t => <span key={t} className="fc-tag">{t}</span>)}
-          </div>
-          <h3 className="fc-desc">{proj.desc}</h3>
-          {proj.url && proj.url !== '#' ? (
-            <a href={proj.url} target="_blank" rel="noreferrer" className="fc-cta">
-              <AnimIcon type="globe" size={15} color="currentColor" /> Voir le projet
-              <span className="btn-arr" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg></span>
-            </a>
-          ) : (
-            <span className="fc-cta fc-cta--disabled">
-              <AnimIcon type="clock" size={15} color="currentColor" /> En cours de développement
-            </span>
-          )}
         </div>
       </div>
+    </div>
+  )
+}
+
+function useProjectSelection() {
+  const [selectedProject, setSelectedProject] = useState(null)
+  const [caseFlipped, setCaseFlipped] = useState(false)
+  const select = useCallback(p => { setSelectedProject(p); setCaseFlipped(false) }, [])
+  const close = useCallback(() => { setSelectedProject(null); setCaseFlipped(false) }, [])
+  return { selectedProject, caseFlipped, select, close, setCaseFlipped }
+}
+
+/* Marquee défilante des technos utilisées, superposée en bas de
+   l'image de chaque carte — reprise à l'identique de dernier_projet
+   .html / slide_pour_app.html (fade-mask gauche/droite, défilement
+   GSAP infini x = -scrollWidth/2, piste dupliquée x2). */
+/* Découpe récursive du texte en lettres, en préservant les balises
+   (ex. <strong>) rencontrées au passage — nécessaire car plusieurs
+   .about-text contiennent du texte en gras au milieu de la phrase. */
+function splitTextToLetters(node, keyPrefix) {
+  if (typeof node === 'string') {
+    return node.split(/(\s+)/).map((chunk, i) => {
+      if (chunk === '') return null
+      if (/^\s+$/.test(chunk)) {
+        return <span key={`${keyPrefix}-sp-${i}`}>{chunk}</span>
+      }
+      return (
+        <span key={`${keyPrefix}-w-${i}`} className="nf-word">
+          {chunk.split('').map((ch, j) => (
+            <span key={`${keyPrefix}-w-${i}-l-${j}`} className="nf-letter">{ch}</span>
+          ))}
+        </span>
+      )
+    })
+  }
+  if (isValidElement(node)) {
+    return cloneElement(node, {
+      children: Children.map(node.props.children, (child, i) => splitTextToLetters(child, `${keyPrefix}-${i}`)),
+    })
+  }
+  return node
+}
+
+/* NEON FLICKER — reprise de text2prooo.html ("04. Cyberpunk Neon
+   Flicker") : chaque lettre flashe en couleur accent avec un halo
+   néon puis se stabilise, décalée de 0.02s par lettre, le tout
+   scrubbé au scroll (avance/recule avec le scroll, pas une lecture
+   figée).
+   Correctifs vs la version précédente (voir image de référence) :
+   - Couleur de repos : avant lue via getComputedStyle(el).color, or
+     .about-text force color:transparent pour l'ancien reveal en
+     background-clip:text (voir plus haut dans ce fichier) — chaque
+     lettre finissait donc invisible une fois "stabilisée". Lue ici
+     directement sur --text (bypass CSS .nf-flicker dans style.css),
+     donc suit vraiment le thème clair/sombre.
+   - Couleur du flash : #00f0ff (cyan de la démo) remplacé par
+     var(--accent) du site (orange), lu au montage — une seule
+     source de vérité, jamais de couleur en dur.
+   - clearProps une fois la lettre stabilisée : l'inline style posé
+     par GSAP est retiré, donc si le thème change après coup la
+     lettre suit --text en direct au lieu de rester figée sur la
+     valeur lue au montage.
+   - État "éteint" avant révélation : chaque lettre part de
+     color:transparent via un .fromTo(), pas une règle CSS séparée.
+     Transparent plutôt que --bg : marche même sur les sections à
+     fond non uni (dégradés, textures — ex. Contact) où --bg seul ne
+     matchait pas exactement le rendu réel. (Une opacité réduite
+     d'une couleur CLAIRE comme --text en mode sombre ne devient
+     jamais aussi sombre que le fond ; transparent, si, toujours.
+     Une règle CSS concurrente aurait aussi cassé le fallback --text
+     de clearProps une fois la lettre stabilisée — voir plus haut.)
+   - Respecte prefers-reduced-motion (même pattern que HeroPhoto plus
+     haut) : texte affiché stable d'emblée, sans flicker ni halo. */
+function NeonFlickerText({ children, tag: Tag = 'h3', className = '', ...rest }) {
+  const ref = useRef(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const letters = el.querySelectorAll('.nf-letter')
+    if (!letters.length) return
+
+    const cs = getComputedStyle(el)
+    const accent = (cs.getPropertyValue('--accent') || '#FF5500').trim()
+    const restColor = (cs.getPropertyValue('--text') || '#F2EDE8').trim()
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    if (reduceMotion) {
+      gsap.set(letters, { color: restColor, textShadow: '0 0 0px transparent' })
+      return
+    }
+
+    const glow = `0 0 12px ${accent}, 0 0 30px ${accent}`
+    const tl = gsap.timeline({
+      scrollTrigger: { trigger: el, start: 'top 85%', end: 'bottom 55%', scrub: true },
+    })
+    /* stagger natif GSAP plutôt qu'une boucle créant 2×N tweens
+       individuels : sur un gros bloc de texte (About fusionné en un
+       seul paragraphe, 500+ lettres), 2×N tweens séparés dans un
+       même timeline scrubbé devenait perceptiblement moins fluide
+       que sur un texte court. stagger:0.02 reproduit exactement le
+       même décalage par lettre (index*0.02) mais en 2 tweens au
+       total au lieu de 2×N — GSAP l'optimise nativement en interne. */
+    tl.fromTo(letters,
+      { color: 'transparent' },
+      { color: accent, textShadow: glow, duration: 0.1, stagger: 0.02 },
+      0
+    ).to(letters, {
+      color: restColor,
+      textShadow: '0 0 0px transparent',
+      duration: 0.1,
+      stagger: 0.02,
+      clearProps: 'color,textShadow',
+    }, 0.15)
+
+    return () => {
+      tl.scrollTrigger?.kill()
+      tl.kill()
+    }
+  }, [])
+
+
+  return (
+    <Tag ref={ref} className={`${className} nf-flicker`} {...rest}>
+      {Children.map(children, (child, i) => splitTextToLetters(child, `nf-${i}`))}
+    </Tag>
+  )
+}
+
+function ProjectMarquee({ tech }) {
+  const trackRef = useRef(null)
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track) return
+    const width = track.scrollWidth / 2
+    const tween = gsap.to(track, { x: -width, duration: 12, ease: 'none', repeat: -1 })
+    return () => tween.kill()
+  }, [])
+  const items = [...tech, ...tech]
+  return (
+    <div className="proj-marquee-wrap">
+      <div className="proj-marquee-track" ref={trackRef}>
+        {items.map((t, i) => <span key={i} className="proj-marquee-item">{t} •</span>)}
+      </div>
+    </div>
+  )
+}
+
+const RECENT_PROJECT_TITLES = ['NEXURA', 'Chez Florence', 'KokoEat', 'Jean Edy · Portfolio']
+const RECENT_PROJECTS = RECENT_PROJECT_TITLES
+  .map(t => PROJECTS.find(p => p.title === t))
+  .filter(Boolean)
+
+function RecentProjects() {
+  const { selectedProject, caseFlipped, select, close, setCaseFlipped } = useProjectSelection()
+  const trackWrapRef = useRef(null)
+  const pausedRef = useRef(false)
+  const nudgeTimerRef = useRef(null)
+  const cascadeRefs = useRef([])
+
+  /* Piste dupliquée x2 pour boucle infinie — scroll réel (scrollLeft
+     + rAF), pas une animation CSS, pour que les boutons prev/next
+     marchent vraiment. */
+  const loopedProjects = [...PROJECTS, ...PROJECTS]
+
+  useEffect(() => {
+    const wrap = trackWrapRef.current
+    if (!wrap) return
+    const SPEED = 0.5 // px / frame (~30px/s à 60fps)
+    let raf
+    const step = () => {
+      if (!pausedRef.current) {
+        wrap.scrollLeft += SPEED
+        const half = wrap.scrollWidth / 2
+        if (wrap.scrollLeft >= half) wrap.scrollLeft -= half
+      }
+      raf = requestAnimationFrame(step)
+    }
+    raf = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(raf)
+  }, [])
+
+  /* Entrée des 4 cartes vedettes au scroll — reprise à l'identique de
+     dernier_projet.html : cartes de gauche (index pair) depuis la
+     gauche, cartes de droite (index impair) depuis la droite. */
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      cascadeRefs.current.forEach((el, i) => {
+        if (!el) return
+        gsap.from(el, {
+          x: i % 2 === 0 ? -120 : 120,
+          autoAlpha: 0,
+          scale: 0.95,
+          scrollTrigger: { trigger: el, start: 'top 85%', end: 'top 45%', scrub: 2 },
+        })
+      })
+    })
+    return () => ctx.revert()
+  }, [])
+
+  const pause = () => { pausedRef.current = true }
+  const resume = () => { pausedRef.current = false }
+  const nudge = (dir) => {
+    const wrap = trackWrapRef.current
+    if (!wrap) return
+    pause()
+    wrap.scrollBy({ left: dir * wrap.clientWidth * 0.7, behavior: 'smooth' })
+    window.clearTimeout(nudgeTimerRef.current)
+    nudgeTimerRef.current = window.setTimeout(resume, 2200)
+  }
+
+  return (
+    <section className="recent-projects-section" id="projets-section">
+      <SectionHeading num="01" title="Projets" sub={`${PROJECTS.length} réalisations`} />
+      <NeonFlickerText className="about-text" style={{ maxWidth: '640px', margin: '0 0 3vh 4vw' }}>
+        Voici mes derniers projets de cette année, et l'ensemble de mes
+        réalisations juste en dessous.
+      </NeonFlickerText>
+
+      {/* ── Sous-section 1 : 4 projets vedettes en cascade (dernier_projet.html) ── */}
+      <div className="rp-featured-grid">
+        {RECENT_PROJECTS.map((p, i) => (
+          <div
+            key={p.id}
+            ref={el => (cascadeRefs.current[i] = el)}
+            className="pcard"
+            onClick={() => select(p)}
+          >
+            <div className="pcard-upper">
+              <img src={p.img} alt={p.title} loading="lazy" />
+            </div>
+            <div className="pcard-hover-reveal">
+              <img src={p.responsive || p.img} alt={`${p.title} — version mobile`} loading="lazy" />
+            </div>
+            <ProjectMarquee tech={p.tech} />
+            <div className="pcard-bottom">
+              <span className="pcard-title">{p.title}</span>
+              <span className="pcard-year">{p.year}'</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Sous-section 2 : Mes réalisations, piste infinie (slide_pour_app.html) ── */}
+      <div className="rp-slider-header">
+        <h3 className="rp-slider-title">Mes réalisations</h3>
+        <span>{PROJECTS.length} projets · défilement automatique, survolez pour mettre en pause</span>
+        <div className="rp-slider-controls">
+          <button type="button" className="pe-nav-btn" onClick={() => nudge(-1)} aria-label="Précédent">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
+          </button>
+          <button type="button" className="pe-nav-btn" onClick={() => nudge(1)} aria-label="Suivant">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
+          </button>
+        </div>
+      </div>
+
+      <div className="rp-track-wrap" ref={trackWrapRef} onMouseEnter={pause} onMouseLeave={resume}>
+        <div className="rp-track">
+          {loopedProjects.map((p, i) => (
+            <div key={`${p.id}-${i}`} className="pcard" onClick={() => select(p)}>
+              <div className="pcard-upper">
+                <img src={p.img} alt={p.title} loading="lazy" />
+              </div>
+              <div className="pcard-hover-reveal">
+                <img src={p.responsive || p.img} alt={`${p.title} — version mobile`} loading="lazy" />
+              </div>
+              <ProjectMarquee tech={p.tech} />
+              <div className="pcard-bottom">
+                <span className="pcard-title">{p.title}</span>
+                <span className="pcard-year">{p.year}'</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <ProjectDetailModal
+        project={selectedProject}
+        caseFlipped={caseFlipped}
+        onFlip={setCaseFlipped}
+        onClose={close}
+      />
     </section>
   )
 }
 
-/* ════════════════════════════════════════════
- PROJECTS TUNNEL — "Mes projets" — WebGL Hyper-Drive
- Remplace l'ancien horizontal parallax (fcx-*).
- Tunnel Three.js pinné en scroll (GSAP ScrollTrigger),
- débris texturés avec les captures des 19 projets,
- la séquence complète des projets est dupliquée le
- long de l'axe Z pour boucler deux fois pendant le scroll.
- Clic sur une carte → modal image + détails projet.
- Poussière d'étoile réaliste (twinkle + teintes) + étoiles filantes.
- ════════════════════════════════════════════ */
 const TUNNEL_ACCENT_A = 0xff5500 // --accent
 const TUNNEL_ACCENT_B = 0x1affc2 // glow complémentaire cinématique
 
@@ -2253,27 +2466,32 @@ function ProjectsTunnel() {
     container.addEventListener('pointermove', handlePointerMove)
     container.addEventListener('pointerleave', handlePointerLeave)
 
-    /* ── ScrollTrigger : pin + traversée du tunnel sur 2 boucles ── */
+    /* ── Molette/tactile : remplace ScrollTrigger (le tunnel vit dans
+       un overlay plein écran, pas dans le flux de scroll normal de
+       la page — un pin+scroller n'a pas de sens dans ce contexte) ── */
     const cameraEndZ = -(TOTAL_LENGTH + 180)
-    const tween = gsap.to(camera.position, {
-      scrollTrigger: {
-        trigger: section,
-        start: 'top top',
-        end: `+=${Math.round(TOTAL_LENGTH * 2.4)}`,
-        pin: true,
-        scrub: 1.2,
-        invalidateOnRefresh: true,
-        onUpdate: self => {
-          // Le titre "MON UNIVERS" n'est pas permanent : il s'efface
-          // dès que le scroll démarre (visible seulement à l'entrée du tunnel).
-          if (titleRef.current) {
-            titleRef.current.style.opacity = String(Math.max(0, 1 - self.progress * 8))
-          }
-        },
-      },
-      z: cameraEndZ,
-      ease: 'none',
-    })
+    let progress = 0
+    const applyProgress = (dur) => {
+      gsap.to(camera.position, { z: progress * cameraEndZ, duration: dur, ease: 'power2.out', overwrite: true })
+      if (titleRef.current) titleRef.current.style.opacity = String(Math.max(0, 1 - progress * 8))
+    }
+    const handleWheel = (e) => {
+      e.preventDefault()
+      progress = Math.min(1, Math.max(0, progress + e.deltaY / (TOTAL_LENGTH * 2.4)))
+      applyProgress(0.5)
+    }
+    let touchStartY = null
+    const handleTouchStart = (e) => { touchStartY = e.touches[0].clientY }
+    const handleTouchMove = (e) => {
+      if (touchStartY === null) return
+      const dy = touchStartY - e.touches[0].clientY
+      touchStartY = e.touches[0].clientY
+      progress = Math.min(1, Math.max(0, progress + dy / (TOTAL_LENGTH * 1.2)))
+      applyProgress(0.3)
+    }
+    container.addEventListener('wheel', handleWheel, { passive: false })
+    container.addEventListener('touchstart', handleTouchStart, { passive: true })
+    container.addEventListener('touchmove', handleTouchMove, { passive: true })
 
     /* ── Boucle d'animation ── */
     const clock = new THREE.Clock()
@@ -2355,8 +2573,9 @@ function ProjectsTunnel() {
       container.removeEventListener('click', handleClick)
       container.removeEventListener('pointermove', handlePointerMove)
       container.removeEventListener('pointerleave', handlePointerLeave)
-      if (tween.scrollTrigger) tween.scrollTrigger.kill()
-      tween.kill()
+      container.removeEventListener('wheel', handleWheel)
+      container.removeEventListener('touchstart', handleTouchStart)
+      container.removeEventListener('touchmove', handleTouchMove)
       geometry.dispose()
       meshObjects.forEach(mesh => mesh.material.dispose())
       projectTextures.forEach(tex => tex.dispose())
@@ -2384,98 +2603,54 @@ function ProjectsTunnel() {
         </h2>
       </div>
 
-      {selectedProject && (
-        <div className="tunnel-modal-backdrop" onClick={() => { setSelectedProject(null); setCaseFlipped(false) }}>
-          <div className="tunnel-modal" onClick={e => e.stopPropagation()}>
-            <button type="button" className="tunnel-modal-close" onClick={() => { setSelectedProject(null); setCaseFlipped(false) }} aria-label="Fermer">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
-                <line x1="5" y1="5" x2="19" y2="19" />
-                <line x1="19" y1="5" x2="5" y2="19" />
-              </svg>
-            </button>
-
-            <div className="tunnel-modal-image">
-              <img src={selectedProject.img} alt={selectedProject.title} loading="lazy" />
-            </div>
-
-            <div className="tunnel-modal-info">
-              <div className={`fc-flip${caseFlipped ? ' is-flipped' : ''}`}>
-                <div className="fc-flip-inner">
-
-                  {/* ── Face avant : infos projet ── */}
-                  <div className="fc-flip-face fc-flip-face--front">
-                    <h3 className="fc-name">{selectedProject.title}</h3>
-                    <h3 className="fc-sub">{selectedProject.sub}</h3>
-                    <div className="fc-meta">
-                      <div className="fc-meta-row"><span className="fc-ml">Marché</span><span className="fc-mv">Côte d'Ivoire</span></div>
-                      <div className="fc-meta-row"><span className="fc-ml">Rôle</span><span className="fc-mv">Conception & Développement</span></div>
-                      <div className="fc-meta-row"><span className="fc-ml">Année</span><span className="fc-mv">{selectedProject.year}</span></div>
-                    </div>
-                    <div className="fc-tags">
-                      {selectedProject.tech.map(t => <TechTag key={t} label={t} />)}
-                    </div>
-                    <h3 className="fc-desc">{selectedProject.desc}</h3>
-                    <div className="fc-actions">
-                      <a
-                        href={selectedProject.url && selectedProject.url !== '#' ? selectedProject.url : '#'}
-                        target="_blank"
-                        rel="noreferrer"
-                        className={`fc-cta ${(!selectedProject.url || selectedProject.url === '#') ? 'fc-cta--disabled' : ''}`}
-                        onClick={e => { if (!selectedProject.url || selectedProject.url === '#') e.preventDefault() }}
-                      >
-                        <AnimIcon type="globe" size={15} color="currentColor" /> Voir le projet
-                        <span className="btn-arr" aria-hidden="true">
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" />
-                          </svg>
-                        </span>
-                      </a>
-                      {selectedProject.github ? (
-                        <a href={selectedProject.github} target="_blank" rel="noreferrer" className="fc-cta-ghost">
-                          <AnimIcon type="github" size={15} color="currentColor" /> Code source
-                        </a>
-                      ) : (
-                        <span className="fc-cta-private">
-                          <AnimIcon type="lock" size={12} color="currentColor" /> Code privé
-                        </span>
-                      )}
-                    </div>
-                    {(selectedProject.problem || selectedProject.result) && (
-                      <button type="button" className="fc-flip-btn" onClick={() => setCaseFlipped(true)}>
-                        <AnimIcon type="flip" size={14} color="currentColor" /> Détails du projet
-                      </button>
-                    )}
-                  </div>
-
-                  {/* ── Face arrière : cas d'étude Problème → Solution → Résultat ── */}
-                  <div className="fc-flip-face fc-flip-face--back">
-                    <h3 className="fc-sub fc-case-label">Cas d'étude</h3>
-                    <div className="fc-case">
-                      <div className="fc-case-block">
-                        <span className="fc-case-tag">Problème</span>
-                        <p>{selectedProject.problem}</p>
-                      </div>
-                      <div className="fc-case-block">
-                        <span className="fc-case-tag">Solution</span>
-                        <p>{selectedProject.solution}</p>
-                      </div>
-                      <div className="fc-case-block fc-case-block--result">
-                        <span className="fc-case-tag">Résultat</span>
-                        <p>{selectedProject.result}</p>
-                      </div>
-                    </div>
-                    <button type="button" className="fc-flip-btn" onClick={() => setCaseFlipped(false)}>
-                      <AnimIcon type="flip" size={14} color="currentColor" /> Retour au projet
-                    </button>
-                  </div>
-
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <ProjectDetailModal
+        project={selectedProject}
+        caseFlipped={caseFlipped}
+        onFlip={setCaseFlipped}
+        onClose={() => { setSelectedProject(null); setCaseFlipped(false) }}
+      />
     </section>
+  )
+}
+
+function ProjectsExplorer({ isOpen, onClose }) {
+  /* Le tunnel (WebGL) n'est monté que quand l'overlay est réellement
+     ouvert — évite de faire tourner un renderer Three.js en arrière-
+     plan quand c'est fermé. Démontage retardé de 550ms à la fermeture
+     pour laisser le fondu CSS (.pe-overlay, transition .5s) se
+     terminer avant de libérer les ressources WebGL. */
+  const [mounted, setMounted] = useState(isOpen)
+
+  useEffect(() => {
+    let t
+    if (isOpen) {
+      setMounted(true)
+    } else {
+      t = setTimeout(() => setMounted(false), 550)
+    }
+    return () => clearTimeout(t)
+  }, [isOpen])
+
+  useEffect(() => {
+    if (!isOpen) return
+    const onKey = e => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [isOpen, onClose])
+
+  useEffect(() => {
+    /* Verrouille le scroll du body tant que l'overlay est ouvert —
+       sinon la page défile sous le plein-écran fixe derrière lui. */
+    if (!isOpen) return
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = prevOverflow }
+  }, [isOpen])
+
+  return (
+    <div className={`pe-overlay${isOpen ? ' is-open' : ''}`} aria-hidden={!isOpen}>
+      {mounted && <ProjectsTunnel />}
+    </div>
   )
 }
 /* ════════════════════════════════════════════
@@ -2593,38 +2768,28 @@ function About() {
           <AboutStats />
 
           <div className="about-text-col">
-            <p className="about-text-lg">
+            <NeonFlickerText tag="p" className="about-text-lg">
               Je suis <strong>M'Bollo Aka</strong> ,développeur web basé à <strong>Abidjan</strong>, avec une vraie envie de
               créer des produits utiles, beaux et agréables à utiliser.
-            </p>
-
-            <p className="about-text-lg">
+              <br /><br />
               Mon parcours a commencé dans le <strong>réseau</strong> et la
               <strong> sécurité informatique</strong>, et cette base m’a appris à construire
               avec méthode, à penser la fiabilité et à garder une vision propre de
               l’architecture.
-            </p>
-
-            <p className="about-text-lg">
+              <br /><br />
               Avec le temps, j’ai trouvé ma place dans le développement web. Aujourd’hui,
               j’aime concevoir des interfaces qui respirent, qui bougent, et qui donnent une
               vraie sensation de produit fini.
-            </p>
-
-            <p className="about-text-lg">
+              <br /><br />
               Je travaille surtout avec <strong>React</strong> et <strong>Django</strong>,
               tout en explorant <strong>Next.js</strong>, <strong>GSAP</strong>,
               <strong>Framer Motion</strong> et parfois <strong>Three.js</strong> pour donner
               plus de vie et de profondeur aux expériences.
-            </p>
-
-            <p className="about-text-lg">
+              <br /><br />
               J’aime créer des applications pensées pour de vrais usages : dashboards, outils
               métier, plateformes web, SaaS et sites immersifs. Mon approche reste simple :
               faire quelque chose de clair, solide et agréable à utiliser.
-            </p>
-
-            <p className="about-text-lg">
+              <br /><br />
               En grande partie <strong>autodidacte</strong>, j’apprends en construisant, en
               testant et en améliorant chaque projet. C’est aussi dans cet esprit que j’ai
               créé{' '}
@@ -2642,7 +2807,7 @@ function About() {
                 AKATech
               </a>
               , un espace où je donne forme à des idées web modernes et concrètes.
-            </p>
+            </NeonFlickerText>
 
             {/* Bloc identitaire */}
             <div itemScope itemType="https://schema.org/Person" style={{ display: 'flex', alignItems: 'center', gap: '1.1rem', marginTop: '2.5rem' }}>
@@ -2918,10 +3083,10 @@ function Timeline() {
   return (
     <section id="timeline-section" className="sec">
       <SectionHeading num="02" title="Parcours" sub="Expérience & Formation" style={{ marginBottom: '1.5rem' }} />
-      <h3 className="about-text" style={{ maxWidth: '640px', marginBottom: '2.5rem' }}>
+      <NeonFlickerText className="about-text" style={{ maxWidth: '640px', marginBottom: '2.5rem' }}>
         De la <strong>sécurité informatique</strong> au développement web : chaque étape
         a renforcé ma méthode et ma rigueur technique.
-      </h3>
+      </NeonFlickerText>
       <p className="tl-board-hint">Glisse les cartes pour explorer</p>
       <TimelineBoard />
     </section>
@@ -3049,17 +3214,17 @@ function SkillsSection() {
   return (
     <section id="skills-section" className="sec">
 
-      <h3 className="about-text" style={{ maxWidth: '640px', marginBottom: '2rem' }}>
+      <NeonFlickerText className="about-text" style={{ maxWidth: '640px', marginBottom: '2rem' }}>
         Un ensemble d'<strong>outils maîtrisés</strong> au fil des projets, du frontend
         au backend, pour livrer du code fiable.
-      </h3>
+      </NeonFlickerText>
 
       {/* Zone interactive : occupe toute la section (du parallaxe précédent
           jusqu'au début de Process). Les logos suivent le curseur, révélés
           en tranches — cf. components/PixelSliceTrail.jsx */}
       <div className="skl-trail-zone">
         <PixelSliceTrail images={skillIcons} imageSize={130} slices={6} smoothing={0.26} spawnThreshold={55} />
-        <span className="skl-trail-hint">Bougez le curseur ici</span>
+        <span className="skl-trail-hint">Survolez ici</span>
       </div>
 
       <h3 style={{ fontFamily: "'Space Mono',monospace", fontSize: '.6rem', color: 'var(--muted)', letterSpacing: '.15em', textAlign: 'center', marginTop: '1rem' }}>
@@ -3208,10 +3373,10 @@ function ProcessSection() {
     <section id="process-section" className="proc-section">
       <div className="proc-header">
         <SectionHeading num="03" title="Process" sub="De l'acompte à la livraison" subAs="h2" style={{ marginBottom: '.8rem' }} />
-        <h3 className="about-text proc-header-text">
+        <NeonFlickerText className="about-text proc-header-text">
           Un processus clair et transparent, du premier brief à la mise en ligne —
           vous savez toujours où en est votre projet.
-        </h3>
+        </NeonFlickerText>
       </div>
       <div className="proc-hvr-wrap">
         <HoverRevealList items={PROCESS_STEPS} eyebrowSuffix="Process" />
@@ -3277,10 +3442,10 @@ function ServicesSection() {
     <section id="services-section" className="svc-section">
       <div className="svc-header">
         <SectionHeading num="03" title="Services" sub="Ce que je peux faire pour vous" subAs="h2" style={{ marginBottom: '.8rem' }} />
-        <h3 className="about-text svc-header-text">
+        <NeonFlickerText className="about-text svc-header-text">
           Cinq offres complémentaires, de la conception au support continu —
           pour un projet qui reste performant dans la durée.
-        </h3>
+        </NeonFlickerText>
       </div>
       <div className="svc-hvr-wrap">
         <HoverRevealList items={items} />
@@ -3351,10 +3516,10 @@ function _ServicesSection_OLD_UNUSED() {
       {/* ── En-tête : titre + accroche — scroll LIBRE, hors du sticky ── */}
       <div className="svc-header">
         <SectionHeading num="03" title="Services" sub="Ce que je peux faire pour vous" subAs="h2" style={{ marginBottom: '.8rem' }} />
-        <h3 className="about-text svc-header-text">
+        <NeonFlickerText className="about-text svc-header-text">
           Cinq offres complémentaires, de la conception au support continu —
           pour un projet qui reste performant dans la durée.
-        </h3>
+        </NeonFlickerText>
       </div>
 
       {/* ── Zone pin : seule cette zone porte le sticky + le scrub GSAP ── */}
@@ -3432,10 +3597,10 @@ function PricingSection() {
   return (
     <section id="pricing-section">
       <SectionHeading num="03" title="Clientèle" sub="Tarifs & offres" style={{ marginBottom: '1.5rem' }} />
-      <h3 className="about-text" style={{ maxWidth: '640px', marginBottom: '2.5rem' }}>
+      <NeonFlickerText className="about-text" style={{ maxWidth: '640px', marginBottom: '2.5rem' }}>
         Des <strong>offres claires</strong>, adaptées à la taille de votre projet — du
         site vitrine à la plateforme web complexe.
-      </h3>
+      </NeonFlickerText>
 
       {/* ── Tabs catégorie ── */}
       <div className="ptabs">
@@ -4375,10 +4540,10 @@ function ContactSection({ onToast }) {
   return (
     <section id="contact">
       <SectionHeading num="05" title="Contact" sub="Travaillons ensemble" style={{ marginBottom: '1.5rem' }} />
-      <h3 className="about-text" style={{ maxWidth: '640px', marginBottom: '2.5rem' }}>
+      <NeonFlickerText className="about-text" style={{ maxWidth: '640px', marginBottom: '2.5rem' }}>
         Une idée, un projet, une question ? Je suis <strong>disponible</strong> pour en
         discuter et la transformer en quelque chose de concret.
-      </h3>
+      </NeonFlickerText>
 
       <div className="contact-grid">
         {/* ── Colonne gauche : liste compacte "Où me joindre" ── */}
@@ -4407,7 +4572,7 @@ function ContactSection({ onToast }) {
           </ul>
         </div>
         <div>
-          <h3 className="about-text" style={{ marginBottom: '.5rem' }}>Envoyez-moi un message</h3>
+          <h3 className="rp-slider-title" style={{ marginBottom: '.5rem' }}>Envoyez-moi un message</h3>
           <h3 style={{ fontSize: '.85rem', color: 'var(--muted)', marginBottom: '1.5rem' }}>Remplissez le formulaire et je vous réponds rapidement.</h3>
           <div className="cf-card">
           {sent ? (
@@ -4820,9 +4985,14 @@ export default function App() {
     le CSS le cache (opacity:0, visibility:hidden). Pas de removeChild. */
     setLoaderDone(true) /* déclenche le démarrage du son d'immersion */
     document.body.classList.remove('nav-loading')
+    /* NB : la classe posée ici doit matcher #loader.hide en CSS
+       (opacity:0 + visibility:hidden), pas '.loaded' — sinon aucune
+       règle CSS ne cible la classe posée et #loader (position:fixed,
+       inset:0, z-index:999999) reste indéfiniment au-dessus du reste
+       de la page. */
     const loaderEl = document.getElementById('loader')
     if (loaderEl) {
-      loaderEl.classList.add('loaded')
+      loaderEl.classList.add('hide')
     }
 
     /* ── Entrée du header (logo / horloge / toggle / hamburger) ── */
@@ -4851,6 +5021,10 @@ export default function App() {
     } catch {}
   }
 
+  /* Overlay "Explorer" (ProjectsExplorer) — bouton dans la navbar,
+     à côté du toggle thème. Dissolve géré en CSS (.pe-overlay). */
+  const [showExplorer, setShowExplorer] = useState(false)
+
   const showToast = () => { setToastVisible(true); setTimeout(() => setToastVisible(false), 3000) }
 
   /* GSAP global hooks */
@@ -4874,15 +5048,15 @@ export default function App() {
       <CursorAndScrollBar />
       <Toast show={toastVisible} />
       <SoundToggle muted={muted} onToggle={toggleMute} />
-      <Navbar theme={theme} onToggleTheme={toggleTheme} />
+      <Navbar theme={theme} onToggleTheme={toggleTheme} isExplorerOpen={showExplorer} onToggleExplorer={() => setShowExplorer(v => !v)} />
+      <ProjectsExplorer isOpen={showExplorer} onClose={() => setShowExplorer(false)} />
       <main>
         <div className="stk-hero-pin">
           <div className="stk-hero-sticky">
             <Hero />
           </div>
         </div>
-        <FeaturedCreationDesktop />
-        <ProjectsTunnel />
+        <RecentProjects />
         <HeroZoomSection />
         <About />
         <Timeline />

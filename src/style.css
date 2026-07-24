@@ -1056,6 +1056,12 @@
    }
    .about-text strong,
    .about-text-lg strong {
+     /* Gras seulement — MÊME couleur que le texte autour, pas de
+        couleur accent ici. Le vrai fix (pourquoi <strong> ne
+        disparaissait plus / se coupait mal) vit dans le bypass
+        .nf-flicker plus bas : strong y suit exactement la même
+        logique que le reste du texte (flash puis couleur de repos
+        identique, --text). */
      font-weight: 800;
    }
    .about-text a,
@@ -1495,9 +1501,9 @@
      border-radius: 16px;
      border: 1px solid rgba(255,85,0,.12);
      overflow: hidden;
-     background: rgba(255,85,0,.02);
+     background: transparent;
    }
-   body.light-mode .skl-trail-zone { background: rgba(255,85,0,.03); border-color: rgba(255,85,0,.15); }
+   body.light-mode .skl-trail-zone { background: transparent; border-color: rgba(255,85,0,.15); }
    .pix-slice-trail { position: absolute; inset: 0; overflow: hidden; }
    .skl-trail-hint {
      position: absolute;
@@ -1505,10 +1511,11 @@
      transform: translate(-50%, -50%);
      pointer-events: none;
      font-family: 'Space Mono', monospace;
-     font-size: .62rem;
-     letter-spacing: .3em;
+     font-size: clamp(1rem, 2.2vw, 1.5rem);
+     font-weight: 700;
+     letter-spacing: .25em;
      text-transform: uppercase;
-     color: rgba(255,85,0,.35);
+     color: var(--accent);
      transition: opacity .3s ease;
      white-space: nowrap;
    }
@@ -1517,8 +1524,7 @@
      .skl-trail-zone { height: clamp(280px, 42vh, 420px); }
    }
    .skills-mastery { display: grid; grid-template-columns: repeat(auto-fit,minmax(100px,1fr)); gap: 1rem; margin: 2.5rem 0 3rem; }
-   .skill-card { display: flex; flex-direction: column; align-items: center; gap: .8rem; padding: 1.5rem 1rem; border: var(--border); border-radius: 16px; transition: border-color .3s,transform .3s,box-shadow .3s,background .3s; cursor: default; background: var(--glass); box-shadow: var(--shadow-sm); }
-   body.light-mode .skill-card { border: var(--border); background: var(--glass); }
+   .skill-card { display: flex; flex-direction: column; align-items: center; gap: .8rem; padding: 1.5rem 1rem; border-radius: 16px; transition: border-color .3s,transform .3s,box-shadow .3s,background .3s; cursor: default; }
    .skill-card img { width: 36px; height: 36px; object-fit: contain; filter: grayscale(1) brightness(0.55); transition: filter .25s; }
    .skill-card span { font-size: .7rem; color: var(--muted); text-align: center; font-family: 'Space Mono', monospace; }
    .skills-bands { display: flex; flex-direction: column; gap: 1.4rem; margin-top: 2rem; overflow: hidden; }
@@ -3527,8 +3533,7 @@
    @keyframes flameAnim { 0%,100%{opacity:.5;transform:scaleY(.7)} 50%{opacity:1;transform:scaleY(1.3)} }
    
    /* ══════════ LIGHT MODE — overrides globaux ══════════ */
-   body.light-mode .skill-card { border-color: rgba(255,85,0,.15); background: rgba(255,85,0,.03); }
-   /* price-card backgrounds handled by data-plan selectors above */
+      /* price-card backgrounds handled by data-plan selectors above */
    body.light-mode .coj-card { background: rgba(255,255,255,.70); border-color: rgba(0,0,0,.08); }
    body.light-mode .coj-card:hover { background: rgba(255,255,255,.90); border-color: rgba(255,85,0,.3); }
    body.light-mode #cursor-dot { background: #FF5500; }
@@ -3827,13 +3832,24 @@
      margin-top: calc(var(--stk-reveal) * -1);
      z-index: 2;
    }
-
-   /* Paire 2 : ProjectsTunnel (fixe, pin GSAP existant) → HeroZoomSection
-      (passe dessus). Le tunnel se pin déjà lui-même (GSAP ScrollTrigger
-      pin:true) ; on remonte juste hzx-section dans sa dernière fenêtre
-      de scroll et on le fait peindre par-dessus. */
-   .hzx-section {
+   /* RecentProjects a pris la place de .featured-creation (section qui
+      doit "remonter" par-dessus le Hero pinné pendant sa phase de
+      reveal) — sans cette règle, le canvas WebGL du Hero (dissolve)
+      reste visible/non-recouvert sur 100vh supplémentaires avant que
+      la section suivante commence, d'où le grand aplat noir signalé. */
+   .recent-projects-section {
      margin-top: calc(var(--stk-reveal) * -1);
+     z-index: 2;
+   }
+
+   /* Paire 2 : DÉSACTIVÉE — ProjectsTunnel ne se pin plus dans le flux
+      de la page (il vit maintenant dans l'overlay Explorer, contrôlé
+      à la molette/tactile, pas par ScrollTrigger sur le scroll de la
+      page). hzx-section n'a donc plus besoin de remonter par-dessus
+      quoi que ce soit — sans ce reset, la section se serait
+      chevauchée avec la fin de la piste "Tous les projets". */
+   .hzx-section {
+     margin-top: 0;
    }
 
    /* Paire 3 : cta-dissolve (fixe, pin interne DissolveTransition) →
@@ -3851,6 +3867,7 @@
      .stk-hero-pin { height: auto; }
      .stk-hero-sticky { position: relative; height: auto; }
      .featured-creation { margin-top: 0; }
+     .recent-projects-section { margin-top: 0; }
      .hzx-section { margin-top: 0; }
      .full-beams-zone { margin-top: 0; }
    }
@@ -4777,6 +4794,34 @@
  PROJECTS TUNNEL — remplace l'ancien .fcx-* (horizontal parallax)
  GSAP ScrollTrigger gère le pin lui-même (pas de sticky CSS ici).
  ════════════════════════════════════════════ */
+/* ── ProjectsExplorer (overlay du bouton "Explorer" de la navbar) ──
+   N'avait AUCUNE règle CSS : .pe-overlay se rendait donc en flux
+   normal (juste après la navbar, avant le hero) au lieu d'un plein
+   écran caché par défaut — son bouton de fermeture (alors dédié,
+   toujours dans le DOM même fermé) restait visible en permanence
+   comme une mini-barre au-dessus du hero. .tunnel-section gère déjà
+   sa propre taille (100vh) une fois montée ; .pe-overlay n'a besoin
+   que d'être le plein-écran fixe caché/affiché. Transition .5s pour
+   matcher le délai de démontage WebGL de 550ms dans ProjectsExplorer
+   (JS). Plus de bouton de fermeture dédié (.pe-close) : le bouton
+   "Explorer" de la navbar (z-index 1300, toujours au-dessus) sert
+   maintenant à la fois d'entrée et de sortie — voir Navbar. */
+.pe-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 950;
+  background: #020202;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .5s ease, visibility 0s linear .5s;
+}
+.pe-overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity .5s ease, visibility 0s linear;
+}
 .tunnel-section {
   position: relative;
   width: 100%;
@@ -5409,7 +5454,6 @@ body.light-mode .faq-list {
    11. Light mode overrides
    ───────────────────────────────────────── */
 body.light-mode .prc-card:not(.prc-card--pop) { background: #f7f5f2 !important; }
-body.light-mode .skill-card      { background: #f7f5f2 !important; }
 body.light-mode .testi-card      { background: #f7f5f2 !important; }
 body.light-mode .writing-card    { background: #f7f5f2 !important; }
 
@@ -5418,8 +5462,244 @@ body.light-mode .writing-card    { background: #f7f5f2 !important; }
   .prc-card          { box-shadow: 3px 3px 0 var(--text) !important; }
   .testi-card        { box-shadow: 3px 3px 0 var(--text) !important; }
   .writing-card      { box-shadow: 3px 3px 0 var(--text) !important; }
-  .skill-card        { box-shadow: 2px 2px 0 var(--text) !important; }
   .faq-icon          { box-shadow: 2px 2px 0 var(--text) !important; }
   .about-stats-col   { box-shadow: 2px 2px 0 var(--text) !important; }
   .stack-pill        { box-shadow: 2px 2px 0 var(--text) !important; }
 }
+/* ════════════════════════════════════════════════════════════════
+   PROJETS — carte unifiée (.pcard), taille et expérience identiques
+   à dernier_projet.html : 46vw × 85vh, "upper-part" 94%×62vh centrée
+   (hover = flou+assombri + reveal scale-in de la version mobile,
+   remplace le hover-vidéo de la référence — pas d'assets vidéo par
+   projet dans portfolioData), "bottom-part" 92%×8vh à 80%, marquee
+   tech à 92%. Réutilisée à l'IDENTIQUE dans les 2 sous-sections —
+   seule la disposition change (cascade absolue vs piste défilante),
+   jamais la taille des cartes.
+   ════════════════════════════════════════════════════════════════ */
+.recent-projects-section {
+  position: relative;
+  padding: 12vh 0 10vh;
+  background: var(--bg);
+  overflow: hidden;
+}
+.rp-section-head { padding: 0 4vw 5vh; max-width: 760px; position: relative; z-index: 1; }
+.rp-section-title {
+  font-size: clamp(2.2rem, 4.5vw, 3.6rem); font-weight: 800;
+  color: var(--text); font-family: var(--fd); letter-spacing: -1px; line-height: 1.05;
+}
+.rp-section-sub { margin-top: .8rem; color: var(--muted); font-size: 1rem; }
+
+/* ── Carte partagée ── */
+.pcard {
+  position: relative;
+  border-radius: 2vw;
+  overflow: hidden;
+  cursor: pointer;
+  background: #0a0a0a;
+  border: 1px solid rgba(255,255,255,.05);
+  box-shadow: 0 30px 60px rgba(0,0,0,.15);
+}
+.pcard-upper {
+  width: 94%; height: 62vh; overflow: hidden;
+  position: absolute; top: 38%; left: 50%; transform: translate(-50%,-50%);
+  border-radius: 1.5vw; z-index: 1;
+}
+.pcard-upper img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: filter .5s ease, opacity .5s ease, transform .7s cubic-bezier(.19,1,.22,1);
+}
+.pcard-hover-reveal {
+  width: 30vw; height: 40vh; overflow: hidden; pointer-events: none;
+  position: absolute; top: 38%; left: 50%; transform: translate(-50%,-50%) scale(.8);
+  border-radius: 1.2vw; opacity: 0; box-shadow: 0 30px 50px rgba(0,0,0,.5);
+  transition: opacity .4s ease, transform .5s cubic-bezier(.19,1,.22,1);
+  z-index: 2;
+}
+.pcard-hover-reveal img { width: 100%; height: 100%; object-fit: cover; }
+@media (hover: hover) and (pointer: fine) {
+  .pcard-upper:hover ~ .pcard-hover-reveal { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+  .pcard-upper:hover img { filter: blur(10px); opacity: .3; transform: scale(1.06); }
+}
+.pcard-bottom {
+  width: 92%; height: 8vh;
+  position: absolute; top: 80%; left: 50%; transform: translate(-50%,-50%);
+  display: flex; align-items: center; justify-content: space-between;
+  border-top: 1px solid rgba(255,255,255,.1); z-index: 1;
+}
+.pcard-title { font-size: 1.5vw; font-family: var(--fd); font-weight: 700; color: #fff; }
+.pcard-year { font-size: 1.1vw; font-family: 'Space Mono', monospace; color: rgba(255,255,255,.4); font-weight: 500; }
+
+/* Marquee tech, superposée en bas de l'image */
+.proj-marquee-wrap {
+  position: absolute; left: 0; right: 0; top: 92%; transform: translateY(-50%);
+  overflow: hidden; pointer-events: none; z-index: 3;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
+}
+.proj-marquee-track { display: flex; gap: 1.4rem; width: max-content; will-change: transform; padding: 0 1.2rem; }
+.proj-marquee-item {
+  font-size: .8vw; text-transform: uppercase; font-weight: 700;
+  letter-spacing: 1px; color: rgba(255,255,255,.6); font-family: 'Space Mono', monospace;
+  white-space: nowrap;
+}
+
+/* ── Sous-section 1 : cascade asymétrique (dernier_projet.html) ──
+   L'ancien calcul (top% × H) ne vérifiait qu'une seule contrainte
+   (la carte 4 doit toucher le bas du conteneur) et en oubliait une
+   autre : deux cartes de la MÊME colonne (1&3 à gauche, 2&4 à
+   droite) ne doivent jamais se chevaucher verticalement. Résultat :
+   la carte 3 démarrait avant la fin de la carte 1 (~25vh de
+   chevauchement), pareil pour 2&4.
+   Recalculé en vh directs (plus simple à vérifier que des % d'un H
+   choisi à l'aveugle) :
+     GAP     = 8vh   marge de sécurité (box-shadow des cartes déborde
+               de ~60px ≈ 6-7vh — 8vh évite qu'elle se touche)
+     STAGGER = 14vh  décalage colonne droite vs gauche (cascade)
+     T1 = 10vh                      carte 1 (gauche, en haut)
+     T2 = T1 + STAGGER  = 24vh      carte 2 (droite)
+     T3 = T1 + 85vh+GAP = 103vh     carte 3 (gauche, sous la 1)
+     T4 = T2 + 85vh+GAP = 117vh     carte 4 (droite, sous la 2)
+     H  = T4 + 85vh     = 202vh     la carte 4 touche le bas
+   Largeur/left/right en % (pas vw) : .rp-featured-grid a un
+   max-width: 1400px, or vw ignore ce plafond — sur tout écran plus
+   large que ~1458px (la plupart des laptops/desktops), les cartes
+   gauche/droite débordaient du conteneur capé et se chevauchaient
+   aussi HORIZONTALEMENT, en plus du chevauchement vertical. En %,
+   elles restent dans les 1400px du conteneur quelle que soit la
+   largeur d'écran. */
+.rp-featured-grid {
+  position: relative;
+  height: 202vh;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.rp-featured-grid .pcard { position: absolute; width: 46%; height: 85vh; }
+.rp-featured-grid .pcard:nth-child(1) { top: 10vh;  left: 2%; }
+.rp-featured-grid .pcard:nth-child(2) { top: 24vh;  right: 2%; }
+.rp-featured-grid .pcard:nth-child(3) { top: 103vh; left: 2%; }
+.rp-featured-grid .pcard:nth-child(4) { top: 117vh; right: 2%; }
+
+/* ── Sous-section 2 : "Mes réalisations", piste infinie (slide_pour_app.html) ── */
+.rp-slider-header {
+  position: relative; z-index: 1;
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .8rem;
+  padding: 6vh 4vw 3vh;
+}
+.rp-slider-title {
+  font-size: clamp(1.3rem, 2.2vw, 1.8rem); font-weight: 800; color: var(--text);
+  font-family: var(--fd); width: 100%;
+}
+.rp-slider-header span { font-family: 'Space Mono', monospace; font-size: .8rem; color: var(--muted); }
+.rp-slider-controls { display: flex; gap: .7rem; }
+.rp-track-wrap {
+  position: relative; z-index: 1; padding-left: 4vw; height: 85vh;
+  overflow-x: auto; overflow-y: hidden; display: flex; align-items: center;
+  scrollbar-width: none; -ms-overflow-style: none;
+}
+.rp-track-wrap::-webkit-scrollbar { display: none; }
+.rp-track { display: flex; gap: 3vw; width: max-content; height: 100%; }
+.rp-track .pcard { position: relative; flex: 0 0 auto; width: 46vw; height: 85vh; }
+
+.pe-nav-btn {
+  width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--border-color, rgba(128,128,128,.3));
+  background: transparent; color: var(--text); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .25s, border-color .25s;
+}
+.pe-nav-btn:hover { background: var(--glass); border-color: var(--accent); }
+
+@media (max-width: 900px) {
+  .rp-section-head { padding: 0 5vw 4vh; }
+  .pcard-title { font-size: 5vw; }
+  .pcard-year { font-size: 4vw; }
+  .proj-marquee-item { font-size: 3.2vw; }
+
+  .rp-featured-grid { height: auto; padding: 0 5vw; }
+  .rp-featured-grid .pcard {
+    position: relative !important; top: 0 !important; left: 0 !important; right: 0 !important;
+    width: 92vw; height: 70vh; margin: 0 auto 4vh;
+  }
+  .pcard-upper { top: 35%; width: 92%; height: 48vh; border-radius: 3vw; }
+  .pcard-hover-reveal { display: none; } /* pas de hover tactile, comme la vidéo désactivée dans la référence */
+  .pcard-bottom { top: 78%; }
+  .proj-marquee-wrap { top: 90%; }
+
+  .rp-slider-header { padding: 5vh 5vw 2vh; }
+  .rp-track-wrap { padding-left: 5vw; height: 70vh; }
+  .rp-track .pcard { width: 84vw; height: 70vh; }
+}
+
+
+/* Bouton Explorer — même traitement que .sm-toggle (StaggeredMenu) :
+   translucide blanc sur le hero (fond sombre, avant scroll), puis
+   thème-aware une fois la navbar scrollée. Neobrutalism : bordure
+   2px + ombre portée dure, hover = inversion des couleurs + lift. */
+.nb-explore-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  border-radius: 999px;
+  padding: 9px 16px 9px 14px;
+  cursor: pointer;
+  font-family: 'Space Mono', monospace; font-size: .65rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase; line-height: 1;
+  transition: color .2s, background .2s, border-color .2s, box-shadow .2s, transform .18s;
+  margin-right: .5rem;
+}
+.nb-topbar:not(.scrolled) .nb-explore-btn {
+  background: rgba(255,255,255,0.06);
+  border: 2px solid rgba(255,255,255,0.75);
+  color: rgba(255,255,255,0.9);
+  box-shadow: 2px 2px 0 rgba(255,255,255,0.25);
+}
+.nb-topbar:not(.scrolled) .nb-explore-btn:hover {
+  background: #fff; color: #0A0A0A; border-color: #fff;
+  box-shadow: 4px 4px 0 rgba(255,255,255,0.5);
+  transform: translate(-2px,-2px);
+}
+.nb-topbar.scrolled .nb-explore-btn {
+  background: var(--bg);
+  border: 2px solid var(--text);
+  color: var(--text);
+  box-shadow: 3px 3px 0 var(--text);
+}
+.nb-topbar.scrolled .nb-explore-btn:hover {
+  background: var(--text); color: var(--bg); border-color: var(--text);
+  box-shadow: 4px 4px 0 var(--text);
+  transform: translate(-2px,-2px);
+}
+@media (max-width: 900px) {
+  .nb-explore-btn span { display: none; }
+  .nb-explore-btn { padding: 9px 10px; }
+}
+
+/* NEON FLICKER (NeonFlickerText) — reprise de text2prooo.html.
+   .nf-word empêche la coupure au milieu d'un mot ; .nf-letter n'a pas
+   de couleur en CSS, elle hérite normalement (donc suit --text /
+   thème) tant que le GSAP scrubbé ne l'anime pas activement.
+   Bypass ci-dessous : .about-text/.about-text-lg forcent
+   color:transparent + background-clip:text (voir plus haut) pour
+   l'ancien reveal en dégradé — ça écrasait le "hérite normalement"
+   ci-dessus et rendait chaque lettre invisible une fois stabilisée.
+   Spécificité à 2 classes (.about-text.nf-flicker) : gagne sans
+   dépendre de l'ordre des règles dans le fichier. Ne touche jamais
+   .about-text-lg seul (piste de reveal séparée, toujours utile). */
+.nf-word { white-space: nowrap; }
+.nf-flicker { -webkit-font-smoothing: antialiased; }
+.about-text.nf-flicker,
+.about-text-lg.nf-flicker {
+  color: var(--text);
+  background-image: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+}
+.nf-flicker .nf-word,
+.nf-flicker .nf-letter,
+.nf-flicker strong {
+  color: inherit;
+  background-image: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+}
+/* état "éteint" avant révélation : géré en JS (fromTo lisant --bg au
+   montage, voir NeonFlickerText plus haut), pas ici — une règle CSS
+   séparée entrerait en conflit avec le fallback --text de clearProps
+   une fois la lettre stabilisée. */

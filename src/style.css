@@ -2465,7 +2465,7 @@
    }
    
    /* ══════════ CONTACT ══════════ */
-   #contact { background: transparent; border-top: 1px solid rgba(255,85,0,.1); padding: 12vh 8vw; overflow: hidden; position: relative; z-index: 1; }
+   #contact { background: var(--bg); border-top: 1px solid rgba(255,85,0,.1); padding: 12vh 8vw; overflow: hidden; position: relative; z-index: 1; }
    /* Beams background zone finale : couvre #contact + footer.
       Le canvas Beams garde une taille fixe (sticky, 100vh) au lieu de
       s'étirer sur toute la hauteur du contenu — même logique que le Hero,
@@ -2500,8 +2500,12 @@
      background: #f5ede0;
    }
 
-   /* ══ FORCE DARK — contact + footer toujours en mode sombre ══
-      Override toutes les variables de thème, indépendamment de body.light-mode */
+   /* ══ FORCE DARK — variables propres à contact + footer, isolées du
+      reste du site (utile pour la zone .full-beams-zone). Le fond
+      lui-même (voir .full-beams-zone / body.light-mode .full-beams-zone
+      plus haut) bascule déjà avec le thème ; complété ci-dessous pour
+      que texte/liens/titre suivent pareil (avant, plusieurs restaient
+      #F2EDE8 même en light-mode → illisible sur le fond cream). ══ */
    .force-dark {
      --bg:     #0A0A0A;
      --text:   #F2EDE8;
@@ -2513,6 +2517,20 @@
      --paper:  #0A0A0A;
      color: #F2EDE8;
      background: #1a1208;
+   }
+   /* Filet de sécurité en plus des overrides ciblés plus bas : couvre
+      tout élément qui utiliserait var(--text)/var(--bg)/etc. dans la
+      zone sans avoir sa propre règle dédiée ci-dessous. */
+   body.light-mode .force-dark {
+     --bg:     #FFFFFF;
+     --text:   #0A0A0A;
+     --muted:  rgba(10,10,10,0.45);
+     --glass:  rgba(0,0,0,0.03);
+     --gb:     rgba(0,0,0,0.1);
+     --ink:    #1A1A1A;
+     --ink-2:  #333333;
+     --paper:  #FFFFFF;
+     color: #0A0A0A;
    }
    /* Inputs et select dans la zone force-dark — bascule désormais avec le thème */
    .force-dark input,
@@ -2576,6 +2594,27 @@
    /* select option */
    .force-dark select option { background: #0A0A0A; color: #F2EDE8; }
    body.light-mode .force-dark select option { background: #FFFFFF; color: #0A0A0A; }
+   /* ── Compléments light-mode : ces éléments restaient #F2EDE8 (blanc
+      cassé) sans contrepartie claire, alors que le fond de la zone
+      (.full-beams-zone) bascule bien lui vers un cream clair en
+      light-mode — illisible (texte blanc sur fond clair). Même
+      logique que les inputs/about-text déjà couverts plus haut. ── */
+   body.light-mode .force-dark .contact-status-badge { color: #0A0A0A; border-color: rgba(10,10,10,.15); }
+   body.light-mode .force-dark a { color: #ffffff; }
+   body.light-mode .force-dark .clk-link { color: #0A0A0A; }
+   body.light-mode .force-dark h2,
+   body.light-mode .force-dark h3,
+   body.light-mode .force-dark h4 { color: #0A0A0A; }
+   body.light-mode .force-dark .sh-title-particle { color: #0A0A0A !important; }
+   body.light-mode .force-dark .sh-title-particle:hover {
+     color: rgba(10,10,10,1) !important;
+     text-shadow: 0 0 10px rgba(10,10,10,.25) !important;
+   }
+   body.light-mode .force-dark .btn-fill { box-shadow: 5px 5px 0 #0A0A0A; }
+   body.light-mode .force-dark .btn-fill:hover { box-shadow: 7px 7px 0 #0A0A0A; }
+   body.light-mode .force-dark .coj-list-link { color: #0A0A0A; }
+   body.light-mode .force-dark .contact-links-col .clk-link { color: #0A0A0A !important; }
+   body.light-mode .force-dark .contact-links-col .clk-label { color: #0A0A0A !important; }
    @media(max-width: 700px) {
      /* sticky peut être instable sur certains mobiles/iOS Safari avec le scroll
         global custom du site → on retombe sur un fond fixe plus court et discret */
@@ -2609,7 +2648,6 @@
      width: 100% !important;
      height: 100% !important;
    }
-   #main-footer { position: relative; }
    .contact-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 4rem; max-width: 1050px; margin: 3rem auto 0; }
    .contact-item { display: flex; align-items: center; gap: .8rem; margin-bottom: 1rem; font-size: clamp(0.88rem,1.2vw,1.0rem); }
    .c-icon { width: 36px; height: 36px; border: 1px solid rgba(255,85,0,.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -3290,8 +3328,23 @@
    @media(max-width:600px){ .coj-list-link{padding:1.2rem .2rem} .coj-list-arrow{width:32px;height:32px} }
 
 
-   /* ══════════ FOOTER ══════════ */
-   #main-footer { background: transparent; color: var(--text); padding-top: 6rem; position: relative; z-index: 1; }
+   /* ══════════ FOOTER ══════════
+      Même procédé que .recent-projects-section (Hero) et
+      .full-beams-zone (cta-dissolve) plus haut : marge négative pour
+      tirer l'élément suivant par-dessus le précédent, avec un
+      z-index plus élevé sur celui qui doit rester visible pendant le
+      chevauchement. Différence clé avec les deux autres cas : ici
+      aucun des deux n'est pinné (pas de position:fixed du tout,
+      contrairement à mes tentatives précédentes) — tout reste en
+      flux normal, donc la comparaison de z-index Contact/Footer
+      reste strictement locale entre ces deux éléments, sans jamais
+      pouvoir s'échapper vers une autre section de la page (ce qui
+      causait le chevauchement site entier des tentatives en
+      position:fixed). #contact garde son z-index:1 (déjà défini
+      plus haut) ; #main-footer passe à z-index:0 + margin-top négatif
+      pour se faire recouvrir par la fin de Contact — descendre
+      révèle le footer, remonter fait revenir Contact par-dessus. */
+   #main-footer { background: transparent; color: var(--text); padding-top: 6rem; position: relative; z-index: 0; margin-top: -20vh; }
    .ft-inner { max-width: 1380px; margin: 0 auto; padding: 0 6vw; }
    .ft-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 3rem; padding-bottom: 3.5rem; border-bottom: 1px solid rgba(255,85,0,.15); }
    /* when footer has been simplified we center the CV block */
@@ -3344,7 +3397,7 @@
      background: transparent;
      border-top: 2px solid #0A0A0A;
      overflow: hidden;
-     min-height: clamp(440px, 58vh, 660px);
+     min-height: 100vh;
      display: flex;
      align-items: flex-start;
    }
@@ -3393,18 +3446,11 @@
    .ft-bb-nav a:hover { color: var(--accent); transform: translateX(4px); }
 
    .ft-bb-logo { display: flex; align-items: center; justify-content: center; flex: 1; min-width: 60px; }
-   .ft-bb-logo img { width: 130px; height: 130px; object-fit: contain; opacity: .95; }
+   .ft-bb-logo img { width: 95px; height: 95px; object-fit: contain; opacity: .95; }
 
    .ft-bb-right { display: flex; flex-direction: column; align-items: flex-end; gap: .85rem; text-align: right; }
    .ft-bb-copyright { font-family: 'Space Mono', monospace; font-size: .7rem; color: rgba(255,255,255,.8); letter-spacing: .02em; }
-   .ft-bb-cta {
-     display: inline-flex; align-items: center; gap: .6rem;
-     --bg: #0A0A0A; --text: #FFFFFF;
-     background: var(--bg); color: var(--text);
-     border-radius: 999px; padding: .65rem .4rem .65rem 1.2rem;
-     text-decoration: none; font-family: var(--fd); font-weight: 700; font-size: .82rem;
-     transition: transform .25s cubic-bezier(.175,.885,.32,1.275), box-shadow .25s, background .3s, color .3s;
-   }
+   
    body.light-mode .ft-bb-cta { --bg: #FFFFFF; --text: #0A0A0A; }
    .ft-bb-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(10,10,10,.3); }
    .ft-bb-cta-arrow {
@@ -3977,6 +4023,13 @@
      margin: 0 0 1.1rem;
      text-shadow: 0 6px 40px rgba(0,0,0,.7);
    }
+   /* .dsv-section porte aussi la classe force-dark (pour ses propres
+      variables, sans rapport avec Contact/Footer) — les overrides
+      light-mode de .force-dark h2/h3/h4 plus haut s'appliquaient donc
+      par erreur ici aussi, repeignant ce titre en noir sur une photo
+      toujours sombre. Ce titre doit rester blanc dans tous les cas
+      (photo de fond fixe, pas de thème clair pour cette section). */
+   .dsv-section .dsv-cta-title { color: #F2EDE8 !important; }
    .dsv-cta-sub {
      font-size: clamp(.85rem, 1.4vw, 1.05rem);
      color: rgba(242,237,232,.78);
@@ -5703,3 +5756,26 @@ body.light-mode .writing-card    { background: #f7f5f2 !important; }
    montage, voir NeonFlickerText plus haut), pas ici — une règle CSS
    séparée entrerait en conflit avec le fallback --text de clearProps
    une fois la lettre stabilisée. */
+
+/* HOVER FADE X (HoverFadeText) — reprise du variant "06. V-FADE-X /
+   Smooth X Fade" de PROOOtypography-hover-12-variants.html. Les deux
+   couches de texte (identiques) sont superposées via CSS grid, comme
+   .hover-text-wrap/.word dans la démo — indispensable pour que la
+   sortie de l'une et l'entrée de l'autre se chevauchent dans le même
+   espace au lieu de se pousser l'une l'autre. */
+.hfx-wrap {
+  display: inline-grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  align-items: center;
+  justify-items: start;
+  cursor: pointer;
+  font-family: var(--fs-retro);
+}
+.hfx-word {
+  grid-area: 1 / 1 / 2 / 2;
+  display: flex;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+.hfx-char { display: inline-block; will-change: transform, opacity; }

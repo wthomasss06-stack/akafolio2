@@ -1,7 +1,8 @@
-﻿import { useEffect, useRef } from 'react'
+﻿import { useEffect, useRef, useCallback } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import * as THREE from 'three'
+import HoverFadeText from './HoverFadeText.jsx'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -365,7 +366,7 @@ export default function DissolveTransition({
               {cta.subtitle && <p className="dsv-cta-sub">{cta.subtitle}</p>}
               {cta.buttonLabel && (
                 <a href={cta.href || '#contact'} className="btn-fill dsv-cta-btn">
-                  <span>{cta.buttonLabel}</span>
+                  <HoverFadeText tag="span">{cta.buttonLabel}</HoverFadeText>
                   <span className="btn-arr" aria-hidden="true">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <line x1="7" y1="17" x2="17" y2="7" />
@@ -380,4 +381,168 @@ export default function DissolveTransition({
       </div>
     </section>
   )
+}
+/* ════════════════════════════════════════════
+   DISSOLVE WIPE — transition impérative (bouton, nav),
+   remplace GooeyTransition.jsx (runGridTransition /
+   useGooeyTransition). Même orchestration prouvée :
+   cover → onMidpoint (jump) → reveal, verrou anti-double-jeu,
+   scroll-behavior verrouillé pendant la transition — mais
+   rendu via le shader de dissolve ci-dessus au lieu de 30
+   lignes DOM : un seul plan plein écran, texture unie (pas de
+   vraies photos à charger, on ne dissout pas entre deux images
+   mais on couvre/révèle l'écran) :
+     - COVER  : uDissolve 1→0 → le halo/bruit se referme des
+       BORDS vers le CENTRE (seuil qui descend), l'écran devient
+       opaque.
+     - reveal du nouveau contenu au midpoint (hardJumpTo)
+     - REVEAL : uDissolve 0→1 → se dissout du CENTRE vers les
+       BORDS, révélant la section de destination.
+   Même halo de bord (Sobel) + bruit (fbm) + sparkle que
+   DissolveTransition — juste piloté par un tween GSAP au lieu
+   d'un ScrollTrigger, sur une texture unie plutôt que 2 photos. */
+
+const WIPE_COVER_DUR = 0.45
+const WIPE_REVEAL_DUR = 0.45
+const WIPE_COLOR = '#FF5500' /* même orange que les lignes Gooey remplacées */
+
+function solidTexture(hex) {
+  const c = document.createElement('canvas')
+  c.width = 4; c.height = 4
+  const ctx = c.getContext('2d')
+  ctx.fillStyle = hex
+  ctx.fillRect(0, 0, 4, 4)
+  const tex = new THREE.CanvasTexture(c)
+  if ('colorSpace' in tex) tex.colorSpace = THREE.SRGBColorSpace
+  return tex
+}
+
+function buildDissolveLayer() {
+  const canvas = document.createElement('canvas')
+  canvas.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;z-index:999999;pointer-events:none;'
+  document.body.appendChild(canvas)
+
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true })
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
+  if ('outputColorSpace' in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace
+
+  const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10)
+  camera.position.z = 1
+  const scene = new THREE.Scene()
+  const geometry = new THREE.PlaneGeometry(2, 2)
+  const texture = solidTexture(WIPE_COLOR)
+
+  const uniforms = {
+    uTexture: { value: texture },
+    uResolution: { value: new THREE.Vector2() },
+    uImageResolution: { value: new THREE.Vector2(4, 4) },
+    uDissolve: { value: 1 },
+    uCenter: { value: new THREE.Vector2(0.5, 0.5) },
+    uGrayscale: { value: 0 },
+    uEdgeIntensity: { value: 0.5 },
+    uEdgeBrightness: { value: 1 },
+  }
+  const material = new THREE.ShaderMaterial({
+    vertexShader: VERTEX_SHADER,
+    fragmentShader: FRONT_FRAGMENT_SHADER,
+    uniforms,
+    transparent: true,
+  })
+  const mesh = new THREE.Mesh(geometry, material)
+  scene.add(mesh)
+
+  function render() { renderer.render(scene, camera) }
+  function resize() {
+    const w = window.innerWidth
+    const h = window.innerHeight
+    renderer.setSize(w, h, false)
+    uniforms.uResolution.value.set(w, h)
+    render()
+  }
+  resize()
+  window.addEventListener('resize', resize)
+
+  function setProgress(p) {
+    uniforms.uDissolve.value = p
+    render()
+  }
+
+  function destroy() {
+    window.removeEventListener('resize', resize)
+    geometry.dispose()
+    material.dispose()
+    texture.dispose()
+    renderer.dispose()
+    canvas.remove()
+  }
+
+  return { setProgress, destroy }
+}
+
+/* ── Mêmes helpers que GooeyTransition.jsx (scroll-behavior
+   verrouillé + saut instantané résistant aux sections pinnées) —
+   dupliqués ici plutôt qu'importés pour que ce fichier reste
+   autonome si GooeyTransition.jsx est retiré du projet plus tard. */
+function lockScrollBehaviorForWipe() {
+  const root = document.documentElement
+  const prev = root.style.scrollBehavior
+  root.style.scrollBehavior = 'auto'
+  return () => { root.style.scrollBehavior = prev }
+}
+
+function hardJumpToForWipe(sectionId) {
+  const el = document.getElementById(sectionId)
+  if (!el) return
+  const top = el.getBoundingClientRect().top + window.scrollY
+  window.scrollTo({ top, left: 0, behavior: 'instant' })
+  ScrollTrigger.update()
+}
+
+/* ── Core runner — impératif (Loader, etc.) ── */
+export function runDissolveWipe(onMidpoint) {
+  const layer = buildDissolveLayer()
+  layer.setProgress(1) /* état initial : rien ne couvre l'écran */
+
+  const state = { p: 1 }
+  const tl = gsap.timeline({ onComplete: () => layer.destroy() })
+
+  tl.to(state, {
+    p: 0,
+    duration: WIPE_COVER_DUR,
+    ease: 'power2.inOut',
+    onUpdate: () => layer.setProgress(state.p),
+  }, 0)
+
+  const midAt = WIPE_COVER_DUR + 0.03
+  tl.add(() => { try { onMidpoint?.() } catch {} }, midAt)
+
+  tl.to(state, {
+    p: 1,
+    duration: WIPE_REVEAL_DUR,
+    ease: 'power2.inOut',
+    onUpdate: () => layer.setProgress(state.p),
+  }, midAt + 0.05)
+}
+
+export function useDissolveNav() {
+  const runningRef = useRef(false)
+
+  const goTo = useCallback((sectionId) => {
+    if (runningRef.current) {
+      hardJumpToForWipe(sectionId)
+      return
+    }
+    runningRef.current = true
+    const unlockScroll = lockScrollBehaviorForWipe()
+
+    runDissolveWipe(() => { hardJumpToForWipe(sectionId) })
+
+    const total = (WIPE_COVER_DUR + WIPE_REVEAL_DUR) * 1000 + 300
+    setTimeout(() => {
+      unlockScroll()
+      runningRef.current = false
+    }, total)
+  }, [])
+
+  return goTo
 }

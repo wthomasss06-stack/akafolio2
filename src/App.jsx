@@ -18,6 +18,7 @@ import { runGridTransition, useGooeyTransition } from './components/GooeyTransit
 // import retiré, le fichier components/ImageTrail.jsx reste disponible si besoin.
 import DissolveTransition, { VERTEX_SHADER, FRONT_FRAGMENT_SHADER, BACK_FRAGMENT_SHADER } from './components/DissolveTransition.jsx'
 import Loader from './components/Loader.jsx'
+import HoverFadeText from './components/HoverFadeText.jsx'
 import PixelSliceTrail from './components/PixelSliceTrail.jsx'
 import CardSwap, { Card } from './components/CardSwap.jsx'
 import FlowingMenu from './components/FlowingMenu.jsx'
@@ -1424,7 +1425,7 @@ function Navbar({ theme, onToggleTheme, onToggleExplorer, isExplorerOpen }) {
         <div className="nb-topbar-right">
           <button type="button" className="nb-explore-btn" onClick={onToggleExplorer} aria-pressed={isExplorerOpen}>
             <AnimIcon type={isExplorerOpen ? 'x' : 'compass'} size={13} color="currentColor" />
-            <span>{isExplorerOpen ? 'Fermer' : 'Explorer'}</span>
+            <HoverFadeText tag="span">{isExplorerOpen ? 'Fermer' : 'Explorer'}</HoverFadeText>
           </button>
           <AnimatedThemeToggler theme={theme} onClick={onToggleTheme} />
           <StaggeredMenu
@@ -1581,7 +1582,7 @@ function Hero() {
               className="btn-fill"
               onClick={e => { e.preventDefault(); scrollTo('contact') }}
             >
-              Contactez-moi
+              <HoverFadeText>Contactez-moi</HoverFadeText>
               <span className="btn-arr" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
             </a>
           </div>
@@ -1822,7 +1823,7 @@ function ProjectDetailModal({ project, caseFlipped, onFlip, onClose }) {
                     className={`fc-cta ${(!project.url || project.url === '#') ? 'fc-cta--disabled' : ''}`}
                     onClick={e => { if (!project.url || project.url === '#') e.preventDefault() }}
                   >
-                    <AnimIcon type="globe" size={15} color="currentColor" /> Voir le projet
+                    <AnimIcon type="globe" size={15} color="currentColor" /> <HoverFadeText>Voir le projet</HoverFadeText>
                     <span className="btn-arr" aria-hidden="true">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" />
@@ -1831,11 +1832,11 @@ function ProjectDetailModal({ project, caseFlipped, onFlip, onClose }) {
                   </a>
                   {project.github ? (
                     <a href={project.github} target="_blank" rel="noreferrer" className="fc-cta-ghost">
-                      <AnimIcon type="github" size={15} color="currentColor" /> Code source
+                      <AnimIcon type="github" size={15} color="currentColor" /> <HoverFadeText>Code source</HoverFadeText>
                     </a>
                   ) : (
                     <span className="fc-cta-private">
-                      <AnimIcon type="lock" size={12} color="currentColor" /> Code privé
+                      <AnimIcon type="lock" size={12} color="currentColor" /> <HoverFadeText>Code privé</HoverFadeText>
                     </span>
                   )}
                 </div>
@@ -2850,7 +2851,7 @@ function About() {
               scrollToSection('contact')
             }}
           >
-            Parlons d’un projet
+            <HoverFadeText>Parlons d’un projet</HoverFadeText>
             <span className="btn-arr" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg></span>
           </a>
         </div>
@@ -3663,7 +3664,7 @@ function PricingSection() {
                 if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY, behavior: 'smooth' })
               }}
             >
-              {tab.key === 'saas' ? 'Demander un devis gratuit' : 'Démarrer le projet'}
+              <HoverFadeText>{tab.key === 'saas' ? 'Demander un devis gratuit' : 'Démarrer le projet'}</HoverFadeText>
               <span className="btn-arr" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg></span>
             </a>
 
@@ -4559,7 +4560,7 @@ function ContactSection({ onToast }) {
                   rel="noreferrer"
                   className="clk-link"
                 >
-                  <span className="clk-label">{n.label}</span>
+                  <span className="clk-label"><HoverFadeText>{n.label}</HoverFadeText></span>
                   <span className="clk-arrow">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                       <line x1="7" y1="17" x2="17" y2="7" />
@@ -4617,7 +4618,7 @@ function ContactSection({ onToast }) {
                 <textarea name="message" rows="6" placeholder="Décrivez votre projet ou opportunité…" required />
               </div>
               <button type="submit" id="cf-submit" className="btn-fill" style={{ width: '100%', justifyContent: 'center', padding: '16px', fontSize: '.82rem', gap: '.6rem' }} disabled={sending}>
-                <span>{btnTxt}</span>
+                <HoverFadeText tag="span">{btnTxt}</HoverFadeText>
                 <span className="btn-arr" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg></span>
               </button>
               <div className="form-note">
@@ -4676,7 +4677,7 @@ function Footer() {
             <nav className="ft-bb-nav">
               {NAV_LINKS.map((l, i) => (
                 <a key={i} href={`#${l.id}`} onClick={e => { e.preventDefault(); scrollToSection(l.id) }}>
-                  {l.label}
+                  <HoverFadeText>{l.label}</HoverFadeText>
                 </a>
               ))}
             </nav>
@@ -4687,13 +4688,8 @@ function Footer() {
 
             <div className="ft-bb-right">
               <span className="ft-bb-copyright">© 2026 AKATech</span>
-              <a href="#contact" className="ft-bb-cta" onClick={e => { e.preventDefault(); const el = document.getElementById('contact'); if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY, behavior: 'smooth' }) }}>
-                Réserver un appel
-                <span className="ft-bb-cta-arrow" aria-hidden="true">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg>
-                </span>
-              </a>
-              <a href="mailto:wthomasss06@gmail.com" className="ft-bb-email">wthomasss06@gmail.com</a>
+              
+              <a href="mailto:wthomasss06@gmail.com" className="ft-bb-email"><HoverFadeText>wthomasss06@gmail.com</HoverFadeText></a>
             </div>
           </div>
         </div>

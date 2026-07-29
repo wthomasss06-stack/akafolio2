@@ -268,6 +268,21 @@ const LI_ICONS = {
   route: (C, sw) => (<svg viewBox="0 0 24 24" fill="none" stroke={C} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round"><g className="li-arr-r"><circle cx="4" cy="6" r="2.5" fill={C} fillOpacity=".3" /><circle cx="20" cy="18" r="2.5" fill={C} fillOpacity=".3" /><path d="M4 8.5v2A4.5 4.5 0 008.5 15H15.5A4.5 4.5 0 0020 10.5v-3" /></g></svg>),
   /* ── LOCATION-ARROW — envoyer / navigation ── */
   'location-arrow': (C, sw) => (<svg viewBox="0 0 24 24" fill="none" stroke={C} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round"><g className="li-plane"><polygon points="3 11 22 2 13 21 11 13 3 11" fill={C} fillOpacity=".15" /></g></svg>),
+  /* ── AJOUTS — noms référencés par SkillBand (Frontend/Autres), SERVICES
+     et TIMELINE mais absents de LI_ICONS jusqu'ici → LI renvoyait null
+     pour ces 6 noms, d'où les icônes manquantes. ── */
+  /* ── LAPTOP-CODE — écran + chevrons de code, réutilise l'anim de "code" ── */
+  'laptop-code': (C, sw) => (<svg viewBox="0 0 24 24" fill="none" stroke={C} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="3" width="16" height="11" rx="1.5" fill={C} fillOpacity=".08" /><path className="li-brace-l" d="M9.5 7.5L7.5 9.5l2 2" /><path className="li-brace-r" d="M14.5 7.5l2 2-2 2" /><path d="M2 18.5h20l-2 3H4l-2-3z" fill={C} fillOpacity=".15" /></svg>),
+  /* ── PLUS-CIRCLE — cercle + croix, style "check-circle" ── */
+  'plus-circle': (C, sw) => (<svg viewBox="0 0 24 24" fill="none" stroke={C} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" fill={C} fillOpacity=".08" /><line x1="12" y1="8" x2="12" y2="16" /><line x1="8" y1="12" x2="16" y2="12" /></svg>),
+  /* ── CHART-BAR — barres qui pulsent en cascade (li-w1/2/3) ── */
+  'chart-bar': (C, sw) => (<svg viewBox="0 0 24 24" fill="none" stroke={C} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="20" x2="21" y2="20" opacity=".3" /><rect className="li-w1" x="5" y="14" width="3.5" height="6" rx="1" fill={C} fillOpacity=".7" stroke="none" /><rect className="li-w2" x="10.5" y="9" width="3.5" height="11" rx="1" fill={C} fillOpacity=".7" stroke="none" /><rect className="li-w3" x="16" y="4" width="3.5" height="16" rx="1" fill={C} fillOpacity=".7" stroke="none" /></svg>),
+  /* ── BRIEFCASE — mallette pro (Parcours : stage) ── */
+  briefcase: (C, sw) => (<svg viewBox="0 0 24 24" fill="none" stroke={C} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" fill={C} fillOpacity=".08" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><line x1="2" y1="13" x2="22" y2="13" /></svg>),
+  /* ── GRADUATION-CAP — toque, pompon animé (li-pin) (Parcours : licence) ── */
+  'graduation-cap': (C, sw) => (<svg viewBox="0 0 24 24" fill="none" stroke={C} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round"><polygon points="12 3 22 8 12 13 2 8 12 3" fill={C} fillOpacity=".18" /><path d="M6 10.5V16c0 1.5 2.5 3 6 3s6-1.5 6-3v-5.5" /><path className="li-pin" d="M22 8v6" /></svg>),
+  /* ── SCHOOL — bâtiment scolaire, porte qui pulse (Parcours : bac) ── */
+  school: (C, sw) => (<svg viewBox="0 0 24 24" fill="none" stroke={C} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round"><path d="M3 10.5L12 4l9 6.5" /><rect x="4.5" y="10.5" width="15" height="10.5" rx="1" fill={C} fillOpacity=".08" /><rect className="li-w2" x="10.5" y="14" width="3" height="7" fill={C} fillOpacity=".5" stroke="none" /><line x1="2.5" y1="21" x2="21.5" y2="21" /></svg>),
 };
 
 
@@ -2598,7 +2613,7 @@ const About = ({ dark }) => {
               <div style={{ position: 'relative', zIndex: 1 }}><p>"Ce n'est pas important de réussir du premier coup. L'essentiel est de réussir au final."</p><span>— Kevin Ressegaire</span></div>
             </div>
             <div className="about-img-wrap">
-              <img src="/assets/images/IMG_20250124_124101KK.webp" alt="Elvis M'Bollo" className={`about-img photo-bw ${aboutPhotoColor ? 'photo-bw--on' : ''}`} />
+              <img src="/assets/images/IMG_20250124_124101KK.webp" alt="M'Bollo Aka" className={`about-img photo-bw ${aboutPhotoColor ? 'photo-bw--on' : ''}`} />
               <div className="about-badges"><span><LI name="code" color="#ff5500" size={13} /> Pro</span><span><LI name="lightbulb" color="#ff5500" size={13} /> Créatif</span><span><LI name="eye" color={dark ? "#fff" : "#1a1a1a"} /> Curieux</span></div>
             </div>
           </div>

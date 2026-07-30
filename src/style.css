@@ -3537,26 +3537,25 @@
    }
 
    /* ── Mots interactifs ── */
+   /* ── Mots interactifs (toujours texte clair/blanc peu importe le thème) ── */
    .fts-word {
      display: inline-flex;
      align-items: center;
      will-change: opacity, filter, transform;
      transition: none;
    }
-   .fts-word--bright { color: var(--text); }
-   .fts-word--muted  { color: rgba(242,237,232,.35); }
+   .fts-word--bright { color: #FFFFFF !important; }
+   .fts-word--muted  { color: rgba(255,255,255,.45) !important; }
    /* Font Silkscreen pour le nom principal */
    .fts-word--silk   { font-family: 'Silkscreen', 'Space Mono', monospace !important; letter-spacing: .04em; }
    .fts-word--link   {
-     color: rgba(255,85,0,.75);
+     color: rgba(255,85,0,.85);
      text-transform: none;
      font-weight: 600;
      letter-spacing: .02em;
      text-decoration: none;
    }
-   .fts-word--link:hover { color: var(--accent); }
-   body.light-mode .fts-word--bright { color: #0A0A0A; }
-   body.light-mode .fts-word--muted  { color: rgba(10,10,10,.28); }
+   .fts-word--link:hover { color: #FF5500; }
 
    /* ── Logo centré ── */
    .fts-logo-wrap {
@@ -3588,11 +3587,9 @@
    }
 
    .ft-bb-nav { display: flex; flex-direction: row; gap: 1.5rem; flex-wrap: wrap; }
-   .ft-bb-nav a { font-family: var(--fd); font-weight: 700; font-size: .82rem; color: rgba(242,237,232,.6); text-decoration: none; text-transform: uppercase; letter-spacing: .05em; transition: color .2s; }
-   .ft-bb-nav a:hover { color: var(--accent); }
-   .ft-bb-copyright { font-family: 'Space Mono', monospace; font-size: .68rem; color: rgba(255,255,255,.5); letter-spacing: .02em; }
-   body.light-mode .ft-bb-copyright { color: rgba(10,10,10,.45); }
-   body.light-mode .ft-bb-nav a { color: rgba(10,10,10,.5); }
+   .ft-bb-nav a { font-family: var(--fd); font-weight: 700; font-size: .82rem; color: rgba(255,255,255,.7) !important; text-decoration: none; text-transform: uppercase; letter-spacing: .05em; transition: color .2s; }
+   .ft-bb-nav a:hover { color: var(--accent) !important; }
+   .ft-bb-copyright { font-family: 'Space Mono', monospace; font-size: .68rem; color: rgba(255,255,255,.6) !important; letter-spacing: .02em; }
 
    /* ── Responsive ── */
    @media(max-width:700px){

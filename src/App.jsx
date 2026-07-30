@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect, useRef, useCallback, useMemo, Children, isValidElement, cloneElement } from 'react'
 import './style.css'
@@ -867,90 +867,128 @@ function useScrollAnimations() {
  DONNÉES
  ════════════════════════════════════════════ */
 const PROJECTS = [
-  { id: 1, title: 'ShopCI', sub: 'Marketplace E-commerce', cat: 'en-ligne', img: '/assets/images/projects/monmarket-preview.webp', responsive: '/assets/images/projects/shopci-responsive.webp', imgFb: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=600', tech: ['React', 'Django', 'Bootstrap 5', 'Vercel + PythonAnywhere'], url: 'https://shop-ci.vercel.app/', desc: "Marketplace multi-vendeurs conçue pour répondre aux problèmes de fiabilité, de visibilité et de gestion des ventes dans le e-commerce local ivoirien.", year: '2024',
+  {
+    id: 1, title: 'ShopCI', sub: 'Marketplace E-commerce', cat: 'en-ligne', img: '/assets/images/projects/monmarket-preview.webp', responsive: '/assets/images/projects/shopci-responsive.webp', imgFb: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=600', tech: ['React', 'Django', 'Bootstrap 5', 'Vercel + PythonAnywhere'], url: 'https://shop-ci.vercel.app/', desc: "Marketplace multi-vendeurs conçue pour répondre aux problèmes de fiabilité, de visibilité et de gestion des ventes dans le e-commerce local ivoirien.", year: '2024',
     private: true,
     problem: "Les vendeurs locaux n'avaient pas de vitrine en ligne fiable pour centraliser leurs produits et rassurer les acheteurs.",
     solution: "Marketplace multi-vendeurs avec back-office Django, fiches produits structurées et parcours d'achat simplifié.",
-    result: "Estimation : temps de mise en ligne d'un produit réduit à quelques minutes pour un vendeur, contre plusieurs heures avant." },
-  { id: 2, title: 'TechFlow', sub: 'Site Vitrine Professionnel', cat: 'en-ligne', img: '/assets/images/projects/techflow-preview.webp', responsive: '/assets/images/projects/techflow.webp', imgFb: 'https://images.unsplash.com/photo-1547658719-da2b51169166?w=600', tech: ['HTML / Tailwind CSS', 'JavaScript', 'Vercel'], url: 'https://techflow-ten.vercel.app/', desc: 'Site vitrine moderne destiné à présenter une activité technologique de manière claire et professionnelle.', year: '2024',
+    result: "Estimation : temps de mise en ligne d'un produit réduit à quelques minutes pour un vendeur, contre plusieurs heures avant."
+  },
+  {
+    id: 2, title: 'TechFlow', sub: 'Site Vitrine Professionnel', cat: 'en-ligne', img: '/assets/images/projects/techflow-preview.webp', responsive: '/assets/images/projects/techflow.webp', imgFb: 'https://images.unsplash.com/photo-1547658719-da2b51169166?w=600', tech: ['HTML / Tailwind CSS', 'JavaScript', 'Vercel'], url: 'https://techflow-ten.vercel.app/', desc: 'Site vitrine moderne destiné à présenter une activité technologique de manière claire et professionnelle.', year: '2024',
     problem: "Le client n'avait aucune présence web pour présenter son activité tech de façon crédible.",
     solution: "Site vitrine one-page rapide, structuré autour de l'offre et des preuves de confiance.",
-    result: "Estimation : site livré en moins d'une semaine, prêt à être partagé en prospection commerciale." },
-  { id: 3, title: 'TerraSafe', sub: 'Marketplace Foncière', cat: 'en-ligne', img: '/assets/images/projects/terrasafe-preview.webp', responsive: '/assets/images/projects/terrasafe.webp', imgFb: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600', tech: ['Python/Flask', 'MySQL', 'JavaScript', 'Bootstrap 5'], url: 'https://wthomassss06.pythonanywhere.com', desc: "Plateforme foncière visant à réduire les risques d'arnaques liées à la vente de terrains. Backend sécurisé avec recherche avancée.", year: '2024',
+    result: "Estimation : site livré en moins d'une semaine, prêt à être partagé en prospection commerciale."
+  },
+  {
+    id: 3, title: 'TerraSafe', sub: 'Marketplace Foncière', cat: 'en-ligne', img: '/assets/images/projects/terrasafe-preview.webp', responsive: '/assets/images/projects/terrasafe.webp', imgFb: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600', tech: ['Python/Flask', 'MySQL', 'JavaScript', 'Bootstrap 5'], url: 'https://wthomassss06.pythonanywhere.com', desc: "Plateforme foncière visant à réduire les risques d'arnaques liées à la vente de terrains. Backend sécurisé avec recherche avancée.", year: '2024',
     problem: "Trop d'arnaques sur la vente de terrains, faute de vérification des annonces et des vendeurs.",
     solution: "Backend sécurisé Flask/MySQL avec recherche avancée et structuration des annonces foncières.",
-    result: "Architecture validée qui a servi de socle technique à NEXURA — preuve qu'elle tenait la route à l'échelle." },
-  { id: 4, title: 'Chap-chapMAP', sub: 'Navigation Intelligente', cat: 'demo', img: '/assets/images/projects/chapchapmap-preview.webp', responsive: '/assets/images/projects/chapchapmap.webp', imgFb: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=600', tech: ['JavaScript', 'Leaflet.js', 'OSRM API', 'Geolocation API'], url: '/demos/chap-chapMAP.html', desc: "Application de cartographie intelligente permettant de localiser un utilisateur en temps réel et de calculer des itinéraires optimisés.", year: '2023',
+    result: "Architecture validée qui a servi de socle technique à NEXURA — preuve qu'elle tenait la route à l'échelle."
+  },
+  {
+    id: 4, title: 'Chap-chapMAP', sub: 'Navigation Intelligente', cat: 'demo', img: '/assets/images/projects/chapchapmap-preview.webp', responsive: '/assets/images/projects/chapchapmap.webp', imgFb: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=600', tech: ['JavaScript', 'Leaflet.js', 'OSRM API', 'Geolocation API'], url: '/demos/chap-chapMAP.html', desc: "Application de cartographie intelligente permettant de localiser un utilisateur en temps réel et de calculer des itinéraires optimisés.", year: '2023',
     problem: "Se déplacer efficacement à Abidjan sans application de navigation locale fiable.",
     solution: "Cartographie interactive avec géolocalisation temps réel et calcul d'itinéraires via l'API OSRM.",
-    result: "Démo technique validant la maîtrise des API de cartographie et de géolocalisation en conditions réelles." },
-  { id: 5, title: 'ElvisMarket', sub: 'Interface E-commerce', cat: 'demo', img: '/assets/images/projects/elvismarket-preview.webp', responsive: '/assets/images/projects/elvismarket.webp', imgFb: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=600', tech: ['HTML + JS vanilla', 'Tailwind CSS', 'LocalStorage'], url: '/demos/projet2.html', desc: "Interface e-commerce développée pour expérimenter la gestion d'état, le panier dynamique et l'optimisation de l'UX.", year: '2023',
+    result: "Démo technique validant la maîtrise des API de cartographie et de géolocalisation en conditions réelles."
+  },
+  {
+    id: 5, title: 'ElvisMarket', sub: 'Interface E-commerce', cat: 'demo', img: '/assets/images/projects/elvismarket-preview.webp', responsive: '/assets/images/projects/elvismarket.webp', imgFb: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=600', tech: ['HTML + JS vanilla', 'Tailwind CSS', 'LocalStorage'], url: '/demos/projet2.html', desc: "Interface e-commerce développée pour expérimenter la gestion d'état, le panier dynamique et l'optimisation de l'UX.", year: '2023',
     problem: "Maîtriser la gestion d'état et le panier dynamique en JS vanilla, sans framework, avant de passer à l'échelle.",
     solution: "Interface e-commerce complète construite en JS vanilla + LocalStorage, sans dépendance lourde.",
-    result: "Projet d'entraînement dont l'architecture front a directement nourri ShopCI et TechFlow." },
-  { id: 6, title: 'MonCashJour', sub: 'Gestion de Ventes', cat: 'demo', img: '/assets/images/projects/moncashjour-preview.webp', responsive: '/assets/images/projects/moncashjour.webp', imgFb: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=600', tech: ['HTML + JS vanilla', 'Tailwind CSS', 'Chart.js'], url: '/demos/projet1.html', desc: 'Application de gestion de ventes quotidiennes destinée aux petits commerçants.', year: '2023',
+    result: "Projet d'entraînement dont l'architecture front a directement nourri ShopCI et TechFlow."
+  },
+  {
+    id: 6, title: 'MonCashJour', sub: 'Gestion de Ventes', cat: 'demo', img: '/assets/images/projects/moncashjour-preview.webp', responsive: '/assets/images/projects/moncashjour.webp', imgFb: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=600', tech: ['HTML + JS vanilla', 'Tailwind CSS', 'Chart.js'], url: '/demos/projet1.html', desc: 'Application de gestion de ventes quotidiennes destinée aux petits commerçants.', year: '2023',
     problem: "Les petits commerçants n'ont pas d'outil simple pour suivre leurs ventes journalières.",
     solution: "Application de gestion de ventes avec visualisation Chart.js, pensée pour un usage terrain rapide.",
-    result: "Estimation : saisie et suivi des ventes du jour en moins de 2 minutes pour un commerçant." },
-  { id: 7, title: 'LivreurTrack Pro', sub: 'Suivi Logistique', cat: 'demo', img: '/assets/images/projects/livreurtrack-preview.webp', responsive: '/assets/images/projects/livreurtrack.webp', imgFb: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600', tech: ['JavaScript', 'Bootstrap 5', 'LocalStorage', 'Camera API'], url: '/demos/projet3.html', desc: "Système de suivi logistique simulant un workflow réel de livraison, avec validation par photo et suivi d'étapes.", year: '2023',
+    result: "Estimation : saisie et suivi des ventes du jour en moins de 2 minutes pour un commerçant."
+  },
+  {
+    id: 7, title: 'LivreurTrack Pro', sub: 'Suivi Logistique', cat: 'demo', img: '/assets/images/projects/livreurtrack-preview.webp', responsive: '/assets/images/projects/livreurtrack.webp', imgFb: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600', tech: ['JavaScript', 'Bootstrap 5', 'LocalStorage', 'Camera API'], url: '/demos/projet3.html', desc: "Système de suivi logistique simulant un workflow réel de livraison, avec validation par photo et suivi d'étapes.", year: '2023',
     problem: "Les livraisons locales manquent de traçabilité : pas de preuve de dépôt, pas de suivi d'étapes.",
     solution: "Système de suivi logistique avec validation photo (Camera API) et statuts de livraison en direct.",
-    result: "Simulation d'un vrai workflow logistique, de la prise en charge jusqu'à la preuve de livraison." },
-  { id: 8, title: 'LinkedIn Banner Pro', sub: 'Générateur SaaS', cat: 'en-cours', img: '/assets/images/projects/linkedin-banner-preview.webp', responsive: '/assets/images/projects/linkedin-banner.webp', imgFb: 'https://images.unsplash.com/photo-1558655146-d09347e92766?w=600', tech: ['JavaScript', 'Canvas API', 'Tailwind CSS'], url: '/demos/projet7.html', desc: 'Outil SaaS en cours de développement permettant de générer des bannières LinkedIn professionnelles.', year: '2025',
+    result: "Simulation d'un vrai workflow logistique, de la prise en charge jusqu'à la preuve de livraison."
+  },
+  {
+    id: 8, title: 'LinkedIn Banner Pro', sub: 'Générateur SaaS', cat: 'en-cours', img: '/assets/images/projects/linkedin-banner-preview.webp', responsive: '/assets/images/projects/linkedin-banner.webp', imgFb: 'https://images.unsplash.com/photo-1558655146-d09347e92766?w=600', tech: ['JavaScript', 'Canvas API', 'Tailwind CSS'], url: '/demos/projet7.html', desc: 'Outil SaaS en cours de développement permettant de générer des bannières LinkedIn professionnelles.', year: '2025',
     problem: "Créer une bannière LinkedIn pro demande des outils de design payants ou complexes à prendre en main.",
     solution: "Générateur SaaS avec rendu Canvas API, pensé pour un export rapide sans compétence design.",
-    result: "Projet en cours — objectif : générer une bannière personnalisée en moins de 60 secondes." },
-  { id: 9, title: 'Tati', sub: 'Portfolio & Vitrine Moderne', cat: 'en-ligne', img: '/assets/images/projects/tati-preview.webp', responsive: '/assets/images/projects/tati.webp', imgFb: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600', tech: ['React', 'Tailwind CSS', 'Framer Motion', 'Vercel'], url: 'https://tatii.vercel.app/', desc: 'Portfolio personnel double fonction avec animations fluides, thème sombre/clair, design 100% responsive.', year: '2024',
+    result: "Projet en cours — objectif : générer une bannière personnalisée en moins de 60 secondes."
+  },
+  {
+    id: 9, title: 'Tati', sub: 'Portfolio & Vitrine Moderne', cat: 'en-ligne', img: '/assets/images/projects/tati-preview.webp', responsive: '/assets/images/projects/tati.webp', imgFb: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600', tech: ['React', 'Tailwind CSS', 'Framer Motion', 'Vercel'], url: 'https://tatii.vercel.app/', desc: 'Portfolio personnel double fonction avec animations fluides, thème sombre/clair, design 100% responsive.', year: '2024',
     github: 'https://github.com/wthomasss06-stack/tatii',
     problem: "Besoin d'un portfolio personnel qui sorte du template classique, avec une vraie identité visuelle.",
     solution: "Portfolio React/Framer Motion sur-mesure, thème clair/sombre, animations soignées de bout en bout.",
-    result: "Livré et déployé en production — utilisé activement comme vitrine professionnelle." },
-  { id: 10, title: 'MK', sub: 'Portfolio Graphiste Client', cat: 'en-ligne', img: '/assets/images/projects/mk-preview.webp', responsive: '/assets/images/projects/mk.webp', imgFb: 'https://images.unsplash.com/photo-1555421689-491a97ff2040?w=600', tech: ['React', 'Tailwind CSS', 'Framer Motion', 'Vercel'], url: 'https://mory01ff.vercel.app/', desc: 'Portfolio professionnel sur-mesure pour un client graphiste. Galerie immersive, animations soignées.', year: '2024',
+    result: "Livré et déployé en production — utilisé activement comme vitrine professionnelle."
+  },
+  {
+    id: 10, title: 'MK', sub: 'Portfolio Graphiste Client', cat: 'en-ligne', img: '/assets/images/projects/mk-preview.webp', responsive: '/assets/images/projects/mk.webp', imgFb: 'https://images.unsplash.com/photo-1555421689-491a97ff2040?w=600', tech: ['React', 'Tailwind CSS', 'Framer Motion', 'Vercel'], url: 'https://mory01ff.vercel.app/', desc: 'Portfolio professionnel sur-mesure pour un client graphiste. Galerie immersive, animations soignées.', year: '2024',
     problem: "Un graphiste avait besoin d'une galerie en ligne qui valorise ses créations sans les noyer dans un template.",
     solution: "Portfolio sur-mesure avec galerie immersive et animations pensées pour mettre le visuel en avant.",
-    result: "Livré au client et en ligne — sert de vitrine commerciale directe pour ses prestations." },
-  { id: 11, title: 'ManoBeat 777', sub: 'Portfolio Beatmaker', cat: 'en-ligne', img: '/assets/images/projects/beatstore-preview.webp', responsive: '/assets/images/projects/beatstore.webp', imgFb: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600', tech: ['React', 'Tailwind CSS', 'Howler.js', 'Vercel'], url: 'https://xxx-x.vercel.app/', desc: "Portfolio d'un beatmaker ivoirien : découvrez et écoutez ses créations directement en ligne.", year: '2025',
+    result: "Livré au client et en ligne — sert de vitrine commerciale directe pour ses prestations."
+  },
+  {
+    id: 11, title: 'ManoBeat 777', sub: 'Portfolio Beatmaker', cat: 'en-ligne', img: '/assets/images/projects/beatstore-preview.webp', responsive: '/assets/images/projects/beatstore.webp', imgFb: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600', tech: ['React', 'Tailwind CSS', 'Howler.js', 'Vercel'], url: 'https://xxx-x.vercel.app/', desc: "Portfolio d'un beatmaker ivoirien : découvrez et écoutez ses créations directement en ligne.", year: '2025',
     problem: "Un beatmaker ivoirien n'avait aucun moyen de faire écouter ses créations en ligne de façon professionnelle.",
     solution: "Portfolio audio avec lecteur intégré Howler.js pour écouter les créations directement sur le site.",
-    result: "Estimation : écoute d'un beat ramenée à un simple clic, sans passer par un lien externe." },
-  { id: 12, title: 'New Horizon Service', sub: 'Location de Résidences', cat: 'en-ligne', img: '/assets/images/projects/newhorizon-preview.webp', responsive: '/assets/images/projects/newhorizon.webp', imgFb: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=600', tech: ['Next.js', 'Flask', 'Python', 'MySQL', 'Vercel'], url: 'https://new-horizonservice.vercel.app/', desc: 'Plateforme de location de résidences meublées haut de gamme avec backend Flask sécurisé.', year: '2025',
+    result: "Estimation : écoute d'un beat ramenée à un simple clic, sans passer par un lien externe."
+  },
+  {
+    id: 12, title: 'New Horizon Service', sub: 'Location de Résidences', cat: 'en-ligne', img: '/assets/images/projects/newhorizon-preview.webp', responsive: '/assets/images/projects/newhorizon.webp', imgFb: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=600', tech: ['Next.js', 'Flask', 'Python', 'MySQL', 'Vercel'], url: 'https://new-horizonservice.vercel.app/', desc: 'Plateforme de location de résidences meublées haut de gamme avec backend Flask sécurisé.', year: '2025',
     github: 'https://github.com/wthomasss06-stack/AllonsSomo',
     problem: "Les résidences meublées haut de gamme manquaient d'une plateforme de location fiable et sécurisée.",
     solution: "Plateforme Next.js/Flask avec backend sécurisé pour la gestion des annonces et des réservations.",
-    result: "En production — a servi de base validée avant l'évolution vers NEXURA." },
-  { id: 13, title: 'AKATech', sub: 'Agence Digitale Abidjan', cat: 'en-ligne', img: '/assets/images/projects/akatech-preview.webp', responsive: '/assets/images/projects/akatech.webp', imgFb: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=600', tech: ['Next.js 15', 'Framer Motion', 'WebGL Aurora', 'Vercel'], url: 'https://akatech.vercel.app/', desc: "Site officiel de mon agence — AKATech accompagne les entrepreneurs et PME en Côte d'Ivoire.", year: '2025',
+    result: "En production — a servi de base validée avant l'évolution vers NEXURA."
+  },
+  {
+    id: 13, title: 'AKATech', sub: 'Agence Digitale Abidjan', cat: 'en-ligne', img: '/assets/images/projects/akatech-preview.webp', responsive: '/assets/images/projects/akatech.webp', imgFb: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=600', tech: ['Next.js 15', 'Framer Motion', 'WebGL Aurora', 'Vercel'], url: 'https://akatech.vercel.app/', desc: "Site officiel de mon agence — AKATech accompagne les entrepreneurs et PME en Côte d'Ivoire.", year: '2025',
     github: 'https://github.com/wthomasss06-stack/akatech-agencenext',
     problem: "Mon agence n'avait pas de site propre capable de convertir les prospects en clients.",
     solution: "Site agence Next.js 15 avec WebGL Aurora, animations Framer Motion et structure orientée conversion (process, pricing, projets).",
-    result: "En production, indexé rapidement sur Google — sert de vitrine commerciale principale." },
-  { id: 14, title: 'Université les Anges', sub: 'Site Institutionnel', cat: 'en-ligne', img: '/assets/images/projects/universitelesanges-preview.webp', responsive: '/assets/images/projects/universitelesanges.webp', imgFb: 'https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=600', tech: ['HTML', 'CSS', 'Bulma', 'Bootstrap', 'Vercel'], url: 'https://universitelesanges.vercel.app/', desc: "Site institutionnel moderne pour l'Université les Anges.", year: '2025',
+    result: "En production, indexé rapidement sur Google — sert de vitrine commerciale principale."
+  },
+  {
+    id: 14, title: 'Université les Anges', sub: 'Site Institutionnel', cat: 'en-ligne', img: '/assets/images/projects/universitelesanges-preview.webp', responsive: '/assets/images/projects/universitelesanges.webp', imgFb: 'https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=600', tech: ['HTML', 'CSS', 'Bulma', 'Bootstrap', 'Vercel'], url: 'https://universitelesanges.vercel.app/', desc: "Site institutionnel moderne pour l'Université les Anges.", year: '2025',
     github: 'https://github.com/wthomasss06-stack/universite-les-anges',
     problem: "Une université privée avait besoin d'un site institutionnel crédible pour rassurer futurs étudiants et parents.",
     solution: "Site institutionnel structuré (présentation, filières, contact) en HTML/Bulma/Bootstrap.",
-    result: "Livré et en ligne — utilisé comme point d'entrée officiel de l'établissement." },
-  { id: 15, title: 'NEXURA', sub: 'Marketplace Nouvelle Génération', cat: 'en-ligne', img: '/assets/images/projects/nexura-preview.webp', responsive: '/assets/images/projects/nexura-responsive.webp', imgFb: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600', tech: ['Next.js 14', 'Django REST', 'PostgreSQL', 'WebSockets', 'Redis & Celery'], url: 'https://nexura-one.vercel.app/', desc: "Marketplace nouvelle génération — évolution de TerraSafe. Location de résidences meublées, motos & véhicules, bureaux & salles de conférence, terrains & immobilier. Auth sécurisée, KYC intégré, temps réel.", year: '2025',
+    result: "Livré et en ligne — utilisé comme point d'entrée officiel de l'établissement."
+  },
+  {
+    id: 15, title: 'NEXURA', sub: 'Marketplace Nouvelle Génération', cat: 'en-ligne', img: '/assets/images/projects/nexura-preview.webp', responsive: '/assets/images/projects/nexura-responsive.webp', imgFb: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600', tech: ['Next.js 14', 'Django REST', 'PostgreSQL', 'WebSockets', 'Redis & Celery'], url: 'https://nexura-one.vercel.app/', desc: "Marketplace nouvelle génération — évolution de TerraSafe. Location de résidences meublées, motos & véhicules, bureaux & salles de conférence, terrains & immobilier. Auth sécurisée, KYC intégré, temps réel.", year: '2025',
     private: true,
     problem: "TerraSafe avait besoin de passer à l'échelle : plus de catégories, plus de sécurité, du temps réel.",
     solution: "Marketplace nouvelle génération Next.js 14 + Django REST + WebSockets, KYC intégré, architecture pensée pour réduire le risque légal.",
-    result: "Projet le plus avancé techniquement du portfolio — repo privé (client), en évolution continue." },
-  { id: 16, title: 'KokoEat', sub: 'Livraison Alimentaire', cat: 'en-cours', img: '/assets/images/projects/kokoeat-preview.webp', responsive: '/assets/images/projects/kokoeat-responsive.webp', imgFb: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600', tech: ['React', 'Django REST', 'PostgreSQL', 'Vercel'], url: '#', desc: "Application de livraison de repas pensée pour le marché ivoirien. Commande en ligne, suivi en temps réel et paiement Mobile Money.", year: '2025',
+    result: "Projet le plus avancé techniquement du portfolio — repo privé (client), en évolution continue."
+  },
+  {
+    id: 16, title: 'KokoEat', sub: 'Livraison Alimentaire', cat: 'en-cours', img: '/assets/images/projects/kokoeat-preview.webp', responsive: '/assets/images/projects/kokoeat-responsive.webp', imgFb: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600', tech: ['React', 'Django REST', 'PostgreSQL', 'Vercel'], url: '#', desc: "Application de livraison de repas pensée pour le marché ivoirien. Commande en ligne, suivi en temps réel et paiement Mobile Money.", year: '2025',
     problem: "Le marché ivoirien manque d'une app de livraison de repas pensée pour le paiement Mobile Money.",
     solution: "App de commande en ligne avec suivi temps réel et intégration Mobile Money prévue.",
-    result: "Projet en cours de développement." },
-  { id: 17, title: 'Jean Edy · Portfolio', sub: 'Portfolio React UI Avancé', cat: 'en-ligne', img: '/assets/images/projects/jean-edy-preview.webp', responsive: '/assets/images/projects/jean-edy.webp', imgFb: 'https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=600', tech: ['React 18', 'Vite', 'GSAP', 'Framer Motion', 'TailwindCSS'], url: 'https://jean-edy-dev.vercel.app/', desc: "Portfolio personnel de Jean Edy — Software Developer basé à Abidjan. et skeuomorphisme complet.", year: '2026',
+    result: "Projet en cours de développement."
+  },
+  {
+    id: 17, title: 'Jean Edy · Portfolio', sub: 'Portfolio React UI Avancé', cat: 'en-ligne', img: '/assets/images/projects/jean-edy-preview.webp', responsive: '/assets/images/projects/jean-edy.webp', imgFb: 'https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=600', tech: ['React 18', 'Vite', 'GSAP', 'Framer Motion', 'TailwindCSS'], url: 'https://jean-edy-dev.vercel.app/', desc: "Portfolio personnel de Jean Edy — Software Developer basé à Abidjan. et skeuomorphisme complet.", year: '2026',
     private: true,
     problem: "Un développeur avait besoin d'un portfolio qui démontre un niveau UI avancé pour ses candidatures.",
     solution: "Portfolio React 18/GSAP avec direction artistique skeuomorphisme complet, sur-mesure.",
-    result: "Livré et en ligne — repo privé (client)." },
-  { id: 18, title: 'MD Laverie Pressing', sub: 'Site Vitrine Pressing', cat: 'en-ligne', img: '/assets/images/projects/laverie-preview.webp', responsive: '/assets/images/projects/laverie.webp', imgFb: 'https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=600', tech: ['React 18', 'Vite', 'GSAP', 'React Router v6', 'EmailJS'], url: 'https://laverie-plus.vercel.app/', desc: "Site vitrine complet pour MD Laverie Pressing, Abidjan. Hero slider GSAP, grille packs pricing, formulaire contact EmailJS.", year: '2025',
+    result: "Livré et en ligne — repo privé (client)."
+  },
+  {
+    id: 18, title: 'MD Laverie Pressing', sub: 'Site Vitrine Pressing', cat: 'en-ligne', img: '/assets/images/projects/laverie-preview.webp', responsive: '/assets/images/projects/laverie.webp', imgFb: 'https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=600', tech: ['React 18', 'Vite', 'GSAP', 'React Router v6', 'EmailJS'], url: 'https://laverie-plus.vercel.app/', desc: "Site vitrine complet pour MD Laverie Pressing, Abidjan. Hero slider GSAP, grille packs pricing, formulaire contact EmailJS.", year: '2025',
     github: 'https://github.com/wthomasss06-stack/PRESSING',
     problem: "Un pressing à Abidjan n'avait aucune présence en ligne pour présenter ses tarifs et être contacté.",
     solution: "Site vitrine React/GSAP avec hero slider, grille de tarifs claire et formulaire de contact EmailJS.",
-    result: "Livré et en ligne — génère des demandes de contact directement depuis le site." },
-  { id: 19, title: 'Chez Florence', sub: 'Vente & Réservation de Lapins', cat: 'en-ligne', img: '/assets/images/projects/chez-florence-preview.webp', responsive: '/assets/images/projects/chez-florence-responsive.webp', responsive2: '/assets/images/projects/chez-florence-responsive2.webp', imgFb: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=600', tech: ['Next.js 14', 'Express.js', 'Prisma', 'PostgreSQL (Neon)', 'Cloudinary'], url: 'https://lapinou.vercel.app/', desc: "Plateforme de présentation et réservation de lapins pour éleveurs et particuliers : fiches par race, réservation en ligne, stock synchronisé en temps réel et notification WhatsApp automatique.", year: '2026',
+    result: "Livré et en ligne — génère des demandes de contact directement depuis le site."
+  },
+  {
+    id: 19, title: 'Chez Florence', sub: 'Vente & Réservation de Lapins', cat: 'en-ligne', img: '/assets/images/projects/chez-florence-preview.webp', responsive: '/assets/images/projects/chez-florence-responsive.webp', responsive2: '/assets/images/projects/chez-florence-responsive2.webp', imgFb: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=600', tech: ['Next.js 14', 'Express.js', 'Prisma', 'PostgreSQL (Neon)', 'Cloudinary'], url: 'https://chez-florence.vercel.app/', desc: "Plateforme de présentation et réservation de lapins pour éleveurs et particuliers : fiches par race, réservation en ligne, stock synchronisé en temps réel et notification WhatsApp automatique.", year: '2026',
     problem: "Les éleveurs de lapins n'avaient aucune vitrine en ligne pour présenter leurs races et centraliser les réservations.",
     solution: "App Next.js/Express avec fiches détaillées par race, réservation en ligne (quantité, stock auto-décrémenté) et double notification — email admin et WhatsApp pré-rempli.",
-    result: "PWA installable avec tableau de bord admin (stock, réservations, stats de vente) — livré et en production." },
+    result: "PWA installable avec tableau de bord admin (stock, réservations, stats de vente) — livré et en production."
+  },
 ]
 NAV_LINKS.find(l => l.id === 'projets-section').sub = `${PROJECTS.length} réalisations`
 
@@ -1583,7 +1621,7 @@ function Hero() {
               onClick={e => { e.preventDefault(); scrollTo('contact') }}
             >
               <HoverFadeText>Contactez-moi</HoverFadeText>
-              <span className="btn-arr" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+              <span className="btn-arr" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg></span>
             </a>
           </div>
 
@@ -2100,6 +2138,9 @@ function RecentProjects() {
             className="pcard"
             onClick={() => select(p)}
           >
+            <span className={`pcard-badge pcard-badge--${p.cat}`}>
+              {p.cat === 'en-ligne' ? 'Live' : p.cat === 'demo' ? 'Démo' : 'En cours'}
+            </span>
             <div className="pcard-upper">
               <img src={p.img} alt={p.title} loading="lazy" />
             </div>
@@ -2133,6 +2174,9 @@ function RecentProjects() {
         <div className="rp-track">
           {loopedProjects.map((p, i) => (
             <div key={`${p.id}-${i}`} className="pcard" onClick={() => select(p)}>
+              <span className={`pcard-badge pcard-badge--${p.cat}`}>
+                {p.cat === 'en-ligne' ? 'Live' : p.cat === 'demo' ? 'Démo' : 'En cours'}
+              </span>
               <div className="pcard-upper">
                 <img src={p.img} alt={p.title} loading="lazy" />
               </div>
@@ -2593,7 +2637,7 @@ function ProjectsTunnel() {
 
   return (
     <section ref={sectionRef} id="hscroll-section" className="tunnel-section">
-      
+
 
       <div ref={containerRef} id="webgl-tunnel-container" />
 
@@ -2826,7 +2870,8 @@ function About() {
                 />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                <h3 itemProp="name" style={{ margin: 0,
+                <h3 itemProp="name" style={{
+                  margin: 0,
                   fontFamily: 'var(--fd)', fontWeight: 800,
                   fontSize: '1rem', color: 'var(--text)',
                   letterSpacing: '-.01em', lineHeight: 1.2,
@@ -2875,9 +2920,9 @@ function About() {
  que la parallaxe souris du Hero ci-dessus).
  ════════════════════════════════════════════ */
 const TL_BOARD_LAYOUT = [
-  { left: '0%',  top: '6%',  rot: -7 },
+  { left: '0%', top: '6%', rot: -7 },
   { left: '19%', top: '34%', rot: 5 },
-  { left: '38%', top: '4%',  rot: -4 },
+  { left: '38%', top: '4%', rot: -4 },
   { left: '57%', top: '32%', rot: 8 },
   { left: '74%', top: '10%', rot: -6 },
 ]
@@ -3269,10 +3314,10 @@ const CrossIcon = () => (
 function HoverRevealList({ items, eyebrowSuffix = '' }) {
   const [hovered, setHovered] = useState(null)
   const containerRef = useRef(null)
-  const wrapRef       = useRef(null) /* boîte flottante : position + rotation + scale/opacity */
-  const imgRef        = useRef(null) /* <img> interne : petit "punch" au changement d'item */
-  const xTo           = useRef(null)
-  const yTo           = useRef(null)
+  const wrapRef = useRef(null) /* boîte flottante : position + rotation + scale/opacity */
+  const imgRef = useRef(null) /* <img> interne : petit "punch" au changement d'item */
+  const xTo = useRef(null)
+  const yTo = useRef(null)
 
   /* ── Suivi du curseur en continu via quickTo — jamais de setState
      ici, donc jamais de re-render de la liste à chaque mousemove.
@@ -3637,22 +3682,42 @@ function PricingSection() {
             {/* Séparateur */}
             <div className="prc-sep" />
 
-            {/* Features list */}
-            <ul className="prc-features">
-              {featuresPerPlan[ci].map((feat, fi) => (
-                <li key={fi} className="prc-feat">
-                  <span className="prc-feat-check">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                  </span>
-                  <span className="prc-feat-label">
-                    {feat.label}
-                    {renderFeatureVal(feat.val)}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            {/* Features list — défilement infini si liste longue */}
+            <div className="prc-features-scroll-wrap">
+              <ul className="prc-features prc-features--scroll">
+                {/* Track 1 — original */}
+                {featuresPerPlan[ci].map((feat, fi) => (
+                  <li key={`a-${fi}`} className="prc-feat">
+                    <span className="prc-feat-check">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </span>
+                    <span className="prc-feat-label">
+                      {feat.label}
+                      {renderFeatureVal(feat.val)}
+                    </span>
+                  </li>
+                ))}
+                {/* Track 2 — copie pour boucle transparente */}
+                {featuresPerPlan[ci].map((feat, fi) => (
+                  <li key={`b-${fi}`} className="prc-feat" aria-hidden="true">
+                    <span className="prc-feat-check">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </span>
+                    <span className="prc-feat-label">
+                      {feat.label}
+                      {renderFeatureVal(feat.val)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              {/* Fondu haut et bas */}
+              <div className="prc-scroll-fade prc-scroll-fade--top" />
+              <div className="prc-scroll-fade prc-scroll-fade--bot" />
+            </div>
 
             {/* CTA */}
             <a
@@ -4576,57 +4641,57 @@ function ContactSection({ onToast }) {
           <h3 className="rp-slider-title" style={{ marginBottom: '.5rem' }}>Envoyez-moi un message</h3>
           <h3 style={{ fontSize: '.85rem', color: 'var(--muted)', marginBottom: '1.5rem' }}>Remplissez le formulaire et je vous réponds rapidement.</h3>
           <div className="cf-card">
-          {sent ? (
-            <div style={{ textAlign: 'center', padding: '3rem 2rem' }}>
-              <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(255,85,0,.12)', border: '1.5px solid var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.2rem' }}>
-                <AnimIcon type="check" size={28} color="#FF5500" />
+            {sent ? (
+              <div style={{ textAlign: 'center', padding: '3rem 2rem' }}>
+                <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(255,85,0,.12)', border: '1.5px solid var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.2rem' }}>
+                  <AnimIcon type="check" size={28} color="#FF5500" />
+                </div>
+                <h3 style={{ fontFamily: "'Clash Display','Syne',sans-serif", fontWeight: 700, marginBottom: '.5rem' }}>Message envoyé !</h3>
+                <h3 style={{ fontSize: '.85rem', color: 'var(--muted)' }}>Je vous réponds sous 24h. <AnimIcon type="rocket" size={14} /></h3>
               </div>
-              <h3 style={{ fontFamily: "'Clash Display','Syne',sans-serif", fontWeight: 700, marginBottom: '.5rem' }}>Message envoyé !</h3>
-              <h3 style={{ fontSize: '.85rem', color: 'var(--muted)' }}>Je vous réponds sous 24h. <AnimIcon type="rocket" size={14} /></h3>
-            </div>
-          ) : (
-            <form id="contact-form" onSubmit={handleSubmit}>
-              {/* Honeypot anti-spam : invisible pour un humain, souvent rempli par les bots */}
-              <input
-                type="text"
-                name="company"
-                tabIndex={-1}
-                autoComplete="off"
-                aria-hidden="true"
-                style={{ position: 'absolute', width: '1px', height: '1px', opacity: 0, pointerEvents: 'none', left: '-9999px' }}
-              />
-              <div className="form-row">
-                <div className="form-field"><label>Nom complet *</label><input type="text" name="name" placeholder="Jean Kouassi" required /></div>
-                <div className="form-field"><label>Email *</label><input type="email" name="email" placeholder="jean@exemple.com" required /></div>
-              </div>
-              <div className="form-field">
-                <label>Type de projet *</label>
-                <select name="projectType" required>
-                  <option value="">Sélectionnez votre besoin…</option>
-                  <option value="site-vitrine">Site Vitrine</option>
-                  <option value="e-commerce">E-commerce</option>
-                  <option value="application-web">Application Web / SaaS</option>
-                  <option value="api">API / Backend</option>
-                  <option value="dashboard">Dashboard / Data</option>
-                  <option value="maintenance">Maintenance / Support</option>
-                  <option value="recrutement">Candidature spontanée</option>
-                  <option value="autre">Autre</option>
-                </select>
-              </div>
-              <div className="form-field">
-                <label>Message *</label>
-                <textarea name="message" rows="6" placeholder="Décrivez votre projet ou opportunité…" required />
-              </div>
-              <button type="submit" id="cf-submit" className="btn-fill" style={{ width: '100%', justifyContent: 'center', padding: '16px', fontSize: '.82rem', gap: '.6rem' }} disabled={sending}>
-                <HoverFadeText tag="span">{btnTxt}</HoverFadeText>
-                <span className="btn-arr" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg></span>
-              </button>
-              <div className="form-note">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }}><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg>
-                Vos données sont sécurisées et ne seront jamais partagées.
-              </div>
-            </form>
-          )}
+            ) : (
+              <form id="contact-form" onSubmit={handleSubmit}>
+                {/* Honeypot anti-spam : invisible pour un humain, souvent rempli par les bots */}
+                <input
+                  type="text"
+                  name="company"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  style={{ position: 'absolute', width: '1px', height: '1px', opacity: 0, pointerEvents: 'none', left: '-9999px' }}
+                />
+                <div className="form-row">
+                  <div className="form-field"><label>Nom complet *</label><input type="text" name="name" placeholder="Jean Kouassi" required /></div>
+                  <div className="form-field"><label>Email *</label><input type="email" name="email" placeholder="jean@exemple.com" required /></div>
+                </div>
+                <div className="form-field">
+                  <label>Type de projet *</label>
+                  <select name="projectType" required>
+                    <option value="">Sélectionnez votre besoin…</option>
+                    <option value="site-vitrine">Site Vitrine</option>
+                    <option value="e-commerce">E-commerce</option>
+                    <option value="application-web">Application Web / SaaS</option>
+                    <option value="api">API / Backend</option>
+                    <option value="dashboard">Dashboard / Data</option>
+                    <option value="maintenance">Maintenance / Support</option>
+                    <option value="recrutement">Candidature spontanée</option>
+                    <option value="autre">Autre</option>
+                  </select>
+                </div>
+                <div className="form-field">
+                  <label>Message *</label>
+                  <textarea name="message" rows="6" placeholder="Décrivez votre projet ou opportunité…" required />
+                </div>
+                <button type="submit" id="cf-submit" className="btn-fill" style={{ width: '100%', justifyContent: 'center', padding: '16px', fontSize: '.82rem', gap: '.6rem' }} disabled={sending}>
+                  <HoverFadeText tag="span">{btnTxt}</HoverFadeText>
+                  <span className="btn-arr" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg></span>
+                </button>
+                <div className="form-note">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }}><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg>
+                  Vos données sont sécurisées et ne seront jamais partagées.
+                </div>
+              </form>
+            )}
           </div>
         </div>
       </div>
@@ -4728,7 +4793,7 @@ function Footer() {
 
             <div className="ft-bb-right">
               <span className="ft-bb-copyright">© 2026 AKATech</span>
-              
+
               <a href="mailto:wthomasss06@gmail.com" className="ft-bb-email"><HoverFadeText>wthomasss06@gmail.com</HoverFadeText></a>
             </div>
           </div>
@@ -4999,7 +5064,7 @@ export default function App() {
     try {
       const saved = localStorage.getItem('aka-html-theme')
       if (saved === 'light' || saved === 'dark') return saved
-    } catch {}
+    } catch { }
     return 'dark'
   })
   const [toastVisible, setToastVisible] = useState(false)
@@ -5054,7 +5119,7 @@ export default function App() {
     setTheme(next)
     try {
       localStorage.setItem('aka-html-theme', next)
-    } catch {}
+    } catch { }
   }
 
   /* Overlay "Explorer" (ProjectsExplorer) — bouton dans la navbar,

@@ -370,7 +370,7 @@ Pensé pour **Vercel** :
 | 16 | KokoEat | Livraison alimentaire, Mobile Money (marché ivoirien) | React, Django REST, PostgreSQL, Vercel | 🚧 En cours |
 | 17 | Jean Edy · Portfolio | Portfolio développeur — direction skeuomorphisme | React 18, Vite, GSAP, Framer Motion, Tailwind CSS | [jean-edy-dev.vercel.app](https://jean-edy-dev.vercel.app/) *(repo privé)* |
 | 18 | MD Laverie Pressing | Vitrine pressing Abidjan — hero slider, formulaire EmailJS | React 18, Vite, GSAP, React Router v6, EmailJS | [laverie-plus.vercel.app](https://laverie-plus.vercel.app/) |
-| 19 | Chez Florence | Vente & réservation de lapins — stock temps réel, notification WhatsApp auto | Next.js 14, Express.js, Prisma, PostgreSQL (Neon), Cloudinary | [lapinou.vercel.app](https://lapinou.vercel.app/) |
+| 19 | Chez Florence | Vente & réservation de lapins — stock temps réel, notification WhatsApp auto | Next.js 14, Express.js, Prisma, PostgreSQL (Neon), Cloudinary | [lapinou.vercel.app](https://chez-florence.vercel.app/) |
 
 ---
 

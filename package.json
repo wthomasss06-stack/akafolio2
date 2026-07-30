@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@fontsource/lora": "^5.2.8",
+    "@vercel/analytics": "^1.5.0",
     "@fontsource/outfit": "^5.2.8",
     "@fontsource/plus-jakarta-sans": "^5.2.8",
     "@fontsource/silkscreen": "^5.2.8",
@@ -22,6 +23,7 @@
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
     "@react-three/rapier": "^2.2.0",
+    "@vercel/analytics": "^2.0.1",
     "face-api.js": "^0.22.2",
     "framer-motion": "^12.34.1",
     "gl-matrix": "^3.4.3",

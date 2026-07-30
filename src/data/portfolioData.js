@@ -50,90 +50,128 @@ export const CONTACT = {
 // variantes d'images). Win95Portfolio.jsx a une version plus pauvre
 // (mêmes projets, sans le narratif) — à migrer vers celle-ci.
 export const PROJECTS = [
-  { id: 1, title: 'ShopCI', sub: 'Marketplace E-commerce', cat: 'en-ligne', img: '/assets/images/projects/monmarket-preview.webp', responsive: '/assets/images/projects/shopci-responsive.webp', imgFb: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=600', tech: ['React', 'Django', 'Bootstrap 5', 'Vercel + PythonAnywhere'], url: 'https://shop-ci.vercel.app/', desc: "Marketplace multi-vendeurs conçue pour répondre aux problèmes de fiabilité, de visibilité et de gestion des ventes dans le e-commerce local ivoirien.", year: '2024',
+  {
+    id: 1, title: 'ShopCI', sub: 'Marketplace E-commerce', cat: 'en-ligne', img: '/assets/images/projects/monmarket-preview.webp', responsive: '/assets/images/projects/shopci-responsive.webp', imgFb: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=600', tech: ['React', 'Django', 'Bootstrap 5', 'Vercel + PythonAnywhere'], url: 'https://shop-ci.vercel.app/', desc: "Marketplace multi-vendeurs conçue pour répondre aux problèmes de fiabilité, de visibilité et de gestion des ventes dans le e-commerce local ivoirien.", year: '2024',
     private: true,
     problem: "Les vendeurs locaux n'avaient pas de vitrine en ligne fiable pour centraliser leurs produits et rassurer les acheteurs.",
     solution: "Marketplace multi-vendeurs avec back-office Django, fiches produits structurées et parcours d'achat simplifié.",
-    result: "Estimation : temps de mise en ligne d'un produit réduit à quelques minutes pour un vendeur, contre plusieurs heures avant." },
-  { id: 2, title: 'TechFlow', sub: 'Site Vitrine Professionnel', cat: 'en-ligne', img: '/assets/images/projects/techflow-preview.webp', responsive: '/assets/images/projects/techflow.webp', imgFb: 'https://images.unsplash.com/photo-1547658719-da2b51169166?w=600', tech: ['HTML / Tailwind CSS', 'JavaScript', 'Vercel'], url: 'https://techflow-ten.vercel.app/', desc: 'Site vitrine moderne destiné à présenter une activité technologique de manière claire et professionnelle.', year: '2024',
+    result: "Estimation : temps de mise en ligne d'un produit réduit à quelques minutes pour un vendeur, contre plusieurs heures avant."
+  },
+  {
+    id: 2, title: 'TechFlow', sub: 'Site Vitrine Professionnel', cat: 'en-ligne', img: '/assets/images/projects/techflow-preview.webp', responsive: '/assets/images/projects/techflow.webp', imgFb: 'https://images.unsplash.com/photo-1547658719-da2b51169166?w=600', tech: ['HTML / Tailwind CSS', 'JavaScript', 'Vercel'], url: 'https://techflow-ten.vercel.app/', desc: 'Site vitrine moderne destiné à présenter une activité technologique de manière claire et professionnelle.', year: '2024',
     problem: "Le client n'avait aucune présence web pour présenter son activité tech de façon crédible.",
     solution: "Site vitrine one-page rapide, structuré autour de l'offre et des preuves de confiance.",
-    result: "Estimation : site livré en moins d'une semaine, prêt à être partagé en prospection commerciale." },
-  { id: 3, title: 'TerraSafe', sub: 'Marketplace Foncière', cat: 'en-ligne', img: '/assets/images/projects/terrasafe-preview.webp', responsive: '/assets/images/projects/terrasafe.webp', imgFb: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600', tech: ['Python/Flask', 'MySQL', 'JavaScript', 'Bootstrap 5'], url: 'https://wthomassss06.pythonanywhere.com', desc: "Plateforme foncière visant à réduire les risques d'arnaques liées à la vente de terrains. Backend sécurisé avec recherche avancée.", year: '2024',
+    result: "Estimation : site livré en moins d'une semaine, prêt à être partagé en prospection commerciale."
+  },
+  {
+    id: 3, title: 'TerraSafe', sub: 'Marketplace Foncière', cat: 'en-ligne', img: '/assets/images/projects/terrasafe-preview.webp', responsive: '/assets/images/projects/terrasafe.webp', imgFb: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600', tech: ['Python/Flask', 'MySQL', 'JavaScript', 'Bootstrap 5'], url: 'https://wthomassss06.pythonanywhere.com', desc: "Plateforme foncière visant à réduire les risques d'arnaques liées à la vente de terrains. Backend sécurisé avec recherche avancée.", year: '2024',
     problem: "Trop d'arnaques sur la vente de terrains, faute de vérification des annonces et des vendeurs.",
     solution: "Backend sécurisé Flask/MySQL avec recherche avancée et structuration des annonces foncières.",
-    result: "Architecture validée qui a servi de socle technique à NEXURA — preuve qu'elle tenait la route à l'échelle." },
-  { id: 4, title: 'Chap-chapMAP', sub: 'Navigation Intelligente', cat: 'demo', img: '/assets/images/projects/chapchapmap-preview.webp', responsive: '/assets/images/projects/chapchapmap.webp', imgFb: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=600', tech: ['JavaScript', 'Leaflet.js', 'OSRM API', 'Geolocation API'], url: '/demos/chap-chapMAP.html', desc: "Application de cartographie intelligente permettant de localiser un utilisateur en temps réel et de calculer des itinéraires optimisés.", year: '2023',
+    result: "Architecture validée qui a servi de socle technique à NEXURA — preuve qu'elle tenait la route à l'échelle."
+  },
+  {
+    id: 4, title: 'Chap-chapMAP', sub: 'Navigation Intelligente', cat: 'demo', img: '/assets/images/projects/chapchapmap-preview.webp', responsive: '/assets/images/projects/chapchapmap.webp', imgFb: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=600', tech: ['JavaScript', 'Leaflet.js', 'OSRM API', 'Geolocation API'], url: '/demos/chap-chapMAP.html', desc: "Application de cartographie intelligente permettant de localiser un utilisateur en temps réel et de calculer des itinéraires optimisés.", year: '2023',
     problem: "Se déplacer efficacement à Abidjan sans application de navigation locale fiable.",
     solution: "Cartographie interactive avec géolocalisation temps réel et calcul d'itinéraires via l'API OSRM.",
-    result: "Démo technique validant la maîtrise des API de cartographie et de géolocalisation en conditions réelles." },
-  { id: 5, title: 'ElvisMarket', sub: 'Interface E-commerce', cat: 'demo', img: '/assets/images/projects/elvismarket-preview.webp', responsive: '/assets/images/projects/elvismarket.webp', imgFb: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=600', tech: ['HTML + JS vanilla', 'Tailwind CSS', 'LocalStorage'], url: '/demos/projet2.html', desc: "Interface e-commerce développée pour expérimenter la gestion d'état, le panier dynamique et l'optimisation de l'UX.", year: '2023',
+    result: "Démo technique validant la maîtrise des API de cartographie et de géolocalisation en conditions réelles."
+  },
+  {
+    id: 5, title: 'ElvisMarket', sub: 'Interface E-commerce', cat: 'demo', img: '/assets/images/projects/elvismarket-preview.webp', responsive: '/assets/images/projects/elvismarket.webp', imgFb: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=600', tech: ['HTML + JS vanilla', 'Tailwind CSS', 'LocalStorage'], url: '/demos/projet2.html', desc: "Interface e-commerce développée pour expérimenter la gestion d'état, le panier dynamique et l'optimisation de l'UX.", year: '2023',
     problem: "Maîtriser la gestion d'état et le panier dynamique en JS vanilla, sans framework, avant de passer à l'échelle.",
     solution: "Interface e-commerce complète construite en JS vanilla + LocalStorage, sans dépendance lourde.",
-    result: "Projet d'entraînement dont l'architecture front a directement nourri ShopCI et TechFlow." },
-  { id: 6, title: 'MonCashJour', sub: 'Gestion de Ventes', cat: 'demo', img: '/assets/images/projects/moncashjour-preview.webp', responsive: '/assets/images/projects/moncashjour.webp', imgFb: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=600', tech: ['HTML + JS vanilla', 'Tailwind CSS', 'Chart.js'], url: '/demos/projet1.html', desc: 'Application de gestion de ventes quotidiennes destinée aux petits commerçants.', year: '2023',
+    result: "Projet d'entraînement dont l'architecture front a directement nourri ShopCI et TechFlow."
+  },
+  {
+    id: 6, title: 'MonCashJour', sub: 'Gestion de Ventes', cat: 'demo', img: '/assets/images/projects/moncashjour-preview.webp', responsive: '/assets/images/projects/moncashjour.webp', imgFb: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=600', tech: ['HTML + JS vanilla', 'Tailwind CSS', 'Chart.js'], url: '/demos/projet1.html', desc: 'Application de gestion de ventes quotidiennes destinée aux petits commerçants.', year: '2023',
     problem: "Les petits commerçants n'ont pas d'outil simple pour suivre leurs ventes journalières.",
     solution: "Application de gestion de ventes avec visualisation Chart.js, pensée pour un usage terrain rapide.",
-    result: "Estimation : saisie et suivi des ventes du jour en moins de 2 minutes pour un commerçant." },
-  { id: 7, title: 'LivreurTrack Pro', sub: 'Suivi Logistique', cat: 'demo', img: '/assets/images/projects/livreurtrack-preview.webp', responsive: '/assets/images/projects/livreurtrack.webp', imgFb: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600', tech: ['JavaScript', 'Bootstrap 5', 'LocalStorage', 'Camera API'], url: '/demos/projet3.html', desc: "Système de suivi logistique simulant un workflow réel de livraison, avec validation par photo et suivi d'étapes.", year: '2023',
+    result: "Estimation : saisie et suivi des ventes du jour en moins de 2 minutes pour un commerçant."
+  },
+  {
+    id: 7, title: 'LivreurTrack Pro', sub: 'Suivi Logistique', cat: 'demo', img: '/assets/images/projects/livreurtrack-preview.webp', responsive: '/assets/images/projects/livreurtrack.webp', imgFb: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600', tech: ['JavaScript', 'Bootstrap 5', 'LocalStorage', 'Camera API'], url: '/demos/projet3.html', desc: "Système de suivi logistique simulant un workflow réel de livraison, avec validation par photo et suivi d'étapes.", year: '2023',
     problem: "Les livraisons locales manquent de traçabilité : pas de preuve de dépôt, pas de suivi d'étapes.",
     solution: "Système de suivi logistique avec validation photo (Camera API) et statuts de livraison en direct.",
-    result: "Simulation d'un vrai workflow logistique, de la prise en charge jusqu'à la preuve de livraison." },
-  { id: 8, title: 'LinkedIn Banner Pro', sub: 'Générateur SaaS', cat: 'en-cours', img: '/assets/images/projects/linkedin-banner-preview.webp', responsive: '/assets/images/projects/linkedin-banner.webp', imgFb: 'https://images.unsplash.com/photo-1558655146-d09347e92766?w=600', tech: ['JavaScript', 'Canvas API', 'Tailwind CSS'], url: '/demos/projet7.html', desc: 'Outil SaaS en cours de développement permettant de générer des bannières LinkedIn professionnelles.', year: '2025',
+    result: "Simulation d'un vrai workflow logistique, de la prise en charge jusqu'à la preuve de livraison."
+  },
+  {
+    id: 8, title: 'LinkedIn Banner Pro', sub: 'Générateur SaaS', cat: 'en-cours', img: '/assets/images/projects/linkedin-banner-preview.webp', responsive: '/assets/images/projects/linkedin-banner.webp', imgFb: 'https://images.unsplash.com/photo-1558655146-d09347e92766?w=600', tech: ['JavaScript', 'Canvas API', 'Tailwind CSS'], url: '/demos/projet7.html', desc: 'Outil SaaS en cours de développement permettant de générer des bannières LinkedIn professionnelles.', year: '2025',
     problem: "Créer une bannière LinkedIn pro demande des outils de design payants ou complexes à prendre en main.",
     solution: "Générateur SaaS avec rendu Canvas API, pensé pour un export rapide sans compétence design.",
-    result: "Projet en cours — objectif : générer une bannière personnalisée en moins de 60 secondes." },
-  { id: 9, title: 'Tati', sub: 'Portfolio & Vitrine Moderne', cat: 'en-ligne', img: '/assets/images/projects/tati-preview.webp', responsive: '/assets/images/projects/tati.webp', imgFb: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600', tech: ['React', 'Tailwind CSS', 'Framer Motion', 'Vercel'], url: 'https://tatii.vercel.app/', desc: 'Portfolio personnel double fonction avec animations fluides, thème sombre/clair, design 100% responsive.', year: '2024',
+    result: "Projet en cours — objectif : générer une bannière personnalisée en moins de 60 secondes."
+  },
+  {
+    id: 9, title: 'Tati', sub: 'Portfolio & Vitrine Moderne', cat: 'en-ligne', img: '/assets/images/projects/tati-preview.webp', responsive: '/assets/images/projects/tati.webp', imgFb: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600', tech: ['React', 'Tailwind CSS', 'Framer Motion', 'Vercel'], url: 'https://tatii.vercel.app/', desc: 'Portfolio personnel double fonction avec animations fluides, thème sombre/clair, design 100% responsive.', year: '2024',
     github: 'https://github.com/wthomasss06-stack/tatii',
     problem: "Besoin d'un portfolio personnel qui sorte du template classique, avec une vraie identité visuelle.",
     solution: "Portfolio React/Framer Motion sur-mesure, thème clair/sombre, animations soignées de bout en bout.",
-    result: "Livré et déployé en production — utilisé activement comme vitrine professionnelle." },
-  { id: 10, title: 'MK', sub: 'Portfolio Graphiste Client', cat: 'en-ligne', img: '/assets/images/projects/mk-preview.webp', responsive: '/assets/images/projects/mk.webp', imgFb: 'https://images.unsplash.com/photo-1555421689-491a97ff2040?w=600', tech: ['React', 'Tailwind CSS', 'Framer Motion', 'Vercel'], url: 'https://mory01ff.vercel.app/', desc: 'Portfolio professionnel sur-mesure pour un client graphiste. Galerie immersive, animations soignées.', year: '2024',
+    result: "Livré et déployé en production — utilisé activement comme vitrine professionnelle."
+  },
+  {
+    id: 10, title: 'MK', sub: 'Portfolio Graphiste Client', cat: 'en-ligne', img: '/assets/images/projects/mk-preview.webp', responsive: '/assets/images/projects/mk.webp', imgFb: 'https://images.unsplash.com/photo-1555421689-491a97ff2040?w=600', tech: ['React', 'Tailwind CSS', 'Framer Motion', 'Vercel'], url: 'https://mory01ff.vercel.app/', desc: 'Portfolio professionnel sur-mesure pour un client graphiste. Galerie immersive, animations soignées.', year: '2024',
     problem: "Un graphiste avait besoin d'une galerie en ligne qui valorise ses créations sans les noyer dans un template.",
     solution: "Portfolio sur-mesure avec galerie immersive et animations pensées pour mettre le visuel en avant.",
-    result: "Livré au client et en ligne — sert de vitrine commerciale directe pour ses prestations." },
-  { id: 11, title: 'ManoBeat 777', sub: 'Portfolio Beatmaker', cat: 'en-ligne', img: '/assets/images/projects/beatstore-preview.webp', responsive: '/assets/images/projects/beatstore.webp', imgFb: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600', tech: ['React', 'Tailwind CSS', 'Howler.js', 'Vercel'], url: 'https://xxx-x.vercel.app/', desc: "Portfolio d'un beatmaker ivoirien : découvrez et écoutez ses créations directement en ligne.", year: '2025',
+    result: "Livré au client et en ligne — sert de vitrine commerciale directe pour ses prestations."
+  },
+  {
+    id: 11, title: 'ManoBeat 777', sub: 'Portfolio Beatmaker', cat: 'en-ligne', img: '/assets/images/projects/beatstore-preview.webp', responsive: '/assets/images/projects/beatstore.webp', imgFb: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600', tech: ['React', 'Tailwind CSS', 'Howler.js', 'Vercel'], url: 'https://xxx-x.vercel.app/', desc: "Portfolio d'un beatmaker ivoirien : découvrez et écoutez ses créations directement en ligne.", year: '2025',
     problem: "Un beatmaker ivoirien n'avait aucun moyen de faire écouter ses créations en ligne de façon professionnelle.",
     solution: "Portfolio audio avec lecteur intégré Howler.js pour écouter les créations directement sur le site.",
-    result: "Estimation : écoute d'un beat ramenée à un simple clic, sans passer par un lien externe." },
-  { id: 12, title: 'New Horizon Service', sub: 'Location de Résidences', cat: 'en-ligne', img: '/assets/images/projects/newhorizon-preview.webp', responsive: '/assets/images/projects/newhorizon.webp', imgFb: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=600', tech: ['Next.js', 'Flask', 'Python', 'MySQL', 'Vercel'], url: 'https://new-horizonservice.vercel.app/', desc: 'Plateforme de location de résidences meublées haut de gamme avec backend Flask sécurisé.', year: '2025',
+    result: "Estimation : écoute d'un beat ramenée à un simple clic, sans passer par un lien externe."
+  },
+  {
+    id: 12, title: 'New Horizon Service', sub: 'Location de Résidences', cat: 'en-ligne', img: '/assets/images/projects/newhorizon-preview.webp', responsive: '/assets/images/projects/newhorizon.webp', imgFb: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=600', tech: ['Next.js', 'Flask', 'Python', 'MySQL', 'Vercel'], url: 'https://new-horizonservice.vercel.app/', desc: 'Plateforme de location de résidences meublées haut de gamme avec backend Flask sécurisé.', year: '2025',
     github: 'https://github.com/wthomasss06-stack/AllonsSomo',
     problem: "Les résidences meublées haut de gamme manquaient d'une plateforme de location fiable et sécurisée.",
     solution: "Plateforme Next.js/Flask avec backend sécurisé pour la gestion des annonces et des réservations.",
-    result: "En production — a servi de base validée avant l'évolution vers NEXURA." },
-  { id: 13, title: 'akaTech', sub: 'Agence Digitale Abidjan', cat: 'en-ligne', img: '/assets/images/projects/akatech-preview.webp', responsive: '/assets/images/projects/akatech.webp', imgFb: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=600', tech: ['Next.js 15', 'Framer Motion', 'WebGL Aurora', 'Vercel'], url: 'https://akatech.vercel.app/', desc: "Site officiel de mon agence — akaTech accompagne les entrepreneurs et PME en Côte d'Ivoire.", year: '2025',
+    result: "En production — a servi de base validée avant l'évolution vers NEXURA."
+  },
+  {
+    id: 13, title: 'akaTech', sub: 'Agence Digitale Abidjan', cat: 'en-ligne', img: '/assets/images/projects/akatech-preview.webp', responsive: '/assets/images/projects/akatech.webp', imgFb: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=600', tech: ['Next.js 15', 'Framer Motion', 'WebGL Aurora', 'Vercel'], url: 'https://akatech.vercel.app/', desc: "Site officiel de mon agence — akaTech accompagne les entrepreneurs et PME en Côte d'Ivoire.", year: '2025',
     github: 'https://github.com/wthomasss06-stack/akatech-agencenext',
     problem: "Mon agence n'avait pas de site propre capable de convertir les prospects en clients.",
     solution: "Site agence Next.js 15 avec WebGL Aurora, animations Framer Motion et structure orientée conversion (process, pricing, projets).",
-    result: "En production, indexé rapidement sur Google — sert de vitrine commerciale principale." },
-  { id: 14, title: 'Université les Anges', sub: 'Site Institutionnel', cat: 'en-ligne', img: '/assets/images/projects/universitelesanges-preview.webp', responsive: '/assets/images/projects/universitelesanges.webp', imgFb: 'https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=600', tech: ['HTML', 'CSS', 'Bulma', 'Bootstrap', 'Vercel'], url: 'https://universitelesanges.vercel.app/', desc: "Site institutionnel moderne pour l'Université les Anges.", year: '2025',
+    result: "En production, indexé rapidement sur Google — sert de vitrine commerciale principale."
+  },
+  {
+    id: 14, title: 'Université les Anges', sub: 'Site Institutionnel', cat: 'en-ligne', img: '/assets/images/projects/universitelesanges-preview.webp', responsive: '/assets/images/projects/universitelesanges.webp', imgFb: 'https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=600', tech: ['HTML', 'CSS', 'Bulma', 'Bootstrap', 'Vercel'], url: 'https://universitelesanges.vercel.app/', desc: "Site institutionnel moderne pour l'Université les Anges.", year: '2025',
     github: 'https://github.com/wthomasss06-stack/universite-les-anges',
     problem: "Une université privée avait besoin d'un site institutionnel crédible pour rassurer futurs étudiants et parents.",
     solution: "Site institutionnel structuré (présentation, filières, contact) en HTML/Bulma/Bootstrap.",
-    result: "Livré et en ligne — utilisé comme point d'entrée officiel de l'établissement." },
-  { id: 15, title: 'NEXURA', sub: 'Marketplace Nouvelle Génération', cat: 'en-ligne', img: '/assets/images/projects/nexura-preview.webp', responsive: '/assets/images/projects/nexura-responsive.webp', imgFb: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600', tech: ['Next.js 14', 'Django REST', 'PostgreSQL', 'WebSockets', 'Redis & Celery'], url: 'https://nexura-one.vercel.app/', desc: "Marketplace nouvelle génération — évolution de TerraSafe. Location de résidences meublées, motos & véhicules, bureaux & salles de conférence, terrains & immobilier. Auth sécurisée, KYC intégré, temps réel.", year: '2025',
+    result: "Livré et en ligne — utilisé comme point d'entrée officiel de l'établissement."
+  },
+  {
+    id: 15, title: 'NEXURA', sub: 'Marketplace Nouvelle Génération', cat: 'en-ligne', img: '/assets/images/projects/nexura-preview.webp', responsive: '/assets/images/projects/nexura-responsive.webp', imgFb: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600', tech: ['Next.js 14', 'Django REST', 'PostgreSQL', 'WebSockets', 'Redis & Celery'], url: 'https://nexura-one.vercel.app/', desc: "Marketplace nouvelle génération — évolution de TerraSafe. Location de résidences meublées, motos & véhicules, bureaux & salles de conférence, terrains & immobilier. Auth sécurisée, KYC intégré, temps réel.", year: '2025',
     private: true,
     problem: "TerraSafe avait besoin de passer à l'échelle : plus de catégories, plus de sécurité, du temps réel.",
     solution: "Marketplace nouvelle génération Next.js 14 + Django REST + WebSockets, KYC intégré, architecture pensée pour réduire le risque légal.",
-    result: "Projet le plus avancé techniquement du portfolio — repo privé (client), en évolution continue." },
-  { id: 16, title: 'KokoEat', sub: 'Livraison Alimentaire', cat: 'en-cours', img: '/assets/images/projects/kokoeat-preview.webp', responsive: '/assets/images/projects/kokoeat-responsive.webp', imgFb: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600', tech: ['React', 'Django REST', 'PostgreSQL', 'Vercel'], url: '#', desc: "Application de livraison de repas pensée pour le marché ivoirien. Commande en ligne, suivi en temps réel et paiement Mobile Money.", year: '2025',
+    result: "Projet le plus avancé techniquement du portfolio — repo privé (client), en évolution continue."
+  },
+  {
+    id: 16, title: 'KokoEat', sub: 'Livraison Alimentaire', cat: 'en-cours', img: '/assets/images/projects/kokoeat-preview.webp', responsive: '/assets/images/projects/kokoeat-responsive.webp', imgFb: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600', tech: ['React', 'Django REST', 'PostgreSQL', 'Vercel'], url: '#', desc: "Application de livraison de repas pensée pour le marché ivoirien. Commande en ligne, suivi en temps réel et paiement Mobile Money.", year: '2025',
     problem: "Le marché ivoirien manque d'une app de livraison de repas pensée pour le paiement Mobile Money.",
     solution: "App de commande en ligne avec suivi temps réel et intégration Mobile Money prévue.",
-    result: "Projet en cours de développement." },
-  { id: 17, title: 'Jean Edy · Portfolio', sub: 'Portfolio React UI Avancé', cat: 'en-ligne', img: '/assets/images/projects/jean-edy-preview.webp', responsive: '/assets/images/projects/jean-edy.webp', imgFb: 'https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=600', tech: ['React 18', 'Vite', 'GSAP', 'Framer Motion', 'TailwindCSS'], url: 'https://jean-edy-dev.vercel.app/', desc: "Portfolio personnel de Jean Edy — Software Developer basé à Abidjan. et skeuomorphisme complet.", year: '2026',
+    result: "Projet en cours de développement."
+  },
+  {
+    id: 17, title: 'Jean Edy · Portfolio', sub: 'Portfolio React UI Avancé', cat: 'en-ligne', img: '/assets/images/projects/jean-edy-preview.webp', responsive: '/assets/images/projects/jean-edy.webp', imgFb: 'https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=600', tech: ['React 18', 'Vite', 'GSAP', 'Framer Motion', 'TailwindCSS'], url: 'https://jean-edy-dev.vercel.app/', desc: "Portfolio personnel de Jean Edy — Software Developer basé à Abidjan. et skeuomorphisme complet.", year: '2026',
     private: true,
     problem: "Un développeur avait besoin d'un portfolio qui démontre un niveau UI avancé pour ses candidatures.",
     solution: "Portfolio React 18/GSAP avec direction artistique skeuomorphisme complet, sur-mesure.",
-    result: "Livré et en ligne — repo privé (client)." },
-  { id: 18, title: 'MD Laverie Pressing', sub: 'Site Vitrine Pressing', cat: 'en-ligne', img: '/assets/images/projects/laverie-preview.webp', responsive: '/assets/images/projects/laverie.webp', imgFb: 'https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=600', tech: ['React 18', 'Vite', 'GSAP', 'React Router v6', 'EmailJS'], url: 'https://laverie-plus.vercel.app/', desc: "Site vitrine complet pour MD Laverie Pressing, Abidjan. Hero slider GSAP, grille packs pricing, formulaire contact EmailJS.", year: '2025',
+    result: "Livré et en ligne — repo privé (client)."
+  },
+  {
+    id: 18, title: 'MD Laverie Pressing', sub: 'Site Vitrine Pressing', cat: 'en-ligne', img: '/assets/images/projects/laverie-preview.webp', responsive: '/assets/images/projects/laverie.webp', imgFb: 'https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=600', tech: ['React 18', 'Vite', 'GSAP', 'React Router v6', 'EmailJS'], url: 'https://laverie-plus.vercel.app/', desc: "Site vitrine complet pour MD Laverie Pressing, Abidjan. Hero slider GSAP, grille packs pricing, formulaire contact EmailJS.", year: '2025',
     github: 'https://github.com/wthomasss06-stack/PRESSING',
     problem: "Un pressing à Abidjan n'avait aucune présence en ligne pour présenter ses tarifs et être contacté.",
     solution: "Site vitrine React/GSAP avec hero slider, grille de tarifs claire et formulaire de contact EmailJS.",
-    result: "Livré et en ligne — génère des demandes de contact directement depuis le site." },
-  { id: 19, title: 'Chez Florence', sub: 'Vente & Réservation de Lapins', cat: 'en-ligne', img: '/assets/images/projects/chez-florence-preview.webp', responsive: '/assets/images/projects/chez-florence-responsive.webp', responsive2: '/assets/images/projects/chez-florence-responsive2.webp', imgFb: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=600', tech: ['Next.js 14', 'Express.js', 'Prisma', 'PostgreSQL (Neon)', 'Cloudinary'], url: 'https://lapinou.vercel.app/', desc: "Plateforme de présentation et réservation de lapins pour éleveurs et particuliers : fiches par race, réservation en ligne, stock synchronisé en temps réel et notification WhatsApp automatique.", year: '2026',
+    result: "Livré et en ligne — génère des demandes de contact directement depuis le site."
+  },
+  {
+    id: 19, title: 'Chez Florence', sub: 'Vente & Réservation de Lapins', cat: 'en-ligne', img: '/assets/images/projects/chez-florence-preview.webp', responsive: '/assets/images/projects/chez-florence-responsive.webp', responsive2: '/assets/images/projects/chez-florence-responsive2.webp', imgFb: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=600', tech: ['Next.js 14', 'Express.js', 'Prisma', 'PostgreSQL (Neon)', 'Cloudinary'], url: 'https://chez-florence.vercel.app/', desc: "Plateforme de présentation et réservation de lapins pour éleveurs et particuliers : fiches par race, réservation en ligne, stock synchronisé en temps réel et notification WhatsApp automatique.", year: '2026',
     problem: "Les éleveurs de lapins n'avaient aucune vitrine en ligne pour présenter leurs races et centraliser les réservations.",
     solution: "App Next.js/Express avec fiches détaillées par race, réservation en ligne (quantité, stock auto-décrémenté) et double notification — email admin et WhatsApp pré-rempli.",
-    result: "PWA installable avec tableau de bord admin (stock, réservations, stats de vente) — livré et en production." },
+    result: "PWA installable avec tableau de bord admin (stock, réservations, stats de vente) — livré et en production."
+  },
 ]
 
 // ─── Tarifs ─────────────────────────────────────────────────────

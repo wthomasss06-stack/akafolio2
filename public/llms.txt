@@ -70,7 +70,7 @@
 3. **Chez Florence** *(PWA Élevage & Réservation)*
    - *Description* : Application Web de gestion et réservation de lapins avec synchronisation des stocks en temps réel et notifications WhatsApp pré-remplies automatisées.
    - *Stack* : Next.js 14, Express.js, Prisma, PostgreSQL (Neon), Cloudinary.
-   - *URL* : https://lapinou.vercel.app/
+   - *URL* : https://chez-florence.vercel.app/
 
 4. **New Horizon Service** *(Immobilier / Résidences)*
    - *Description* : Plateforme haut de gamme de réservation et de location de résidences meublées.

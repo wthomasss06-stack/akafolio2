@@ -1,6 +1,7 @@
 import '@fortawesome/fontawesome-free/css/all.min.css'
 import '../fonts.css'
 import './globals.css'
+import { Analytics } from '@vercel/analytics/react'
 
 import { SEO_CONFIG } from '../useSEO.jsx'
 
@@ -61,7 +62,10 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
-      <body>{children}</body>
+      <body>
+        {children}
+        <Analytics />
+      </body>
     </html>
   )
 }

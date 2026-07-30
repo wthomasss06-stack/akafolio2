@@ -3329,22 +3329,30 @@
 
 
    /* ══════════ FOOTER ══════════
-      Même procédé que .recent-projects-section (Hero) et
-      .full-beams-zone (cta-dissolve) plus haut : marge négative pour
-      tirer l'élément suivant par-dessus le précédent, avec un
-      z-index plus élevé sur celui qui doit rester visible pendant le
-      chevauchement. Différence clé avec les deux autres cas : ici
-      aucun des deux n'est pinné (pas de position:fixed du tout,
-      contrairement à mes tentatives précédentes) — tout reste en
-      flux normal, donc la comparaison de z-index Contact/Footer
-      reste strictement locale entre ces deux éléments, sans jamais
-      pouvoir s'échapper vers une autre section de la page (ce qui
-      causait le chevauchement site entier des tentatives en
-      position:fixed). #contact garde son z-index:1 (déjà défini
-      plus haut) ; #main-footer passe à z-index:0 + margin-top négatif
-      pour se faire recouvrir par la fin de Contact — descendre
-      révèle le footer, remonter fait revenir Contact par-dessus. */
-   #main-footer { background: transparent; color: var(--text); padding-top: 6rem; position: relative; z-index: 0; margin-top: -20vh; }
+      Après 2 essais en CSS pur (position:fixed → chevauchement site
+      entier ; position:sticky → erreur de géométrie, padding du
+      mauvais côté), passage à l'outil prévu pour ça : ScrollTrigger
+      avec pin:true (cf. skill gsap-scrolltrigger). Le "rester immobile"
+      est géré entièrement par GSAP dans Footer() (App.jsx) —
+      ScrollTrigger pin #main-footer via un ref, matchMedia coupe
+      l'effet sous 769px comme les autres effets stacked-scroll. Le
+      CSS ici ne gère plus que la zone de chevauchement : #contact
+      garde z-index:2 et un margin-bottom négatif qui remonte le
+      footer sous sa fin (donc #main-footer est déjà partiellement
+      visible, recouvert par #contact, avant même que le pin ne
+      s'enclenche) ; #main-footer passe à z-index:1 (entre le fond
+      .full-beams-zone__bg à 0 et #contact à 2) — GSAP applique
+      position:fixed lui-même pendant le pin, pas besoin de position
+      ici. --stk-footer-reveal (50vh) fixe la marge de chevauchement
+      CSS ; la durée du pin (+=50vh) est réglée à la même valeur en
+      dur dans le useEffect de Footer() — si tu changes l'un, change
+      l'autre pareil. */
+   :root { --stk-footer-reveal: 50vh; }
+   #contact {
+     z-index: 2;
+     margin-bottom: calc(var(--stk-footer-reveal, 50vh) * -1);
+   }
+   #main-footer { background: transparent; color: var(--text); padding-top: 6rem; z-index: 1; }
    .ft-inner { max-width: 1380px; margin: 0 auto; padding: 0 6vw; }
    .ft-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 3rem; padding-bottom: 3.5rem; border-bottom: 1px solid rgba(255,85,0,.15); }
    /* when footer has been simplified we center the CV block */
@@ -3916,6 +3924,7 @@
      .recent-projects-section { margin-top: 0; }
      .hzx-section { margin-top: 0; }
      .full-beams-zone { margin-top: 0; }
+     #contact { margin-bottom: 0; }
    }
 
    .hzx-section {

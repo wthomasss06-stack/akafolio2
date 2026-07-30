@@ -4663,9 +4663,49 @@ function Footer() {
   /* Même transition "staircase" que la Navbar pour toute navigation
   déclenchée depuis le footer (cf. GooeyTransition.jsx). */
   const scrollToSection = useGooeyTransition('desktop')
+  const footerRef = useRef(null)
+
+  /* Pin scroll-driven — remplace position:sticky (cf. commentaire FOOTER
+  dans style.css pour l'historique des 2 essais précédents). ScrollTrigger
+  gère lui-même position:fixed + le spacer compensateur pendant le pin,
+  donc pas de risque de rejouer le bug "chevauchement site entier" d'un
+  position:fixed posé à la main. --stk-footer-reveal (CSS, 50vh) ne
+  couvrait qu'une partie de #main-footer si sa hauteur réelle dépasse
+  50vh — le bas du footer dépassait de la zone de chevauchement et
+  restait visible sous Contact au lieu d'être complètement recouvert.
+  Fix : on mesure la vraie hauteur du footer (footerRef) et on pose le
+  margin-bottom exact dessus via gsap.set (inline, prioritaire sur le
+  --stk-footer-reveal de style.css) — tout #main-footer est alors dans
+  la zone de chevauchement, plus de bas de footer qui dépasse. Effet de
+  bord utile : le pin ('bottom bottom') s'enclenche alors exactement
+  quand le footer est intégralement révélé (son bas naturel retombe
+  pile là où Contact finissait avant le margin négatif). end:'max' :
+  #main-footer est la dernière section, il reste immobile jusqu'au vrai
+  bas de page une fois révélé — seul remonter (scroll inverse) relâche
+  le pin et refait glisser Contact par-dessus. */
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      ScrollTrigger.matchMedia({
+        '(min-width: 769px)': function () {
+          const contactEl = document.getElementById('contact')
+          const footerH = footerRef.current.getBoundingClientRect().height
+          if (contactEl) gsap.set(contactEl, { marginBottom: -footerH })
+
+          ScrollTrigger.create({
+            trigger: footerRef.current,
+            start: 'bottom bottom',
+            end: 'max',
+            pin: true,
+            pinSpacing: true,
+          })
+        },
+      })
+    })
+    return () => ctx.revert()
+  }, [])
 
   return (
-    <footer id="main-footer">
+    <footer id="main-footer" ref={footerRef}>
 
       {/* Barre de bas — style "verteal" : nav gauche / logo centré / CTA+email droite, filigrane AKATECH en fond.
      Fond transparent : laisse apparaître le Beams animé de full-beams-zone derrière. */}

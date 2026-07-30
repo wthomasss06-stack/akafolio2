@@ -3448,11 +3448,7 @@
    .ft-dl-btn:hover { transform: translate(-2px,-2px) !important; box-shadow: 5px 5px 0 #CC3300 !important; }
    .ft-svg-wrap { overflow: hidden; padding: 2rem 4rem 0; border-top: 1px solid rgba(255,85,0,.12); text-align: center; }
 
-   /* ══════════ BARRE DE BAS — style "verteal" ══════════
-      Bloc plein-bleed à couleur fixe (--accent) : plus de bascule
-      noir/blanc selon le thème (qui cassait le contraste du texte
-      en light-mode). Le texte est donc lui aussi en couleurs fixes
-      (blanc / noir) puisque le fond ne dépend plus de --bg/--text. */
+   /* ══════════ BARRE DE BAS — typographie scatter ══════════ */
    .ft-bottom-band {
      position: relative;
      background: transparent;
@@ -3472,7 +3468,7 @@
      padding: 3.4rem 6vw 0;
    }
 
-   /* Filigrane "AKATECH" massif en fond — teinte claire sur fond sombre + Beams */
+   /* Filigrane massif en fond */
    .ft-aka-watermark {
      position: absolute;
      left: 50%;
@@ -3486,52 +3482,128 @@
      line-height: 1;
      letter-spacing: -.02em;
      white-space: nowrap;
-     color: rgba(242,237,232,.08);
+     color: rgba(242,237,232,.06);
      pointer-events: none;
      user-select: none;
      z-index: 0;
    }
 
-   .ft-bb-top {
-     position: relative;
-     z-index: 1;
+   /* ── Carte 3D wrapper ── */
+   .fts-card {
+     transform-style: preserve-3d;
+     will-change: transform;
+   }
+
+   /* ── Grille typographique ── */
+   .fts-grid {
+     display: grid;
+     gap: .4rem;
+     text-transform: uppercase;
+     letter-spacing: -.03em;
+     line-height: 1;
+     user-select: none;
+   }
+
+   .fts-row {
      display: flex;
-     align-items: flex-start;
+     align-items: center;
+     /* Forcer les 2 éléments aux extrémités opposées */
      justify-content: space-between;
-     gap: 2rem;
+     width: 100%;
+     gap: 0;
+   }
+   /* Chaque mot occupe sa moitié : le 1er collé à gauche, le 2e à droite */
+   .fts-row > .fts-item:first-child  { margin-right: auto; }
+   .fts-row > .fts-item:last-child   { margin-left: auto; }
+   /* Ligne avec logo centré — le logo prend l'espace central */
+   .fts-row--logo > .fts-item:first-child  { flex: 0 0 auto; }
+   .fts-row--logo > .fts-logo-wrap         { flex: 1; justify-content: center; }
+   .fts-row--logo > .fts-item:last-child   { flex: 0 0 auto; }
+   .fts-row--name {
+     font-size: clamp(3.2rem, 10vw, 9rem);
+     font-family: var(--fd);
+     font-weight: 800;
+   }
+   .fts-row:not(.fts-row--name):not(.fts-row--small) {
+     font-size: clamp(2.2rem, 6.5vw, 6.5rem);
+     font-family: var(--fd);
+     font-weight: 800;
+   }
+   .fts-row--small {
+     font-size: clamp(.9rem, 2vw, 1.6rem);
+     font-family: 'Space Mono', monospace;
+     letter-spacing: .01em;
+     margin-top: 1rem;
+   }
+
+   /* ── Mots interactifs ── */
+   .fts-word {
+     display: inline-flex;
+     align-items: center;
+     will-change: opacity, filter, transform;
+     transition: none;
+   }
+   .fts-word--bright { color: var(--text); }
+   .fts-word--muted  { color: rgba(242,237,232,.35); }
+   /* Font Silkscreen pour le nom principal */
+   .fts-word--silk   { font-family: 'Silkscreen', 'Space Mono', monospace !important; letter-spacing: .04em; }
+   .fts-word--link   {
+     color: rgba(255,85,0,.75);
+     text-transform: none;
+     font-weight: 600;
+     letter-spacing: .02em;
+     text-decoration: none;
+   }
+   .fts-word--link:hover { color: var(--accent); }
+   body.light-mode .fts-word--bright { color: #0A0A0A; }
+   body.light-mode .fts-word--muted  { color: rgba(10,10,10,.28); }
+
+   /* ── Logo centré ── */
+   .fts-logo-wrap {
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     flex: 0 0 auto;
+   }
+   .fts-logo {
+     width: clamp(60px, 8vw, 110px);
+     height: clamp(60px, 8vw, 110px);
+     object-fit: contain;
+     opacity: .92;
+     transition: opacity .3s;
+   }
+   .fts-logo-wrap:hover .fts-logo { opacity: 1; }
+
+   /* ── Barre inférieure ── */
+   .fts-footer-bar {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     border-top: 1px solid rgba(255,85,0,.12);
+     margin-top: 2.5rem;
+     padding-top: 1.6rem;
+     padding-bottom: 2rem;
+     gap: 1rem;
      flex-wrap: wrap;
    }
 
-   .ft-bb-nav { display: flex; flex-direction: column; gap: .55rem; }
-   .ft-bb-nav a { font-family: var(--fd); font-weight: 700; font-size: .98rem; color: #fff; text-decoration: none; transition: color .2s, transform .2s; }
-   .ft-bb-nav a:hover { color: var(--accent); transform: translateX(4px); }
+   .ft-bb-nav { display: flex; flex-direction: row; gap: 1.5rem; flex-wrap: wrap; }
+   .ft-bb-nav a { font-family: var(--fd); font-weight: 700; font-size: .82rem; color: rgba(242,237,232,.6); text-decoration: none; text-transform: uppercase; letter-spacing: .05em; transition: color .2s; }
+   .ft-bb-nav a:hover { color: var(--accent); }
+   .ft-bb-copyright { font-family: 'Space Mono', monospace; font-size: .68rem; color: rgba(255,255,255,.5); letter-spacing: .02em; }
+   body.light-mode .ft-bb-copyright { color: rgba(10,10,10,.45); }
+   body.light-mode .ft-bb-nav a { color: rgba(10,10,10,.5); }
 
-   .ft-bb-logo { display: flex; align-items: center; justify-content: center; flex: 1; min-width: 60px; }
-   .ft-bb-logo img { width: 95px; height: 95px; object-fit: contain; opacity: .95; }
-
-   .ft-bb-right { display: flex; flex-direction: column; align-items: flex-end; gap: .85rem; text-align: right; }
-   .ft-bb-copyright { font-family: 'Space Mono', monospace; font-size: .7rem; color: rgba(255,255,255,.8); letter-spacing: .02em; }
-   
-   body.light-mode .ft-bb-cta { --bg: #FFFFFF; --text: #0A0A0A; }
-   .ft-bb-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(10,10,10,.3); }
-   .ft-bb-cta-arrow {
-     display: inline-flex; align-items: center; justify-content: center;
-     width: 26px; height: 26px; border-radius: 50%;
-     background: var(--text); color: var(--bg);
-     transition: transform .25s cubic-bezier(.175,.885,.32,1.275), background .3s, color .3s;
-   }
-   .ft-bb-cta:hover .ft-bb-cta-arrow { transform: rotate(45deg); }
-   .ft-bb-email { font-family: 'Space Mono', monospace; font-size: .72rem; color: rgba(255,255,255,.9); text-decoration: none; transition: color .2s; }
-   .ft-bb-email:hover { color: var(--accent); }
-
+   /* ── Responsive ── */
    @media(max-width:700px){
      .ft-bottom-band { min-height: clamp(380px, 62vh, 520px); }
      .ft-bb-inner { padding: 2.6rem 6vw 0; }
-     .ft-bb-top { flex-direction: column; align-items: center; text-align: center; gap: 1.6rem; }
-     .ft-bb-nav { align-items: center; order: 1; }
-     .ft-bb-logo { order: 0; }
-     .ft-bb-right { align-items: center; order: 2; }
+     .fts-row { flex-wrap: wrap; gap: .6rem; justify-content: flex-start; }
+     .fts-row--name { font-size: clamp(2.4rem, 14vw, 4rem); }
+     .fts-row:not(.fts-row--name):not(.fts-row--small) { font-size: clamp(1.8rem, 10vw, 3rem); }
      .ft-aka-watermark { font-size: clamp(4rem, 24vw, 8rem); }
+     .fts-footer-bar { flex-direction: column; align-items: flex-start; }
+     .ft-bb-nav { gap: .8rem; }
    }
 
    /* Footer tagline (kept below QR, no logo) */

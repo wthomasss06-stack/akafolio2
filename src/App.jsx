@@ -4724,30 +4724,12 @@ function BeamsInteractive() {
 
 
 function Footer() {
-
-  /* Même transition "staircase" que la Navbar pour toute navigation
-  déclenchée depuis le footer (cf. GooeyTransition.jsx). */
   const scrollToSection = useGooeyTransition('desktop')
   const footerRef = useRef(null)
+  const tiltRef   = useRef(null)
+  const floatRef  = useRef(null)
 
-  /* Pin scroll-driven — remplace position:sticky (cf. commentaire FOOTER
-  dans style.css pour l'historique des 2 essais précédents). ScrollTrigger
-  gère lui-même position:fixed + le spacer compensateur pendant le pin,
-  donc pas de risque de rejouer le bug "chevauchement site entier" d'un
-  position:fixed posé à la main. --stk-footer-reveal (CSS, 50vh) ne
-  couvrait qu'une partie de #main-footer si sa hauteur réelle dépasse
-  50vh — le bas du footer dépassait de la zone de chevauchement et
-  restait visible sous Contact au lieu d'être complètement recouvert.
-  Fix : on mesure la vraie hauteur du footer (footerRef) et on pose le
-  margin-bottom exact dessus via gsap.set (inline, prioritaire sur le
-  --stk-footer-reveal de style.css) — tout #main-footer est alors dans
-  la zone de chevauchement, plus de bas de footer qui dépasse. Effet de
-  bord utile : le pin ('bottom bottom') s'enclenche alors exactement
-  quand le footer est intégralement révélé (son bas naturel retombe
-  pile là où Contact finissait avant le margin négatif). end:'max' :
-  #main-footer est la dernière section, il reste immobile jusqu'au vrai
-  bas de page une fois révélé — seul remonter (scroll inverse) relâche
-  le pin et refait glisser Contact par-dessus. */
+  /* ── Pin scroll-driven (inchangé) ── */
   useEffect(() => {
     const ctx = gsap.context(() => {
       ScrollTrigger.matchMedia({
@@ -4755,7 +4737,6 @@ function Footer() {
           const contactEl = document.getElementById('contact')
           const footerH = footerRef.current.getBoundingClientRect().height
           if (contactEl) gsap.set(contactEl, { marginBottom: -footerH })
-
           ScrollTrigger.create({
             trigger: footerRef.current,
             start: 'bottom bottom',
@@ -4769,33 +4750,165 @@ function Footer() {
     return () => ctx.revert()
   }, [])
 
+  /* ── Float continu ── */
+  useEffect(() => {
+    if (!floatRef.current) return
+    const tween = gsap.to(floatRef.current, {
+      y: -10,
+      duration: 3.5,
+      repeat: -1,
+      yoyo: true,
+      ease: 'sine.inOut',
+    })
+    return () => tween.kill()
+  }, [])
+
+  /* ── Tilt 3D ── */
+  useEffect(() => {
+    const card = tiltRef.current
+    if (!card) return
+    const onMove = e => {
+      const rect = card.getBoundingClientRect()
+      const x = (e.clientX - rect.left) / rect.width  - 0.5
+      const y = (e.clientY - rect.top)  / rect.height - 0.5
+      gsap.to(card, { rotateY: x * 10, rotateX: -y * 10, duration: 0.6, ease: 'power2.out' })
+    }
+    const onLeave = () => gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.8, ease: 'power2.out' })
+    card.addEventListener('pointermove', onMove)
+    card.addEventListener('pointerleave', onLeave)
+    return () => { card.removeEventListener('pointermove', onMove); card.removeEventListener('pointerleave', onLeave) }
+  }, [])
+
+  /* ── Scatter helpers ── */
+  const rand = (min, max) => Math.round(Math.random() * (max - min) + min)
+
+  const handleEnter = e => {
+    const hovered = e.currentTarget
+    const all = footerRef.current.querySelectorAll('.fts-item')
+    gsap.to(tiltRef.current, { rotateX: 0, rotateY: 0, duration: 0.4 })
+    all.forEach(item => {
+      if (item !== hovered) {
+        gsap.to(item, { opacity: 0.18, filter: 'blur(7px)', scale: 0.96, duration: 0.4, ease: 'power2.out' })
+      } else {
+        gsap.to(item, { opacity: 1, filter: 'blur(0px)', scale: 1, duration: 0.3 })
+        item.querySelectorAll('.fts-char').forEach(ch => {
+          gsap.to(ch, {
+            xPercent: rand(-28, 28),
+            yPercent: rand(-55, 22),
+            rotate:   rand(-18, 18),
+            duration: 0.5,
+            ease: 'back.out(1.7)',
+          })
+        })
+      }
+    })
+  }
+
+  const handleLeave = e => {
+    const all = footerRef.current.querySelectorAll('.fts-item')
+    all.forEach(item => {
+      gsap.to(item, { opacity: 1, filter: 'blur(0px)', scale: 1, duration: 0.4, ease: 'power2.out' })
+      gsap.to(item.querySelectorAll('.fts-char'), { xPercent: 0, yPercent: 0, rotate: 0, duration: 0.4, ease: 'power2.out', stagger: 0.01 })
+    })
+  }
+
+  /* ── ScatterWord — split text en chars ── */
+  const ScatterWord = ({ children, className = '', tag: Tag = 'div', href, target }) => {
+    const text = String(children)
+    const inner = (
+      <Tag
+        className={`fts-item cursor-pointer ${className}`}
+        onMouseEnter={handleEnter}
+        onMouseLeave={handleLeave}
+        {...(href ? { href, target } : {})}
+      >
+        {Array.from(text).map((ch, i) => (
+          <span key={i} className="fts-char" style={{ display: 'inline-block', whiteSpace: 'pre', willChange: 'transform' }}>
+            {ch}
+          </span>
+        ))}
+      </Tag>
+    )
+    return inner
+  }
+
   return (
     <footer id="main-footer" ref={footerRef}>
-
-      {/* Barre de bas — style "verteal" : nav gauche / logo centré / CTA+email droite, filigrane AKATECH en fond.
-     Fond transparent : laisse apparaître le Beams animé de full-beams-zone derrière. */}
       <div className="ft-bottom-band">
         <span className="ft-aka-watermark" aria-hidden="true">AKATECH</span>
 
-        <div className="ft-bb-inner">
-          <div className="ft-bb-top">
-            <nav className="ft-bb-nav">
-              {NAV_LINKS.map((l, i) => (
-                <a key={i} href={`#${l.id}`} onClick={e => { e.preventDefault(); scrollToSection(l.id) }}>
-                  <HoverFadeText>{l.label}</HoverFadeText>
-                </a>
-              ))}
-            </nav>
+        <div className="ft-bb-inner" style={{ perspective: '1000px' }}>
+          <div ref={floatRef}>
+            <div ref={tiltRef} className="fts-card">
 
-            <div className="ft-bb-logo">
-              <img src="/assets/images/logo-akatech.webp" alt="AKATech" loading="lazy" onError={e => { e.target.style.display = 'none' }} />
-            </div>
+              {/* ── Grille typographique — 2 vraies colonnes ── */}
+              <div className="fts-grid">
 
-            <div className="ft-bb-right">
-              <span className="ft-bb-copyright">© 2026 AKATech</span>
+                {/* Ligne 1 — Nom — silkscreen */}
+                <div className="fts-row fts-row--name">
+                  <ScatterWord className="fts-word fts-word--bright fts-word--silk">M'Bollo</ScatterWord>
+                  <ScatterWord className="fts-word fts-word--bright fts-word--silk">aka</ScatterWord>
+                </div>
 
-              <a href="mailto:wthomasss06@gmail.com" className="ft-bb-email"><HoverFadeText>wthomasss06@gmail.com</HoverFadeText></a>
-            </div>
+                {/* Ligne 2 — rôle muted */}
+                <div className="fts-row">
+                  <ScatterWord className="fts-word fts-word--muted">dev</ScatterWord>
+                  <ScatterWord className="fts-word fts-word--muted">web</ScatterWord>
+                </div>
+
+                {/* Ligne 3 — titre + logo centré + titre */}
+                <div className="fts-row fts-row--logo">
+                  <ScatterWord className="fts-word fts-word--muted">CEO</ScatterWord>
+                  <div
+                    className="fts-item fts-logo-wrap cursor-pointer"
+                    onMouseEnter={handleEnter}
+                    onMouseLeave={handleLeave}
+                  >
+                    <img
+                      src="/assets/images/logo-akatech.webp"
+                      alt="AKATech logo"
+                      className="fts-logo"
+                      loading="lazy"
+                      onError={e => { e.target.style.display = 'none' }}
+                    />
+                  </div>
+                  <ScatterWord className="fts-word fts-word--muted">Founder</ScatterWord>
+                </div>
+
+                {/* Ligne 4 — email */}
+                <div className="fts-row fts-row--small">
+                  <ScatterWord
+                    tag="a"
+                    href="mailto:wthomasss06@gmail.com"
+                    className="fts-word fts-word--link"
+                  >
+                    wthomasss06@gmail.com
+                  </ScatterWord>
+                  <ScatterWord
+                    tag="a"
+                    href="https://akatech.vercel.app/"
+                    target="_blank"
+                    className="fts-word fts-word--link"
+                  >
+                    akatech.vercel.app
+                  </ScatterWord>
+                </div>
+
+              </div>{/* /fts-grid */}
+
+              {/* ── Bas de carte : nav + copyright ── */}
+              <div className="fts-footer-bar">
+                <nav className="ft-bb-nav">
+                  {NAV_LINKS.map((l, i) => (
+                    <a key={i} href={`#${l.id}`} onClick={e => { e.preventDefault(); scrollToSection(l.id) }}>
+                      <HoverFadeText>{l.label}</HoverFadeText>
+                    </a>
+                  ))}
+                </nav>
+                <span className="ft-bb-copyright">© 2026 M'Bollo aka · akaTech</span>
+              </div>
+
+            </div>{/* /fts-card */}
           </div>
         </div>
       </div>

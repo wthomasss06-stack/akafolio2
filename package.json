@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@fontsource/lora": "^5.2.8",
-    "@vercel/analytics": "^1.5.0",
     "@fontsource/outfit": "^5.2.8",
     "@fontsource/plus-jakarta-sans": "^5.2.8",
     "@fontsource/silkscreen": "^5.2.8",

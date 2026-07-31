@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useRef, useCallback, useMemo, Children, isValidElement, cloneElement } from 'react'
 import './style.css'
@@ -1236,6 +1236,7 @@ function Navbar({ theme, onToggleTheme, onToggleExplorer, isExplorerOpen }) {
   const [activeSection, setActiveSection] = useState('hero')
   const [clock, setClock] = useState({ date: '', time: '' })
   const [scrolled, setScrolled] = useState(false)
+  const [inFooterZone, setInFooterZone] = useState(false)
 
   const navLinks = NAV_LINKS
 
@@ -1322,6 +1323,23 @@ function Navbar({ theme, onToggleTheme, onToggleExplorer, isExplorerOpen }) {
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  /* ── Full écran footer : la navbar s'efface une fois la zone
+     .full-beams-zone atteinte — même trigger que la fusée
+     #scroll-top-btn (IntersectionObserver sur #main-footer,
+     threshold 0.05) pour que les deux basculent ensemble : la navbar
+     disparaît pendant que la fusée prend le relais comme seule
+     action de retour en haut. ── */
+  useEffect(() => {
+    const footer = document.getElementById('main-footer')
+    if (!footer) return
+    const obs = new IntersectionObserver(
+      entries => entries.forEach(e => setInFooterZone(e.isIntersecting)),
+      { root: null, threshold: 0.05 }
+    )
+    obs.observe(footer)
+    return () => obs.disconnect()
   }, [])
 
   /* ── GSAP micro-animation au changement de phase ── */
@@ -1437,7 +1455,7 @@ function Navbar({ theme, onToggleTheme, onToggleExplorer, isExplorerOpen }) {
       <TargetCursor targetSelector=".btn-fill, .btn-ghost, .mag-btn, a, button, .cursor-target, .sm-panel-item" />
 
       {/* ── TOPBAR ── */}
-      <header className={`nb-topbar${scrolled ? ' scrolled' : ''}`}>
+      <header className={`nb-topbar${scrolled ? ' scrolled' : ''}${inFooterZone ? ' nb-hidden' : ''}`}>
 
         {/* Gauche */}
         <div className="nb-topbar-left" ref={leftRef}>
@@ -4905,7 +4923,7 @@ function Footer() {
                     </a>
                   ))}
                 </nav>
-                <span className="ft-bb-copyright">© 2026 M'Bollo aka · akaTech</span>
+                <span className="ft-bb-copyright">© 2026 · AKATech Studio.</span>
               </div>
 
             </div>{/* /fts-card */}

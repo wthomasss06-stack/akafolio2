@@ -149,6 +149,17 @@
      backdrop-filter: none;
      -webkit-backdrop-filter: none;
      border-bottom: none;
+     transition: opacity .45s ease;
+   }
+   /* Zone plein-écran du footer (.full-beams-zone) atteinte : la navbar
+      s'efface pour laisser la fusée #scroll-top-btn seule maîtresse du
+      retour en haut. Opacity seule (pas de transform) : un transform ici
+      créerait un containing block pour #sm-panel (position:fixed du
+      drawer StaggeredMenu, imbriqué dans la navbar) et casserait son
+      positionnement pendant que la navbar est cachée. */
+   .nb-topbar.nb-hidden {
+     opacity: 0;
+     pointer-events: none;
    }
    /* Zones du header */
    .nb-topbar-left {

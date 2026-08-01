@@ -303,7 +303,7 @@ export function StaggeredMenu({
 
           {/* Logo panel */}
           <div className="sm-panel-logo">
-            <img src="/assets/images/logo-akatech.webp" alt="akaTech" className="sm-panel-logo-img"
+            <img src="/assets/images/logo-akatech.webp" alt="AKATech Studio" className="sm-panel-logo-img"
               onError={e => { e.target.style.display='none'; e.target.nextSibling.style.display='block' }} />
             <span className="sm-panel-logo-text" style={{ display:'none' }}>
               aka<span style={{ color:'#FF5500' }}>TECH</span>

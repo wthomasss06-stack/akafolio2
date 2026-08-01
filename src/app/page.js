@@ -45,7 +45,7 @@ export default function Page() {
         <h1>M&apos;Bollo aka — Développeur Web Full Stack à Abidjan</h1>
         <p>
           Développeur web full stack basé à Abidjan, Côte d&apos;Ivoire, spécialisé en React,
-          Django et Flask. Fondateur de akaTech. Création de portfolios, sites vitrines,
+          Django et Flask. Fondateur de AKATech Studio. Création de portfolios, sites vitrines,
           boutiques e-commerce et applications web sur mesure.
         </p>
 

@@ -22,12 +22,15 @@ import HoverFadeText from './components/HoverFadeText.jsx'
 import PixelSliceTrail from './components/PixelSliceTrail.jsx'
 import CardSwap, { Card } from './components/CardSwap.jsx'
 import FlowingMenu from './components/FlowingMenu.jsx'
-import { WRITING_POSTS, CONTACT } from './data/portfolioData.js'
+import { PROJECTS, PRICING_TABS, FAQ_ITEMS, WRITING_POSTS, CONTACT } from './data/portfolioData.js'
 
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import StaggeredMenu from './components/StaggeredMenu.jsx'
-import * as THREE from 'three'
+import dynamic from 'next/dynamic'
+import ProjectDetailModal from './components/ProjectDetailModal.jsx'
+const HeroZoomSection = dynamic(() => import('./components/HeroZoomSection.jsx'), { ssr: false })
+const ProjectsTunnel = dynamic(() => import('./components/ProjectsTunnel.jsx'), { ssr: false })
 import { cld } from './lib/cloudinary'
 gsap.registerPlugin(ScrollTrigger)
 
@@ -867,130 +870,6 @@ function useScrollAnimations() {
 /* ════════════════════════════════════════════
  DONNÉES
  ════════════════════════════════════════════ */
-const PROJECTS = [
-  {
-    id: 1, title: 'ShopCI', sub: 'Marketplace E-commerce', cat: 'en-ligne', img: cld('/assets/images/projects/monmarket-preview.webp'), responsive: cld('/assets/images/projects/shopci-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=600', tech: ['React', 'Django', 'Bootstrap 5', 'Vercel + PythonAnywhere'], url: 'https://shop-ci.vercel.app/', desc: "Marketplace multi-vendeurs conçue pour répondre aux problèmes de fiabilité, de visibilité et de gestion des ventes dans le e-commerce local ivoirien.", year: '2024',
-    private: true,
-    problem: "Les vendeurs locaux n'avaient pas de vitrine en ligne fiable pour centraliser leurs produits et rassurer les acheteurs.",
-    solution: "Marketplace multi-vendeurs avec back-office Django, fiches produits structurées et parcours d'achat simplifié.",
-    result: "Estimation : temps de mise en ligne d'un produit réduit à quelques minutes pour un vendeur, contre plusieurs heures avant."
-  },
-  {
-    id: 2, title: 'TechFlow', sub: 'Site Vitrine Professionnel', cat: 'en-ligne', img: cld('/assets/images/projects/techflow-preview.webp'), responsive: cld('/assets/images/projects/techflow.webp'), imgFb: 'https://images.unsplash.com/photo-1547658719-da2b51169166?w=600', tech: ['HTML / Tailwind CSS', 'JavaScript', 'Vercel'], url: 'https://techflow-ten.vercel.app/', desc: 'Site vitrine moderne destiné à présenter une activité technologique de manière claire et professionnelle.', year: '2024',
-    problem: "Le client n'avait aucune présence web pour présenter son activité tech de façon crédible.",
-    solution: "Site vitrine one-page rapide, structuré autour de l'offre et des preuves de confiance.",
-    result: "Estimation : site livré en moins d'une semaine, prêt à être partagé en prospection commerciale."
-  },
-  {
-    id: 3, title: 'TerraSafe', sub: 'Marketplace Foncière', cat: 'en-ligne', img: cld('/assets/images/projects/terrasafe-preview.webp'), responsive: cld('/assets/images/projects/terrasafe.webp'), imgFb: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600', tech: ['Python/Flask', 'MySQL', 'JavaScript', 'Bootstrap 5'], url: 'https://wthomassss06.pythonanywhere.com', desc: "Plateforme foncière visant à réduire les risques d'arnaques liées à la vente de terrains. Backend sécurisé avec recherche avancée.", year: '2024',
-    problem: "Trop d'arnaques sur la vente de terrains, faute de vérification des annonces et des vendeurs.",
-    solution: "Backend sécurisé Flask/MySQL avec recherche avancée et structuration des annonces foncières.",
-    result: "Architecture validée qui a servi de socle technique à NEXURA — preuve qu'elle tenait la route à l'échelle."
-  },
-  {
-    id: 4, title: 'Chap-chapMAP', sub: 'Navigation Intelligente', cat: 'demo', img: cld('/assets/images/projects/chapchapmap-preview.webp'), responsive: cld('/assets/images/projects/chapchapmap.webp'), imgFb: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=600', tech: ['JavaScript', 'Leaflet.js', 'OSRM API', 'Geolocation API'], url: '/demos/chap-chapMAP.html', desc: "Application de cartographie intelligente permettant de localiser un utilisateur en temps réel et de calculer des itinéraires optimisés.", year: '2023',
-    problem: "Se déplacer efficacement à Abidjan sans application de navigation locale fiable.",
-    solution: "Cartographie interactive avec géolocalisation temps réel et calcul d'itinéraires via l'API OSRM.",
-    result: "Démo technique validant la maîtrise des API de cartographie et de géolocalisation en conditions réelles."
-  },
-  {
-    id: 5, title: 'ElvisMarket', sub: 'Interface E-commerce', cat: 'demo', img: cld('/assets/images/projects/elvismarket-preview.webp'), responsive: cld('/assets/images/projects/elvismarket.webp'), imgFb: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=600', tech: ['HTML + JS vanilla', 'Tailwind CSS', 'LocalStorage'], url: '/demos/projet2.html', desc: "Interface e-commerce développée pour expérimenter la gestion d'état, le panier dynamique et l'optimisation de l'UX.", year: '2023',
-    problem: "Maîtriser la gestion d'état et le panier dynamique en JS vanilla, sans framework, avant de passer à l'échelle.",
-    solution: "Interface e-commerce complète construite en JS vanilla + LocalStorage, sans dépendance lourde.",
-    result: "Projet d'entraînement dont l'architecture front a directement nourri ShopCI et TechFlow."
-  },
-  {
-    id: 6, title: 'MonCashJour', sub: 'Gestion de Ventes', cat: 'demo', img: cld('/assets/images/projects/moncashjour-preview.webp'), responsive: cld('/assets/images/projects/moncashjour.webp'), imgFb: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=600', tech: ['HTML + JS vanilla', 'Tailwind CSS', 'Chart.js'], url: '/demos/projet1.html', desc: 'Application de gestion de ventes quotidiennes destinée aux petits commerçants.', year: '2023',
-    problem: "Les petits commerçants n'ont pas d'outil simple pour suivre leurs ventes journalières.",
-    solution: "Application de gestion de ventes avec visualisation Chart.js, pensée pour un usage terrain rapide.",
-    result: "Estimation : saisie et suivi des ventes du jour en moins de 2 minutes pour un commerçant."
-  },
-  {
-    id: 7, title: 'LivreurTrack Pro', sub: 'Suivi Logistique', cat: 'demo', img: cld('/assets/images/projects/livreurtrack-preview.webp'), responsive: cld('/assets/images/projects/livreurtrack.webp'), imgFb: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600', tech: ['JavaScript', 'Bootstrap 5', 'LocalStorage', 'Camera API'], url: '/demos/projet3.html', desc: "Système de suivi logistique simulant un workflow réel de livraison, avec validation par photo et suivi d'étapes.", year: '2023',
-    problem: "Les livraisons locales manquent de traçabilité : pas de preuve de dépôt, pas de suivi d'étapes.",
-    solution: "Système de suivi logistique avec validation photo (Camera API) et statuts de livraison en direct.",
-    result: "Simulation d'un vrai workflow logistique, de la prise en charge jusqu'à la preuve de livraison."
-  },
-  {
-    id: 8, title: 'LinkedIn Banner Pro', sub: 'Générateur SaaS', cat: 'en-cours', img: cld('/assets/images/projects/linkedin-banner-preview.webp'), responsive: cld('/assets/images/projects/linkedin-banner.webp'), imgFb: 'https://images.unsplash.com/photo-1558655146-d09347e92766?w=600', tech: ['JavaScript', 'Canvas API', 'Tailwind CSS'], url: '/demos/projet7.html', desc: 'Outil SaaS en cours de développement permettant de générer des bannières LinkedIn professionnelles.', year: '2025',
-    problem: "Créer une bannière LinkedIn pro demande des outils de design payants ou complexes à prendre en main.",
-    solution: "Générateur SaaS avec rendu Canvas API, pensé pour un export rapide sans compétence design.",
-    result: "Projet en cours — objectif : générer une bannière personnalisée en moins de 60 secondes."
-  },
-  {
-    id: 9, title: 'Tati', sub: 'Portfolio & Vitrine Moderne', cat: 'en-ligne', img: cld('/assets/images/projects/tati-preview.webp'), responsive: cld('/assets/images/projects/tati.webp'), imgFb: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600', tech: ['React', 'Tailwind CSS', 'Framer Motion', 'Vercel'], url: 'https://tatii.vercel.app/', desc: 'Portfolio personnel double fonction avec animations fluides, thème sombre/clair, design 100% responsive.', year: '2024',
-    github: 'https://github.com/wthomasss06-stack/tatii',
-    problem: "Besoin d'un portfolio personnel qui sorte du template classique, avec une vraie identité visuelle.",
-    solution: "Portfolio React/Framer Motion sur-mesure, thème clair/sombre, animations soignées de bout en bout.",
-    result: "Livré et déployé en production — utilisé activement comme vitrine professionnelle."
-  },
-  {
-    id: 10, title: 'MK', sub: 'Portfolio Graphiste Client', cat: 'en-ligne', img: cld('/assets/images/projects/mk-preview.webp'), responsive: cld('/assets/images/projects/mk.webp'), imgFb: 'https://images.unsplash.com/photo-1555421689-491a97ff2040?w=600', tech: ['React', 'Tailwind CSS', 'Framer Motion', 'Vercel'], url: 'https://mory01ff.vercel.app/', desc: 'Portfolio professionnel sur-mesure pour un client graphiste. Galerie immersive, animations soignées.', year: '2024',
-    problem: "Un graphiste avait besoin d'une galerie en ligne qui valorise ses créations sans les noyer dans un template.",
-    solution: "Portfolio sur-mesure avec galerie immersive et animations pensées pour mettre le visuel en avant.",
-    result: "Livré au client et en ligne — sert de vitrine commerciale directe pour ses prestations."
-  },
-  {
-    id: 11, title: 'ManoBeat 777', sub: 'Portfolio Beatmaker', cat: 'en-ligne', img: cld('/assets/images/projects/beatstore-preview.webp'), responsive: cld('/assets/images/projects/beatstore.webp'), imgFb: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600', tech: ['React', 'Tailwind CSS', 'Howler.js', 'Vercel'], url: 'https://xxx-x.vercel.app/', desc: "Portfolio d'un beatmaker ivoirien : découvrez et écoutez ses créations directement en ligne.", year: '2025',
-    problem: "Un beatmaker ivoirien n'avait aucun moyen de faire écouter ses créations en ligne de façon professionnelle.",
-    solution: "Portfolio audio avec lecteur intégré Howler.js pour écouter les créations directement sur le site.",
-    result: "Estimation : écoute d'un beat ramenée à un simple clic, sans passer par un lien externe."
-  },
-  {
-    id: 12, title: 'New Horizon Service', sub: 'Location de Résidences', cat: 'en-ligne', img: cld('/assets/images/projects/newhorizon-preview.webp'), responsive: cld('/assets/images/projects/newhorizon.webp'), imgFb: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=600', tech: ['Next.js', 'Flask', 'Python', 'MySQL', 'Vercel'], url: 'https://new-horizonservice.vercel.app/', desc: 'Plateforme de location de résidences meublées haut de gamme avec backend Flask sécurisé.', year: '2025',
-    github: 'https://github.com/wthomasss06-stack/AllonsSomo',
-    problem: "Les résidences meublées haut de gamme manquaient d'une plateforme de location fiable et sécurisée.",
-    solution: "Plateforme Next.js/Flask avec backend sécurisé pour la gestion des annonces et des réservations.",
-    result: "En production — a servi de base validée avant l'évolution vers NEXURA."
-  },
-  {
-    id: 13, title: 'AKATech', sub: 'Agence Digitale Abidjan', cat: 'en-ligne', img: cld('/assets/images/projects/akatech-preview.webp'), responsive: cld('/assets/images/projects/akatech.webp'), imgFb: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=600', tech: ['Next.js 15', 'Framer Motion', 'WebGL Aurora', 'Vercel'], url: 'https://akatech.vercel.app/', desc: "Site officiel de mon agence — AKATech accompagne les entrepreneurs et PME en Côte d'Ivoire.", year: '2025',
-    github: 'https://github.com/wthomasss06-stack/akatech-agencenext',
-    problem: "Mon agence n'avait pas de site propre capable de convertir les prospects en clients.",
-    solution: "Site agence Next.js 15 avec WebGL Aurora, animations Framer Motion et structure orientée conversion (process, pricing, projets).",
-    result: "En production, indexé rapidement sur Google — sert de vitrine commerciale principale."
-  },
-  {
-    id: 14, title: 'Université les Anges', sub: 'Site Institutionnel', cat: 'en-ligne', img: cld('/assets/images/projects/universitelesanges-preview.webp'), responsive: cld('/assets/images/projects/universitelesanges.webp'), imgFb: 'https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=600', tech: ['HTML', 'CSS', 'Bulma', 'Bootstrap', 'Vercel'], url: 'https://universitelesanges.vercel.app/', desc: "Site institutionnel moderne pour l'Université les Anges.", year: '2025',
-    github: 'https://github.com/wthomasss06-stack/universite-les-anges',
-    problem: "Une université privée avait besoin d'un site institutionnel crédible pour rassurer futurs étudiants et parents.",
-    solution: "Site institutionnel structuré (présentation, filières, contact) en HTML/Bulma/Bootstrap.",
-    result: "Livré et en ligne — utilisé comme point d'entrée officiel de l'établissement."
-  },
-  {
-    id: 15, title: 'NEXURA', sub: 'Marketplace Nouvelle Génération', cat: 'en-ligne', img: cld('/assets/images/projects/nexura-preview.webp'), responsive: cld('/assets/images/projects/nexura-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600', tech: ['Next.js 14', 'Django REST', 'PostgreSQL', 'WebSockets', 'Redis & Celery'], url: 'https://nexura-one.vercel.app/', desc: "Marketplace nouvelle génération — évolution de TerraSafe. Location de résidences meublées, motos & véhicules, bureaux & salles de conférence, terrains & immobilier. Auth sécurisée, KYC intégré, temps réel.", year: '2025',
-    private: true,
-    problem: "TerraSafe avait besoin de passer à l'échelle : plus de catégories, plus de sécurité, du temps réel.",
-    solution: "Marketplace nouvelle génération Next.js 14 + Django REST + WebSockets, KYC intégré, architecture pensée pour réduire le risque légal.",
-    result: "Projet le plus avancé techniquement du portfolio — repo privé (client), en évolution continue."
-  },
-  {
-    id: 16, title: 'KokoEat', sub: 'Livraison Alimentaire', cat: 'en-cours', img: cld('/assets/images/projects/kokoeat-preview.webp'), responsive: cld('/assets/images/projects/kokoeat-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600', tech: ['React', 'Django REST', 'PostgreSQL', 'Vercel'], url: '#', desc: "Application de livraison de repas pensée pour le marché ivoirien. Commande en ligne, suivi en temps réel et paiement Mobile Money.", year: '2025',
-    problem: "Le marché ivoirien manque d'une app de livraison de repas pensée pour le paiement Mobile Money.",
-    solution: "App de commande en ligne avec suivi temps réel et intégration Mobile Money prévue.",
-    result: "Projet en cours de développement."
-  },
-  {
-    id: 17, title: 'Jean Edy · Portfolio', sub: 'Portfolio React UI Avancé', cat: 'en-ligne', img: cld('/assets/images/projects/jean-edy-preview.webp'), responsive: cld('/assets/images/projects/jean-edy.webp'), imgFb: 'https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=600', tech: ['React 18', 'Vite', 'GSAP', 'Framer Motion', 'TailwindCSS'], url: 'https://jean-edy-dev.vercel.app/', desc: "Portfolio personnel de Jean Edy — Software Developer basé à Abidjan. et skeuomorphisme complet.", year: '2026',
-    private: true,
-    problem: "Un développeur avait besoin d'un portfolio qui démontre un niveau UI avancé pour ses candidatures.",
-    solution: "Portfolio React 18/GSAP avec direction artistique skeuomorphisme complet, sur-mesure.",
-    result: "Livré et en ligne — repo privé (client)."
-  },
-  {
-    id: 18, title: 'MD Laverie Pressing', sub: 'Site Vitrine Pressing', cat: 'en-ligne', img: cld('/assets/images/projects/laverie-preview.webp'), responsive: cld('/assets/images/projects/laverie.webp'), imgFb: 'https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=600', tech: ['React 18', 'Vite', 'GSAP', 'React Router v6', 'EmailJS'], url: 'https://laverie-plus.vercel.app/', desc: "Site vitrine complet pour MD Laverie Pressing, Abidjan. Hero slider GSAP, grille packs pricing, formulaire contact EmailJS.", year: '2025',
-    github: 'https://github.com/wthomasss06-stack/PRESSING',
-    problem: "Un pressing à Abidjan n'avait aucune présence en ligne pour présenter ses tarifs et être contacté.",
-    solution: "Site vitrine React/GSAP avec hero slider, grille de tarifs claire et formulaire de contact EmailJS.",
-    result: "Livré et en ligne — génère des demandes de contact directement depuis le site."
-  },
-  {
-    id: 19, title: 'Chez Florence', sub: 'Vente & Réservation de Lapins', cat: 'en-ligne', img: cld('/assets/images/projects/chez-florence-preview.webp'), responsive: cld('/assets/images/projects/chez-florence-responsive.webp'), responsive2: cld('/assets/images/projects/chez-florence-responsive2.webp'), imgFb: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=600', tech: ['Next.js 14', 'Express.js', 'Prisma', 'PostgreSQL (Neon)', 'Cloudinary'], url: 'https://chez-florence.vercel.app/', desc: "Plateforme de présentation et réservation de lapins pour éleveurs et particuliers : fiches par race, réservation en ligne, stock synchronisé en temps réel et notification WhatsApp automatique.", year: '2026',
-    problem: "Les éleveurs de lapins n'avaient aucune vitrine en ligne pour présenter leurs races et centraliser les réservations.",
-    solution: "App Next.js/Express avec fiches détaillées par race, réservation en ligne (quantité, stock auto-décrémenté) et double notification — email admin et WhatsApp pré-rempli.",
-    result: "PWA installable avec tableau de bord admin (stock, réservations, stats de vente) — livré et en production."
-  },
-]
 NAV_LINKS.find(l => l.id === 'projets-section').sub = `${PROJECTS.length} réalisations`
 
 const SERVICES = [
@@ -1017,131 +896,6 @@ const PROCESS_STEPS = [
    Chaque tab a : plans[] (entête + prix) et rows[] (lignes de features).
    Chaque cellule peut être : true (check vert) | false (tiret) | 'Limité' | 'Texte'
    ─────────────────────────────────────────────────────────────────── */
-const PRICING_TABS = [
-  {
-    key: 'portfolio', label: 'Portfolio',
-    plans: [
-      { title: 'Starter', price: '100 000 FCFA', delivery: '3 à 5 jours' },
-      { title: 'Standard', price: '175 000 FCFA', delivery: '5 à 7 jours', isPopular: true },
-      { title: 'Premium', price: '275 000 FCFA', delivery: '7 à 10 jours' },
-    ],
-    rows: [
-      { label: 'Nombre de pages', cells: ['3 pages', '5 pages', 'Illimité'] },
-      { label: 'Design responsive', cells: [true, true, true] },
-      { label: 'Animations modernes', cells: [false, true, true] },
-      { label: 'Section projets', cells: [true, true, true] },
-      { label: 'Formulaire contact', cells: [true, true, true] },
-      { label: 'SEO', cells: [false, 'SEO de base', 'SEO + AEO/GEO'] },
-      { label: 'CRO (CTA + preuve sociale)', cells: [false, false, true] },
-      { label: 'Projets détaillés', cells: [false, true, true] },
-      { label: 'Design personnalisé', cells: [false, false, true] },
-      { label: 'Blog intégré', cells: [false, false, true] },
-      { label: 'Optimisation perf. (SXO)', cells: [false, false, true] },
-      { label: 'Nom de domaine (1 an)', cells: [true, true, true] },
-      { label: 'Hébergement (1 an)', cells: [true, true, true] },
-      { label: 'Support', cells: [false, false, '1 mois'] },
-      { label: 'Maintenance mensuelle', cells: ['20 000 à 40 000/mois', '20 000 à 40 000/mois', '20 000 à 40 000/mois'] },
-    ],
-  },
-  {
-    key: 'vitrine', label: 'Site Vitrine',
-    plans: [
-      { title: 'Starter', price: '220 000 FCFA', delivery: '5 à 7 jours' },
-      { title: 'Pro', price: '350 000 FCFA', delivery: '7 à 10 jours', isPopular: true },
-      { title: 'Elite', price: '550 000 FCFA', delivery: '10 à 14 jours' },
-    ],
-    rows: [
-      { label: 'Nombre de pages', cells: ['5 pages', '10 pages', '15–20 pages'] },
-      { label: 'Design responsive', cells: [true, true, true] },
-      { label: 'Design premium', cells: [false, true, true] },
-      { label: 'Design sur mesure', cells: [false, false, true] },
-      { label: 'Formulaire contact', cells: [true, true, true] },
-      { label: 'SEO', cells: ['Base', 'Avancé (SEO + AEO)', 'SEO + AEO + GEO + Analytics'] },
-      { label: 'CRO (CTA + preuve sociale)', cells: [false, true, true] },
-      { label: 'Optimisation SXO', cells: [false, true, true] },
-      { label: 'Blog intégré', cells: [false, true, true] },
-      { label: 'CMS complet', cells: [false, false, true] },
-      { label: 'Nom de domaine (1 an)', cells: [true, true, true] },
-      { label: 'Hébergement (1 an)', cells: [false, true, true] },
-      { label: 'Support', cells: ['1 mois', '3 mois', '6 mois'] },
-      { label: 'Formation', cells: [false, '2h', 'Complète'] },
-      { label: 'Maintenance mensuelle', cells: ['20 000 à 40 000/mois', '20 000 à 40 000/mois', '20 000 à 40 000/mois'] },
-      { label: 'Page supp.', cells: ['15 000 à 25 000 FCFA', '15 000 à 25 000 FCFA', '15 000 à 25 000 FCFA'] },
-    ],
-  },
-  {
-    key: 'ecommerce', label: 'E-commerce',
-    plans: [
-      { title: 'Starter', price: '450 000 FCFA', delivery: '14 jours' },
-      { title: 'Pro', price: '750 000 FCFA', delivery: '21 jours', isPopular: true },
-      { title: 'Elite', price: '1 200 000 FCFA', delivery: '30 jours' },
-    ],
-    rows: [
-      { label: 'Produits', cells: ["Jusqu'à 50", '200–500', 'Illimités'] },
-      { label: 'Paiement Mobile Money', cells: [true, true, true] },
-      { label: 'Multi-paiement', cells: [false, true, true] },
-      { label: 'API paiement custom', cells: [false, false, true] },
-      { label: 'Gestion commandes', cells: [true, true, true] },
-      { label: 'Gestion stock temps réel', cells: [false, true, true] },
-      { label: 'Tableau de bord', cells: [true, true, true] },
-      { label: 'SEO produits (SEO/AEO)', cells: [false, true, true] },
-      { label: 'Optimisation IA (GEO)', cells: [false, false, true] },
-      { label: "CRO (tunnel d'achat optimisé)", cells: [false, true, true] },
-      { label: 'Analytics', cells: [false, true, true] },
-      { label: 'Rapports avancés', cells: [false, false, true] },
-      { label: 'Automatisations', cells: [false, false, true] },
-      { label: 'Nom de domaine (1 an)', cells: [true, true, true] },
-      { label: 'Hébergement (1 an)', cells: [true, true, true] },
-      { label: 'Support', cells: ['1 mois', '3 mois', '6 mois'] },
-      { label: 'Formation', cells: [false, 'Admin', 'Équipe'] },
-      { label: 'Maintenance mensuelle', cells: ['20 000 à 40 000/mois', '20 000 à 40 000/mois', '20 000 à 40 000/mois'] },
-    ],
-  },
-  {
-    key: 'saas', label: 'App Web / SaaS',
-    plans: [
-      {
-        title: 'Sur devis', price: 'Étude personnalisée', delivery: 'Après diagnostic gratuit',
-        desc: "Chaque projet SaaS est unique. J'étudie la complexité réelle (architecture, intégrations, sécurité, volume) avant de donner un prix juste et engageant."
-      },
-    ],
-    rows: [
-      { label: 'Diagnostic gratuit de votre besoin', cells: [true] },
-      { label: 'Authentification + rôles', cells: [true] },
-      { label: 'API REST', cells: [true] },
-      { label: 'Dashboard sur mesure', cells: [true] },
-      { label: 'Intégrations tierces (paiement, email…)', cells: [true] },
-      { label: 'Multi-tenant (si besoin)', cells: [true] },
-      { label: 'Onboarding optimisé (CRO)', cells: [true] },
-      { label: 'Déploiement cloud', cells: [true] },
-      { label: 'Devis détaillé sous 48h', cells: [true] },
-      { label: 'Accompagnement post-lancement', cells: [true] },
-    ],
-  },
-  {
-    key: 'gbp', label: 'Fiche Google',
-    plans: [
-      { title: 'Création', price: '20 000 FCFA', delivery: '1 à 2 jours', isPopular: true, desc: "Vous n'avez pas encore de fiche Google ? Création complète de zéro." },
-      { title: 'Optimisation', price: '12 000 FCFA', delivery: '1 jour', desc: 'Fiche déjà existante ? On corrige et améliore ce qui est en place.' },
-      { title: 'Suivi mensuel', price: '10 000 FCFA/mois', delivery: 'Continu', desc: 'Gestion continue : avis, publications et statistiques chaque mois.' },
-    ],
-    rows: [
-      { label: 'Création de la fiche (de zéro)', cells: [true, false, false] },
-      { label: 'Vérification infos (NAP)', cells: [true, true, false] },
-      { label: 'Horaires + zone de service', cells: [true, true, false] },
-      { label: 'Catégorie + attributs', cells: [true, true, false] },
-      { label: 'Lien vers le site web', cells: [true, true, false] },
-      { label: 'Ajout photos (logo, local, produits)', cells: [true, true, false] },
-      { label: 'Description optimisée SEO local', cells: [true, true, false] },
-      { label: "Mots-clés locaux ciblés", cells: [true, true, false] },
-      { label: 'Intégration carte sur le site', cells: [true, false, false] },
-      { label: 'Réponse aux avis clients', cells: [false, false, true] },
-      { label: 'Posts Google réguliers', cells: [false, false, true] },
-      { label: 'Suivi statistiques de fiche', cells: [false, false, true] },
-    ],
-  },
-]
-
 const SKILLS = {
   frontend: [
     { name: 'React', icon: '/assets/icons/devicon/react/react-original.svg', color: '#61DAFB' },
@@ -1176,7 +930,7 @@ const SKILLS = {
 }
 
 const TIMELINE = [
-  { date: '2025–2026', title: 'Développeur Freelance Fullstack', company: 'AKATech', items: ["Conception et déploiement de +10 Projets web (SaaS, e-commerce, plateformes)", "Développement d'API REST avec Django et Flask", "Mise en place de dashboards et systèmes de gestion de données"], tags: ['Freelance', 'Full-Stack', 'Django', 'React', 'SaaS'] },
+  { date: '2025–2026', title: 'Développeur Freelance Fullstack', company: 'AKATech Studio', items: ["Conception et déploiement de +10 Projets web (SaaS, e-commerce, plateformes)", "Développement d'API REST avec Django et Flask", "Mise en place de dashboards et systèmes de gestion de données"], tags: ['Freelance', 'Full-Stack', 'Django', 'React', 'SaaS'] },
   { date: 'Mai–Nov. 2025', title: 'Informaticien Stagiaire', company: "Mairie d'Agboville", items: ['Maintenance du parc informatique et du réseau', 'Support technique aux utilisateurs', 'Contribution à la gestion et numérisation des données'], tags: ['Maintenance', 'Réseau', 'Support'] },
   { date: '2023–2024', title: 'Projet Académique – ARTICI', company: 'UVCI', items: ["Plateforme web de promotion de l'artisanat local", "Travail collaboratif en équipe pluridisciplinaire", "Intégration de bonnes pratiques de sécurité"], tags: ['Frontend', 'Backend', 'Sécurité'] },
   { date: '2023–2024', title: 'Licence Réseau et Sécurité Informatique', company: 'UVCI', items: ['Formation complète en développement web, bases de données et sécurité', 'Certification E-Banking — Réf: CC/24-002485'], tags: ['Diplôme', 'Certification'] },
@@ -1221,14 +975,6 @@ const TESTIMONIALS = [
 ]
 
 /* ─── FAQ — 6 questions les plus pertinentes avant/pendant une commande ─── */
-const FAQ_ITEMS = [
-  { q: 'Comment se déroule le paiement de mon site ?', a: "Le paiement se fait en deux fois : 50% à la commande pour démarrer le projet, et les 50% restants à la livraison, juste avant de recevoir les fichiers finaux et les accès." },
-  { q: 'Quel est le délai pour recevoir mon site ?', a: "Cela dépend du pack choisi : 3 à 5 jours pour un portfolio simple, davantage pour une vitrine, une boutique e-commerce ou une application plus complexe. Le délai exact est précisé dans le devis et démarre dès réception de l'acompte et de vos contenus." },
-  { q: "Puis-je voir mon site avant qu'il soit en ligne ?", a: "Oui, toujours. Vous recevez un lien de prévisualisation pour tester le site, faire vos retours et demander des ajustements avant la mise en ligne officielle." },
-  { q: "Le nom de domaine et l'hébergement sont-ils vraiment gratuits ?", a: "Oui, la première année est offerte sur tous les packs. Après cette période, vous payez simplement le renouvellement — environ 15 000 à 30 000 FCFA par an selon le domaine — et je vous envoie un rappel avant l'expiration." },
-  { q: 'Quels contenus dois-je fournir ?', a: "Votre logo, vos photos, vos textes de présentation et vos informations de contact. Plus ces éléments arrivent vite, plus le développement avance rapidement." },
-  { q: 'Qui gère mon site après la livraison ?', a: "Vous. Je vous transmets tous les accès — administration, hébergement, nom de domaine — ainsi qu'un tutoriel simple pour modifier vos textes et images sans dépendre de moi." },
-]
 
 /* ════════════════════════════════════════════
  NAVBAR
@@ -1410,7 +1156,7 @@ function Navbar({ theme, onToggleTheme, onToggleExplorer, isExplorerOpen }) {
     { label: 'LinkedIn', link: 'https://www.linkedin.com/in/m-bollo-aka' },
     { label: 'GitHub', link: 'https://github.com/wthomasss06-stack' },
     { label: 'Facebook', link: 'https://web.facebook.com/profile.php?id=61577494705852' },
-    { label: 'AKATech', link: 'https://akatech.vercel.app/' },
+    { label: 'AKATech Studio', link: 'https://akatech.vercel.app/' },
     { label: 'Mon CV', link: '/assets/CV_MBOLLO_AKA_ELVIS.pdf' },
   ]
 
@@ -1444,7 +1190,7 @@ function Navbar({ theme, onToggleTheme, onToggleExplorer, isExplorerOpen }) {
 
   const logoBlock = (
     <>
-      <img src={cld("/assets/images/logo-akatech.webp")} alt="AKATech" className="nb-logo-img"
+      <img src={cld("/assets/images/logo-akatech.webp")} alt="AKATech Studio" className="nb-logo-img"
         onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'inline' }}
       />
       <span className="nb-logo-text" style={{ display: 'none' }}>AKA<span className="nb-logo-acc">TECH</span></span>
@@ -1658,280 +1404,8 @@ function Hero() {
 }
 
 
-/* ════════════════════════════════════════════
- HERO ZOOM + DISSOLVE — 3 phases fusionnées dans un seul
- pin/canvas, pour un passage petit-cadre → plein écran →
- dissolve vers l'image suivante SANS rupture visuelle :
-   1. clip-path resserré (30/35) + scale 1.3 → plein écran
-   2. léger palier — l'image tient à pleine résolution
-   3. dissolve WebGL (shaders repris de DissolveTransition.jsx,
-      exportés depuis ce fichier) : hero-bg.webp → about-1.webp
- Le canvas Three.js est monté dès le départ (au lieu d'un
- <img> qui basculerait vers un <canvas> séparé au moment du
- dissolve) : c'est le zoom CSS (clip-path + scale) qui joue
- sur ce même canvas, donc aucune bascule DOM ni flash quand
- le dissolve prend le relais — juste la suite du même scrub.
- Absorbe l'ex-<DissolveTransition id="hero-dissolve" /> qui
- suivait directement dans le rendu (voir plus bas).
- ════════════════════════════════════════════ */
-function HeroZoomSection() {
-  const pinRef = useRef(null)
-  const containerRef = useRef(null)
-  const canvasRef = useRef(null)
-
-  useEffect(() => {
-    const pin = pinRef.current
-    const container = containerRef.current
-    const canvas = canvasRef.current
-    if (!pin || !container || !canvas) return
-
-    let destroyed = false
-    let frontTexture = null
-    let backTexture = null
-
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true })
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
-    if ('outputColorSpace' in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace
-
-    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10)
-    camera.position.z = 1
-    const scene = new THREE.Scene()
-    const geometry = new THREE.PlaneGeometry(2, 2)
-
-    const uniformsFront = {
-      uTexture: { value: null },
-      uResolution: { value: new THREE.Vector2() },
-      uImageResolution: { value: new THREE.Vector2(1, 1) },
-      uDissolve: { value: 0 },
-      uCenter: { value: new THREE.Vector2(0.5, 0.5) },
-      uGrayscale: { value: 0 },
-      uEdgeIntensity: { value: 0 },
-      uEdgeBrightness: { value: 1 },
-    }
-    const uniformsBack = {
-      uTexture: { value: null },
-      uResolution: { value: new THREE.Vector2() },
-      uImageResolution: { value: new THREE.Vector2(1, 1) },
-      uEdgeIntensity: { value: 0.6 },
-      uDarkness: { value: 1 },
-      uGrayscale: { value: 1 },
-    }
-
-    const materialFront = new THREE.ShaderMaterial({
-      vertexShader: VERTEX_SHADER,
-      fragmentShader: FRONT_FRAGMENT_SHADER,
-      uniforms: uniformsFront,
-      transparent: true,
-    })
-    const materialBack = new THREE.ShaderMaterial({
-      vertexShader: VERTEX_SHADER,
-      fragmentShader: BACK_FRAGMENT_SHADER,
-      uniforms: uniformsBack,
-      transparent: true,
-    })
-
-    const meshBack = new THREE.Mesh(geometry, materialBack)
-    meshBack.position.z = -0.1
-    scene.add(meshBack)
-    const meshFront = new THREE.Mesh(geometry, materialFront)
-    scene.add(meshFront)
-
-    function render() {
-      if (destroyed) return
-      renderer.render(scene, camera)
-    }
-
-    function resize() {
-      const w = window.innerWidth
-      const h = window.innerHeight
-      renderer.setSize(w, h, false)
-      uniformsFront.uResolution.value.set(w, h)
-      uniformsBack.uResolution.value.set(w, h)
-      render()
-    }
-
-    const loader = new THREE.TextureLoader()
-    loader.load(cld('/assets/images/hero-bg.webp'), tex => {
-      if (destroyed) { tex.dispose(); return }
-      if ('colorSpace' in tex) tex.colorSpace = THREE.SRGBColorSpace
-      frontTexture = tex
-      uniformsFront.uTexture.value = tex
-      uniformsFront.uImageResolution.value.set(tex.image.width, tex.image.height)
-      render()
-    })
-    loader.load(cld('/assets/images/about-1.webp'), tex => {
-      if (destroyed) { tex.dispose(); return }
-      if ('colorSpace' in tex) tex.colorSpace = THREE.SRGBColorSpace
-      backTexture = tex
-      uniformsBack.uTexture.value = tex
-      uniformsBack.uImageResolution.value.set(tex.image.width, tex.image.height)
-      render()
-    })
-
-    resize()
-    window.addEventListener('resize', resize)
-
-    /* État initial — identique à l'ancien HeroZoomSection */
-    gsap.set(container, { clipPath: 'inset(30% 35% 30% 35%)' })
-    gsap.set(canvas, { scale: 1.3 })
-
-    /* Uniformes dérivés du dissolve — même calcul que setProgress()
-       dans DissolveTransition.jsx, rejoué ici via onUpdate GSAP */
-    function syncDissolve() {
-      const p = uniformsFront.uDissolve.value
-      uniformsFront.uGrayscale.value = Math.min(1, p / 0.4)
-      uniformsFront.uEdgeIntensity.value = p * 0.5
-      uniformsFront.uEdgeBrightness.value = 1 - p
-
-      const acc = Math.min(1, p * 1.1)
-      uniformsBack.uEdgeIntensity.value = 0.6 * (1 - acc)
-      uniformsBack.uDarkness.value = 1 - acc
-      uniformsBack.uGrayscale.value = 1 - acc
-
-      render()
-    }
-
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: pin,
-        start: 'top top',
-        end: 'bottom bottom',
-        scrub: 1,
-      },
-    })
-      /* Phase 1 → 2 : petit cadre vers plein écran */
-      .to(container, { clipPath: 'inset(0% 0% 0% 0%)', ease: 'none', duration: 1 }, 0)
-      .to(canvas, { scale: 1, ease: 'none', duration: 1 }, 0)
-      /* Phase 3 : dissolve plein écran vers l'image suivante — léger
-         palier (1 → 1.1) pour laisser l'image respirer avant qu'elle
-         ne commence à se dissoudre */
-      .to(uniformsFront.uDissolve, { value: 1, ease: 'none', duration: 0.75, onUpdate: syncDissolve }, 1.1)
-
-    return () => {
-      destroyed = true
-      window.removeEventListener('resize', resize)
-      tl.scrollTrigger?.kill()
-      tl.kill()
-      geometry.dispose()
-      materialFront.dispose()
-      materialBack.dispose()
-      frontTexture?.dispose()
-      backTexture?.dispose()
-      renderer.dispose()
-    }
-  }, [])
-
-  return (
-    <section id="hero-zoom-section" className="hzx-section">
-      <div ref={pinRef} className="hzx-pin">
-        <div className="hzx-sticky">
-          <div ref={containerRef} className="hzx-container">
-            <canvas
-              ref={canvasRef}
-              className="hzx-canvas"
-              role="img"
-              aria-label="M'Bollo Aka au travail, de nuit, face à la ville"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
-  )
-}
 
 
-function ProjectDetailModal({ project, caseFlipped, onFlip, onClose }) {
-  if (!project) return null
-  return (
-    <div className="tunnel-modal-backdrop" onClick={onClose}>
-      <div className="tunnel-modal" onClick={e => e.stopPropagation()}>
-        <button type="button" className="tunnel-modal-close" onClick={onClose} aria-label="Fermer">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
-            <line x1="5" y1="5" x2="19" y2="19" />
-            <line x1="19" y1="5" x2="5" y2="19" />
-          </svg>
-        </button>
-
-        <div className="tunnel-modal-image">
-          <img src={project.img} alt={project.title} loading="lazy" />
-        </div>
-
-        <div className="tunnel-modal-info">
-          <div className={`fc-flip${caseFlipped ? ' is-flipped' : ''}`}>
-            <div className="fc-flip-inner">
-
-              <div className="fc-flip-face fc-flip-face--front">
-                <h3 className="fc-name">{project.title}</h3>
-                <h3 className="fc-sub">{project.sub}</h3>
-                <div className="fc-meta">
-                  <div className="fc-meta-row"><span className="fc-ml">Marché</span><span className="fc-mv">Côte d'Ivoire</span></div>
-                  <div className="fc-meta-row"><span className="fc-ml">Rôle</span><span className="fc-mv">Conception & Développement</span></div>
-                  <div className="fc-meta-row"><span className="fc-ml">Année</span><span className="fc-mv">{project.year}</span></div>
-                </div>
-                <div className="fc-tags">
-                  {project.tech.map(t => <TechTag key={t} label={t} />)}
-                </div>
-                <h3 className="fc-desc">{project.desc}</h3>
-                <div className="fc-actions">
-                  <a
-                    href={project.url && project.url !== '#' ? project.url : '#'}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={`fc-cta ${(!project.url || project.url === '#') ? 'fc-cta--disabled' : ''}`}
-                    onClick={e => { if (!project.url || project.url === '#') e.preventDefault() }}
-                  >
-                    <AnimIcon type="globe" size={15} color="currentColor" /> <HoverFadeText>Voir le projet</HoverFadeText>
-                    <span className="btn-arr" aria-hidden="true">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" />
-                      </svg>
-                    </span>
-                  </a>
-                  {project.github ? (
-                    <a href={project.github} target="_blank" rel="noreferrer" className="fc-cta-ghost">
-                      <AnimIcon type="github" size={15} color="currentColor" /> <HoverFadeText>Code source</HoverFadeText>
-                    </a>
-                  ) : (
-                    <span className="fc-cta-private">
-                      <AnimIcon type="lock" size={12} color="currentColor" /> <HoverFadeText>Code privé</HoverFadeText>
-                    </span>
-                  )}
-                </div>
-                {(project.problem || project.result) && (
-                  <button type="button" className="fc-flip-btn" onClick={() => onFlip(true)}>
-                    <AnimIcon type="flip" size={14} color="currentColor" /> Détails du projet
-                  </button>
-                )}
-              </div>
-
-              <div className="fc-flip-face fc-flip-face--back">
-                <h3 className="fc-sub fc-case-label">Cas d'étude</h3>
-                <div className="fc-case">
-                  <div className="fc-case-block">
-                    <span className="fc-case-tag">Problème</span>
-                    <p>{project.problem}</p>
-                  </div>
-                  <div className="fc-case-block">
-                    <span className="fc-case-tag">Solution</span>
-                    <p>{project.solution}</p>
-                  </div>
-                  <div className="fc-case-block fc-case-block--result">
-                    <span className="fc-case-tag">Résultat</span>
-                    <p>{project.result}</p>
-                  </div>
-                </div>
-                <button type="button" className="fc-flip-btn" onClick={() => onFlip(false)}>
-                  <AnimIcon type="flip" size={14} color="currentColor" /> Retour au projet
-                </button>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 function useProjectSelection() {
   const [selectedProject, setSelectedProject] = useState(null)
@@ -2222,460 +1696,7 @@ function RecentProjects() {
   )
 }
 
-const TUNNEL_ACCENT_A = 0xff5500 // --accent
-const TUNNEL_ACCENT_B = 0x1affc2 // glow complémentaire cinématique
 
-function ProjectsTunnel() {
-  const sectionRef = useRef(null)
-  const containerRef = useRef(null)
-  const titleRef = useRef(null)
-  const [selectedProject, setSelectedProject] = useState(null)
-  const [caseFlipped, setCaseFlipped] = useState(false)
-  const [hoveredProject, setHoveredProject] = useState(null)
-  const selectedRef = useRef(null)
-  const hoveredRef = useRef(null)
-  useEffect(() => { selectedRef.current = selectedProject }, [selectedProject])
-
-  useEffect(() => {
-    const section = sectionRef.current
-    const container = containerRef.current
-    if (!section || !container) return
-
-    let width = container.clientWidth
-    let height = container.clientHeight
-
-    const scene = new THREE.Scene()
-    scene.fog = new THREE.FogExp2(0x020202, 0.00028)
-
-    const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 5000)
-    camera.position.z = 0
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' })
-    renderer.setSize(width, height)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 1.2
-    container.appendChild(renderer.domElement)
-
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.25)
-    scene.add(ambientLight)
-
-    const movingLight = new THREE.PointLight(TUNNEL_ACCENT_A, 10, 2200)
-    movingLight.position.set(0, 0, -200)
-    scene.add(movingLight)
-
-    /* ── Textures : les captures des 19 projets (pas d'Unsplash) ── */
-    const textureLoader = new THREE.TextureLoader()
-    const projectTextures = PROJECTS.map(p => {
-      const tex = textureLoader.load(p.img)
-      tex.generateMipmaps = true
-      tex.minFilter = THREE.LinearMipmapLinearFilter
-      if ('colorSpace' in tex) tex.colorSpace = THREE.SRGBColorSpace
-      return tex
-    })
-
-    const vertexShader = `
-      varying vec2 vUv;
-      uniform float uTime;
-      uniform float uDistortion;
-      void main() {
-        vUv = uv;
-        vec3 pos = position;
-        float wave = sin(pos.y * 0.03 + uTime * 1.6) * cos(pos.x * 0.03 + uTime * 1.6) * uDistortion;
-        pos.z += wave * 15.0;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-      }
-    `
-
-    const fragmentShader = `
-      varying vec2 vUv;
-      uniform sampler2D uTexture;
-      uniform float uTime;
-      uniform vec3 uColorGlow;
-      void main() {
-        float shift = 0.006 * sin(uTime * 3.0);
-        float r = texture2D(uTexture, vUv + vec2(shift, 0.0)).r;
-        float g = texture2D(uTexture, vUv).g;
-        float b = texture2D(uTexture, vUv - vec2(shift, 0.0)).b;
-        vec3 finalColor = vec3(r, g, b);
-        float scanline = sin(vUv.y * 200.0 + uTime * 5.0) * 0.03;
-        finalColor += vec3(scanline) + (uColorGlow * 0.1);
-        gl_FragColor = vec4(finalColor, 1.0);
-      }
-    `
-
-    // Plans agrandis (345x225, un cran au-dessus du méga-format précédent)
-    const CARD_W = 345
-    const CARD_H = 225
-    const geometry = new THREE.PlaneGeometry(CARD_W, CARD_H, 20, 20)
-
-    const debrisGroup = new THREE.Group()
-    const meshObjects = []
-
-    const ITEMS_PER_PROJECT = 2
-    const ITEMS_PER_LOOP = PROJECTS.length * ITEMS_PER_PROJECT // 36
-    const SPACING = 52 // espacement accru pour laisser respirer les cartes agrandies
-    const LOOP_LENGTH = ITEMS_PER_LOOP * SPACING // 1872
-
-    // Construit une boucle complète de la séquence des 19 projets.
-    // Appelée deux fois (loopIndex 0 et 1) : le tunnel boucle deux fois.
-    function buildLoop(loopIndex) {
-      for (let i = 0; i < ITEMS_PER_LOOP; i++) {
-        const globalIndex = loopIndex * ITEMS_PER_LOOP + i
-        const projIndex = i % PROJECTS.length
-        const proj = PROJECTS[projIndex]
-        const tex = projectTextures[projIndex]
-
-        const material = new THREE.ShaderMaterial({
-          vertexShader,
-          fragmentShader,
-          uniforms: {
-            uTexture: { value: tex },
-            uTime: { value: 0 },
-            uDistortion: { value: 0.4 },
-            uColorGlow: { value: new THREE.Color(globalIndex % 2 === 0 ? TUNNEL_ACCENT_A : TUNNEL_ACCENT_B) },
-          },
-          side: THREE.DoubleSide,
-        })
-
-        const mesh = new THREE.Mesh(geometry, material)
-        mesh.userData.project = proj
-
-        const angle = Math.random() * Math.PI * 2
-        const radius = 320 + Math.random() * 260 // rayon élargi pour accueillir les cartes agrandies
-        mesh.position.x = Math.cos(angle) * radius
-        mesh.position.y = Math.sin(angle) * radius
-        mesh.position.z = -(loopIndex * LOOP_LENGTH) - i * SPACING
-
-        mesh.lookAt(0, 0, mesh.position.z)
-        mesh.rotation.z += Math.random() * 0.2
-
-        debrisGroup.add(mesh)
-        meshObjects.push(mesh)
-      }
-    }
-
-    buildLoop(0)
-    buildLoop(1) // ← boucle deux fois sur la profondeur du tunnel
-
-    scene.add(debrisGroup)
-
-    const TOTAL_LENGTH = LOOP_LENGTH * 2
-
-    /* ── Nuage de particules "réaliste" : tailles/couleurs variées + twinkle shader ── */
-    const particleCount = 22000
-    const particleGeo = new THREE.BufferGeometry()
-    const starPositions = new Float32Array(particleCount * 3)
-    const starSizes = new Float32Array(particleCount)
-    const starPhases = new Float32Array(particleCount)
-    const starColors = new Float32Array(particleCount * 3)
-
-    const STAR_WHITE = new THREE.Color(0xffffff)
-    const STAR_BLUE = new THREE.Color(0xaecbff)
-    const STAR_AMBER = new THREE.Color(0xffd9a8)
-
-    for (let i = 0; i < particleCount; i++) {
-      const pAngle = Math.random() * Math.PI * 2
-      const pRadius = Math.random() * 700
-      starPositions[i * 3] = Math.cos(pAngle) * pRadius
-      starPositions[i * 3 + 1] = Math.sin(pAngle) * pRadius
-      starPositions[i * 3 + 2] = -Math.random() * (TOTAL_LENGTH + 500)
-
-      starSizes[i] = 0.7 + Math.random() * 2.1
-      starPhases[i] = Math.random() * Math.PI * 2
-
-      const tint = Math.random()
-      const c = tint < 0.78 ? STAR_WHITE : tint < 0.9 ? STAR_BLUE : STAR_AMBER
-      starColors[i * 3] = c.r
-      starColors[i * 3 + 1] = c.g
-      starColors[i * 3 + 2] = c.b
-    }
-
-    particleGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3))
-    particleGeo.setAttribute('aSize', new THREE.BufferAttribute(starSizes, 1))
-    particleGeo.setAttribute('aPhase', new THREE.BufferAttribute(starPhases, 1))
-    particleGeo.setAttribute('aColor', new THREE.BufferAttribute(starColors, 3))
-
-    const starVertexShader = `
-      attribute float aSize;
-      attribute float aPhase;
-      attribute vec3 aColor;
-      varying float vTwinkle;
-      varying vec3 vColor;
-      uniform float uTime;
-      void main() {
-        vColor = aColor;
-        vTwinkle = 0.5 + 0.5 * sin(uTime * (0.6 + aPhase * 0.15) + aPhase * 6.2831);
-        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-        gl_PointSize = aSize * (320.0 / -mvPosition.z);
-        gl_Position = projectionMatrix * mvPosition;
-      }
-    `
-    const starFragmentShader = `
-      varying float vTwinkle;
-      varying vec3 vColor;
-      void main() {
-        float d = length(gl_PointCoord - vec2(0.5));
-        float alpha = smoothstep(0.5, 0.05, d);
-        gl_FragColor = vec4(vColor * (0.55 + vTwinkle * 0.7), alpha * (0.4 + vTwinkle * 0.6));
-      }
-    `
-    const starMaterial = new THREE.ShaderMaterial({
-      vertexShader: starVertexShader,
-      fragmentShader: starFragmentShader,
-      uniforms: { uTime: { value: 0 } },
-      transparent: true,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-    })
-    const starField = new THREE.Points(particleGeo, starMaterial)
-    scene.add(starField)
-
-    /* ── Étoiles filantes : trait + tête lumineuse, cycle spawn aléatoire ── */
-    const SHOOTING_STAR_COUNT = 6
-    const shootingStars = []
-    for (let s = 0; s < SHOOTING_STAR_COUNT; s++) {
-      const lineGeo = new THREE.BufferGeometry()
-      lineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3))
-      const lineMat = new THREE.LineBasicMaterial({
-        color: 0xffffff, transparent: true, opacity: 0,
-        blending: THREE.AdditiveBlending, depthWrite: false,
-      })
-      const line = new THREE.Line(lineGeo, lineMat)
-      scene.add(line)
-
-      const headGeo = new THREE.BufferGeometry()
-      headGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(3), 3))
-      const headMat = new THREE.PointsMaterial({
-        color: 0xffffff, size: 7, transparent: true, opacity: 0,
-        sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false,
-      })
-      const head = new THREE.Points(headGeo, headMat)
-      scene.add(head)
-
-      shootingStars.push({
-        line, head, active: false, life: 0, maxLife: 0.6,
-        pos: new THREE.Vector3(), vel: new THREE.Vector3(),
-        nextSpawn: 1 + Math.random() * 4,
-      })
-    }
-
-    function spawnShootingStar(s) {
-      const camZ = camera.position.z
-      s.pos.set(
-        (Math.random() - 0.5) * 1100,
-        200 + Math.random() * 500,
-        camZ - 500 - Math.random() * 1400
-      )
-      const dir = new THREE.Vector3(
-        (Math.random() - 0.5) * 0.6 - 0.3,
-        -1 - Math.random() * 0.3,
-        (Math.random() - 0.5) * 0.4
-      ).normalize()
-      s.vel.copy(dir).multiplyScalar(1500 + Math.random() * 1000)
-      s.maxLife = 0.45 + Math.random() * 0.35
-      s.life = 0
-      s.active = true
-    }
-
-    /* ── Suivi souris amorti ── */
-    let mouseX = 0
-    let mouseY = 0
-    let targetCameraX = 0
-    let targetCameraY = 0
-    const handleMouseMove = e => {
-      mouseX = (e.clientX / window.innerWidth) * 2 - 1
-      mouseY = -(e.clientY / window.innerHeight) * 2 - 1
-    }
-    window.addEventListener('mousemove', handleMouseMove)
-
-    /* ── Clic sur une carte → ouvre le modal projet (raycasting) ── */
-    const raycaster = new THREE.Raycaster()
-    const pointer = new THREE.Vector2()
-    const getPointerNDC = e => {
-      const rect = container.getBoundingClientRect()
-      pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1
-      pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1
-    }
-    const handleClick = e => {
-      if (selectedRef.current) return
-      getPointerNDC(e)
-      raycaster.setFromCamera(pointer, camera)
-      const hits = raycaster.intersectObjects(meshObjects, false)
-      if (hits.length) {
-        const proj = hits[0].object.userData.project
-        if (proj) setSelectedProject(proj)
-      }
-    }
-    const handlePointerMove = e => {
-      getPointerNDC(e)
-      raycaster.setFromCamera(pointer, camera)
-      const hits = raycaster.intersectObjects(meshObjects, false)
-      const hitProj = hits.length ? hits[0].object.userData.project : null
-      container.style.cursor = hitProj ? 'pointer' : 'default'
-      const hitId = hitProj ? hitProj.id : null
-      if (hoveredRef.current !== hitId) {
-        hoveredRef.current = hitId
-        setHoveredProject(hitProj)
-      }
-    }
-    const handlePointerLeave = () => {
-      if (hoveredRef.current !== null) {
-        hoveredRef.current = null
-        setHoveredProject(null)
-      }
-      container.style.cursor = 'default'
-    }
-    container.addEventListener('click', handleClick)
-    container.addEventListener('pointermove', handlePointerMove)
-    container.addEventListener('pointerleave', handlePointerLeave)
-
-    /* ── Molette/tactile : remplace ScrollTrigger (le tunnel vit dans
-       un overlay plein écran, pas dans le flux de scroll normal de
-       la page — un pin+scroller n'a pas de sens dans ce contexte) ── */
-    const cameraEndZ = -(TOTAL_LENGTH + 180)
-    let progress = 0
-    const applyProgress = (dur) => {
-      gsap.to(camera.position, { z: progress * cameraEndZ, duration: dur, ease: 'power2.out', overwrite: true })
-      if (titleRef.current) titleRef.current.style.opacity = String(Math.max(0, 1 - progress * 8))
-    }
-    const handleWheel = (e) => {
-      e.preventDefault()
-      progress = Math.min(1, Math.max(0, progress + e.deltaY / (TOTAL_LENGTH * 2.4)))
-      applyProgress(0.5)
-    }
-    let touchStartY = null
-    const handleTouchStart = (e) => { touchStartY = e.touches[0].clientY }
-    const handleTouchMove = (e) => {
-      if (touchStartY === null) return
-      const dy = touchStartY - e.touches[0].clientY
-      touchStartY = e.touches[0].clientY
-      progress = Math.min(1, Math.max(0, progress + dy / (TOTAL_LENGTH * 1.2)))
-      applyProgress(0.3)
-    }
-    container.addEventListener('wheel', handleWheel, { passive: false })
-    container.addEventListener('touchstart', handleTouchStart, { passive: true })
-    container.addEventListener('touchmove', handleTouchMove, { passive: true })
-
-    /* ── Boucle d'animation ── */
-    const clock = new THREE.Clock()
-    let lastT = 0
-    let rafId
-    function animate() {
-      rafId = requestAnimationFrame(animate)
-      const t = clock.getElapsedTime()
-      const dt = Math.min(t - lastT, 0.05)
-      lastT = t
-
-      meshObjects.forEach(mesh => {
-        mesh.material.uniforms.uTime.value = t
-        mesh.rotation.z += 0.0015
-      })
-
-      starMaterial.uniforms.uTime.value = t
-      starField.rotation.z = t * 0.015
-
-      // Étoiles filantes
-      shootingStars.forEach(s => {
-        if (!s.active) {
-          s.nextSpawn -= dt
-          if (s.nextSpawn <= 0) spawnShootingStar(s)
-          return
-        }
-        s.life += dt
-        const p = s.life / s.maxLife
-        s.pos.addScaledVector(s.vel, dt)
-        const tail = s.pos.clone().addScaledVector(s.vel, -0.045)
-
-        const linePos = s.line.geometry.attributes.position
-        linePos.setXYZ(0, s.pos.x, s.pos.y, s.pos.z)
-        linePos.setXYZ(1, tail.x, tail.y, tail.z)
-        linePos.needsUpdate = true
-
-        const headPos = s.head.geometry.attributes.position
-        headPos.setXYZ(0, s.pos.x, s.pos.y, s.pos.z)
-        headPos.needsUpdate = true
-
-        const fade = p < 0.15 ? p / 0.15 : p > 0.7 ? Math.max(0, (1 - p) / 0.3) : 1
-        s.line.material.opacity = fade * 0.85
-        s.head.material.opacity = fade
-
-        if (p >= 1) {
-          s.active = false
-          s.nextSpawn = 2 + Math.random() * 6
-          s.line.material.opacity = 0
-          s.head.material.opacity = 0
-        }
-      })
-
-      targetCameraX = mouseX * 45
-      targetCameraY = mouseY * 45
-      camera.position.x += (targetCameraX - camera.position.x) * 0.05
-      camera.position.y += (targetCameraY - camera.position.y) * 0.05
-      camera.lookAt(new THREE.Vector3(camera.position.x * 0.5, camera.position.y * 0.5, camera.position.z - 200))
-
-      movingLight.position.z = camera.position.z - 150
-
-      renderer.render(scene, camera)
-    }
-    animate()
-
-    const handleResize = () => {
-      width = container.clientWidth
-      height = container.clientHeight
-      camera.aspect = width / height
-      camera.updateProjectionMatrix()
-      renderer.setSize(width, height)
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    }
-    window.addEventListener('resize', handleResize)
-
-    return () => {
-      cancelAnimationFrame(rafId)
-      window.removeEventListener('resize', handleResize)
-      window.removeEventListener('mousemove', handleMouseMove)
-      container.removeEventListener('click', handleClick)
-      container.removeEventListener('pointermove', handlePointerMove)
-      container.removeEventListener('pointerleave', handlePointerLeave)
-      container.removeEventListener('wheel', handleWheel)
-      container.removeEventListener('touchstart', handleTouchStart)
-      container.removeEventListener('touchmove', handleTouchMove)
-      geometry.dispose()
-      meshObjects.forEach(mesh => mesh.material.dispose())
-      projectTextures.forEach(tex => tex.dispose())
-      particleGeo.dispose()
-      starMaterial.dispose()
-      shootingStars.forEach(s => {
-        s.line.geometry.dispose(); s.line.material.dispose()
-        s.head.geometry.dispose(); s.head.material.dispose()
-      })
-      renderer.dispose()
-      if (container.contains(renderer.domElement)) container.removeChild(renderer.domElement)
-    }
-  }, [])
-
-  return (
-    <section ref={sectionRef} id="hscroll-section" className="tunnel-section">
-
-
-      <div ref={containerRef} id="webgl-tunnel-container" />
-
-      <div className="tunnel-ui-overlay">
-        <h2 ref={titleRef} className="tunnel-ui-title">MON UNIVERS</h2>
-        <h2 className={`tunnel-hover-title${hoveredProject ? ' is-visible' : ''}`}>
-          {hoveredProject ? hoveredProject.title : ''}
-        </h2>
-      </div>
-
-      <ProjectDetailModal
-        project={selectedProject}
-        caseFlipped={caseFlipped}
-        onFlip={setCaseFlipped}
-        onClose={() => { setSelectedProject(null); setCaseFlipped(false) }}
-      />
-    </section>
-  )
-}
 
 function ProjectsExplorer({ isOpen, onClose }) {
   /* Le tunnel (WebGL) n'est monté que quand l'overlay est réellement
@@ -2868,7 +1889,7 @@ function About() {
                   borderBottom: '1.5px solid var(--accent)'
                 }}
               >
-                AKATech
+                AKATech Studio
               </a>
               , un espace où je donne forme à des idées web modernes et concrètes.
             </NeonFlickerText>
@@ -2899,7 +1920,7 @@ function About() {
                   fontFamily: "'Space Mono', monospace",
                   fontSize: '.62rem', letterSpacing: '.06em',
                   color: 'var(--muted)', textTransform: 'uppercase', lineHeight: 1.3,
-                }}>Développeur Web Full Stack · Fondateur, AKATech</span>
+                }}>Développeur Web Full Stack · Fondateur, AKATech Studio</span>
               </div>
             </div>
           </div>
@@ -4494,7 +3515,7 @@ function GitHubInteractiveCard() {
             ) : (ghRepos.length > 0 ? ghRepos : [
               { name: 'ShopCI', description: 'Marketplace E-commerce locale avec intégration mobile money.', stargazers_count: 14, forks_count: 4, language: 'JavaScript' },
               { name: 'TerraSafe', description: "Plateforme foncière de prévention des risques d'arnaque.", stargazers_count: 8, forks_count: 2, language: 'Python' },
-              { name: 'AKATech', description: 'Site officiel de mon agence digitale. Responsive + animations.', stargazers_count: 21, forks_count: 5, language: 'TypeScript' },
+              { name: 'AKATech Studio', description: 'Site officiel de mon agence digitale. Responsive + animations.', stargazers_count: 21, forks_count: 5, language: 'TypeScript' },
               { name: 'chap-chapMAP', description: "Cartographie interactive pour l'itinéraire et la livraison.", stargazers_count: 5, forks_count: 1, language: 'JavaScript' },
             ]).map((repo, i) => {
               const langColor = { JavaScript: '#f1e05a', Python: '#3572A5', TypeScript: '#2b7489', HTML: '#e34c26', CSS: '#563d7c' }
@@ -4616,7 +3637,7 @@ function ContactSection({ onToast }) {
     { id: 'cojn-linkedin', href: 'https://www.linkedin.com/in/m-bollo-aka', label: 'LinkedIn' },
     { id: 'cojn-facebook', href: 'https://web.facebook.com/profile.php?id=61577494705852', label: 'Facebook' },
     { id: 'cojn-whatsapp', href: 'https://wa.me/2250142507750', label: 'WhatsApp' },
-    { id: 'cojn-akatech', href: 'https://akatech.vercel.app/', label: 'AKATech' },
+    { id: 'cojn-akatech', href: 'https://akatech.vercel.app/', label: 'AKATech Studio' },
     { id: 'cojn-gmail', href: 'mailto:wthomasss06@gmail.com', label: 'Gmail' },
     { id: 'cojn-uvci', href: 'https://uvci.edu.ci/', label: 'UVCI' },
     { id: 'cojn-cv', href: '/assets/CV_MBOLLO_AKA_ELVIS.pdf', label: 'Mon CV' },
@@ -4885,7 +3906,7 @@ function Footer() {
                   >
                     <img
                       src={cld("/assets/images/logo-akatech.webp")}
-                      alt="AKATech logo"
+                      alt="AKATech Studio logo"
                       className="fts-logo"
                       loading="lazy"
                       onError={e => { e.target.style.display = 'none' }}

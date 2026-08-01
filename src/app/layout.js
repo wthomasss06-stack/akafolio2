@@ -43,7 +43,7 @@ export const metadata = {
     description: seo.description,
     images: [{ url: seo.image, width: 1200, height: 1200 }],
     locale: 'fr_CI',
-    siteName: "M'Bollo aka — akaTech",
+    siteName: "M'Bollo Aka — AKATech Studio.",
   },
   twitter: {
     card: 'summary_large_image',

@@ -387,7 +387,7 @@ export default function Loader({ onDone, isMobile = false, dark = true }) {
       <div className={`${p}-logo-wrap`}>
         <img
           src="/assets/images/logo-akatech.webp"
-          alt="AKATech"
+          alt="AKATech Studio."
           className={`${p}-logo`}
           onError={e => { e.target.style.display = 'none' }}
         />
@@ -422,7 +422,7 @@ export default function Loader({ onDone, isMobile = false, dark = true }) {
 
       {/* CORNER — bas-gauche */}
       <div className={`${p}-corner`}>
-        AKATECH 2026
+        AKATECH Studio. 2026
       </div>
 
     </div>

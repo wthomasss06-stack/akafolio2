@@ -925,13 +925,13 @@ const ICON_SVGS = {
 // ═══════════════════════════════════════════════════════════════
 
 const BOOT_LINES = [
-  { t: 300, cls: 'white', txt: 'AKAFOLIO BIOS v3.0 — Copyright AKATech 2025' },
+  { t: 300, cls: 'white', txt: 'AKAFOLIO BIOS v3.0 — Copyright AKATech Studio 2025' },
   { t: 600, cls: 'white', txt: 'CPU: Elvis K. Fullstack Dev @ 3.6GHz' },
   { t: 900, cls: 'ok', txt: '[OK] RAM Check ............. 14 Projets détectés' },
   { t: 1100, cls: 'ok', txt: '[OK] Frontend drivers ....... React 18 ✓' },
   { t: 1300, cls: 'ok', txt: '[OK] Backend services ........ Flask/Django ✓' },
   { t: 1500, cls: 'ok', txt: '[OK] Deployment module ....... Vercel ✓' },
-  { t: 1700, cls: 'ok', txt: '[OK] AKATech Agency .......... En ligne ✓' },
+  { t: 1700, cls: 'ok', txt: '[OK] AKATech Studio. .......... En ligne ✓' },
   { t: 1900, cls: 'warn', txt: '[WARN] Café restant ........... Critique' },
   { t: 2100, cls: 'ok', txt: '[OK] Windows XP Wallpaper .... Chargé ✓' },
   { t: 2300, cls: 'info', txt: '[INFO] Localisation ........... Abidjan, CI' },
@@ -1415,7 +1415,7 @@ function AboutContent() {
           </div>
           {/* Boutons ligne 1 */}
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 4 }}>
-            <a href={ME.site} target="_blank" rel="noreferrer"><button className="w95-btn primary" style={{ fontSize: 10 }}><Fa icon="globe" style={{ marginRight: 4 }} />AKATech</button></a>
+            <a href={ME.site} target="_blank" rel="noreferrer"><button className="w95-btn primary" style={{ fontSize: 10 }}><Fa icon="globe" style={{ marginRight: 4 }} />AKATech Studio</button></a>
             <a href={ME.github} target="_blank" rel="noreferrer"><button className="w95-btn" style={{ fontSize: 10 }}><Fa icon="code-branch" style={{ marginRight: 4 }} />GitHub</button></a>
             <a href={ME.linkedin} target="_blank" rel="noreferrer"><button className="w95-btn" style={{ fontSize: 10 }}><Fa icon="user-tie" style={{ marginRight: 4 }} />LinkedIn</button></a>
           </div>
@@ -1452,7 +1452,7 @@ function AboutContent() {
           À l'aise avec <strong>Django, Flask, React, Next.js</strong> et <strong>MySQL</strong>, je développe aussi des solutions orientées <strong>Data &amp; Cartographie</strong> : dashboards, visualisations interactives et intégration de cartes (Leaflet, OpenStreetMap).
         </div>
         <div style={{ fontSize: 11, lineHeight: 1.7, color: 'var(--text-main)', marginBottom: 8 }}>
-          Via mon agence <strong>AKATech</strong>, j'ai livré plus de <strong>10 applications web</strong> — SaaS, e-commerce, plateformes — avec une approche orientée produit, sécurité et usages réels.
+          Via mon agence <strong>AKATech Studio</strong>, j'ai livré plus de <strong>10 applications web</strong> — SaaS, e-commerce, plateformes — avec une approche orientée produit, sécurité et usages réels.
         </div>
         {/* Soft skills */}
         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
@@ -1513,7 +1513,7 @@ function AboutContent() {
           <div><Fa icon="map-marker-alt" style={{ marginRight: 6, color: 'var(--navy)', width: 14 }} />{ME.location}</div>
           <div><Fa icon="globe" style={{ marginRight: 6, color: 'var(--navy)', width: 14 }} /><a href={ME.site} target="_blank" rel="noreferrer" style={{ color: 'var(--navy)' }}>{ME.site}</a></div>
           <div><Fa icon="code" style={{ marginRight: 6, color: 'var(--navy)', width: 14 }} /><a href={ME.github} target="_blank" rel="noreferrer" style={{ color: 'var(--navy)' }}>{ME.github}</a></div>
-          <div><Fa icon="thumbs-up" style={{ marginRight: 6, color: 'var(--navy)', width: 14 }} /><a href={ME.facebook} target="_blank" rel="noreferrer" style={{ color: 'var(--navy)' }}>Facebook AKATech</a></div>
+          <div><Fa icon="thumbs-up" style={{ marginRight: 6, color: 'var(--navy)', width: 14 }} /><a href={ME.facebook} target="_blank" rel="noreferrer" style={{ color: 'var(--navy)' }}>Facebook AKATech Studio</a></div>
         </div>
       </div>
 
@@ -1836,7 +1836,7 @@ function ContactContent({ onAlert }) {
           <div><Fa icon="globe" style={{ width: 16, marginRight: 6, color: 'var(--navy)' }} /><a href={ME.site} target="_blank" rel="noreferrer" style={{ color: 'var(--navy)' }}>{ME.site}</a></div>
           <div><Fa icon="code" style={{ width: 16, marginRight: 6, color: 'var(--navy)' }} /><a href={ME.github} target="_blank" rel="noreferrer" style={{ color: 'var(--navy)' }}>{ME.github}</a></div>
           <div><Fa icon="user-tie" style={{ width: 16, marginRight: 6, color: 'var(--navy)' }} /><a href={ME.linkedin} target="_blank" rel="noreferrer" style={{ color: 'var(--navy)' }}>LinkedIn</a></div>
-          <div><Fa icon="thumbs-up" style={{ width: 16, marginRight: 6, color: '#1877F2' }} /><a href={ME.facebook} target="_blank" rel="noreferrer" style={{ color: 'var(--navy)' }}>Facebook AKATech</a></div>
+          <div><Fa icon="thumbs-up" style={{ width: 16, marginRight: 6, color: '#1877F2' }} /><a href={ME.facebook} target="_blank" rel="noreferrer" style={{ color: 'var(--navy)' }}>Facebook AKATech Studio</a></div>
           <div><Fa icon="file-pdf" style={{ width: 16, marginRight: 6, color: '#c00' }} /><a href={ME.cv} download style={{ color: 'var(--navy)' }}>Télécharger CV PDF</a></div>
         </div>
       </div>
@@ -1898,7 +1898,7 @@ function WelcomeContent({ onOpen }) {
     `╔═════════════════════════════════╗
 ║   akaFOLIO v3 — Win95/WinXP OS  ║
 ║   by M'BOLLO aka           ║
-║   akaTech · Abidjan, CI          ║
+║   AKATech Studio · Abidjan, CI   ║
 ╚═════════════════════════════════╝`;
   return (
     <div>
@@ -1983,7 +1983,7 @@ function StartMenu({ onOpen, onClose }) {
   };
   return (
     <div className="w95-startmenu" onClick={e => e.stopPropagation()}>
-      <div className="w95-sm-sidebar"><div className="w95-sm-sidetext">AKATech OS</div></div>
+      <div className="w95-sm-sidebar"><div className="w95-sm-sidetext">AKATech Studio OS</div></div>
       <div className="w95-sm-items">
         {items.map((item, i) =>
           item === null
@@ -2056,7 +2056,7 @@ const DESKTOP_ICONS_DEF = [
   { id: 'contact', icon: 'contact', label: 'Contact' },
   { id: 'faq', icon: 'faq', label: 'FAQ' },
   { id: '_github', icon: 'github', label: 'GitHub' },
-  { id: '_site', icon: 'akatech', label: 'akaTech' },
+  { id: '_site', icon: 'akatech', label: 'AKATech Studio' },
 ];
 
 function DesktopIcon({ def, selected, onClick, pos, onDragEnd }) {
@@ -2380,7 +2380,7 @@ export default function Win95Portfolio() {
                       win.type === 'contact' ? ['Fichier', 'Édition', 'Aide'] : []
               }
               statusText={
-                win.type === 'projects' ? `${PROJECTS.length} projets · akaTech Portfolio` :
+                win.type === 'projects' ? `${PROJECTS.length} projets · AKATech Studio Portfolio` :
                   win.type === 'skills' ? 'Frontend · Backend · Outils · Autres' :
                     win.type === 'services' ? 'Services + Tarifs · 4 offres' :
                       win.type === 'contact' ? 'Prêt.' : ''

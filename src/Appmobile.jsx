@@ -358,7 +358,7 @@ const AkafolioLogo = ({ size = 58, dark = true, onClick, animate = true }) => {
   return (
     <img
       src={cld("/assets/images/logo-akatech.webp")}
-      alt="AKATech Logo"
+      alt="AKATech Studio Logo"
       onClick={onClick}
       style={{
         width: size,
@@ -462,7 +462,7 @@ const SKILLS = {
 
 const TIMELINE = [
   {
-    date: "2025 – 2026", icon: "rocket", title: "Développeur Freelance Fullstack", company: "AKATech",
+    date: "2025 – 2026", icon: "rocket", title: "Développeur Freelance Fullstack", company: "AKATech Studio",
     items: [
       "Conception et déploiement de plus de 10 applications web (SaaS, e-commerce, plateformes)",
       "Développement d'API REST avec Django et Flask",
@@ -1156,7 +1156,7 @@ const Navbar = ({ dark, onToggle }) => {
           <a href="https://github.com/wthomasss06-stack" target="_blank" rel="noreferrer"><LI name="github" color={dark ? "#ffffff" : "#1a1a1a"} /></a>
           <a href="https://www.linkedin.com/in/m-bollo-aka" target="_blank" rel="noreferrer"><LI name="linkedin" color={dark ? "#ffffff" : "#1a1a1a"} /></a>
           <a href={FACEBOOK_URL} target="_blank" rel="noreferrer"><LI name="facebook" color={dark ? "#ffffff" : "#1a1a1a"} /></a>
-          <a href="https://akatech.vercel.app/" target="_blank" rel="noreferrer" title="AKATech"><LI name="globe" color={dark ? "#fff" : "#1a1a1a"} /></a>
+          <a href="https://akatech.vercel.app/" target="_blank" rel="noreferrer" title="AKATech Studio"><LI name="globe" color={dark ? "#fff" : "#1a1a1a"} /></a>
           <a href="mailto:wthomasss06@gmail.com"><LI name="envelope" color="#ff5500" size={16} /></a>
         </div>
       </div>
@@ -2624,7 +2624,7 @@ const About = ({ dark }) => {
             <p>Mon parcours a commencé dans le <strong>réseau</strong> et la <strong>sécurité informatique</strong>, et cette base m'a appris à construire avec méthode, à penser la fiabilité et à garder une vision propre de l'architecture.</p>
             <p>Avec le temps, j'ai trouvé ma place dans le développement web. Aujourd'hui, j'aime concevoir des interfaces qui respirent, qui bougent, et qui donnent une vraie sensation de produit fini.</p>
             <p>Je travaille surtout avec <strong>React</strong> et <strong>Django</strong>, tout en explorant <strong>Next.js</strong>, <strong>GSAP</strong>, <strong>Framer Motion</strong> et parfois <strong>Three.js</strong> pour donner plus de vie et de profondeur aux expériences.</p>
-            <p>En grande partie <strong>autodidacte</strong>, j'apprends en construisant, en testant et en améliorant chaque projet. C'est aussi dans cet esprit que j'ai créé <a href="https://akatech.vercel.app/" target="_blank" rel="noreferrer" style={{ color: 'var(--acc)', fontWeight: 700, textDecoration: 'none', borderBottom: '1.5px solid var(--acc)' }}>AKATech</a>, un espace où je donne forme à des idées web modernes et concrètes.</p>
+            <p>En grande partie <strong>autodidacte</strong>, j'apprends en construisant, en testant et en améliorant chaque projet. C'est aussi dans cet esprit que j'ai créé <a href="https://akatech.vercel.app/" target="_blank" rel="noreferrer" style={{ color: 'var(--acc)', fontWeight: 700, textDecoration: 'none', borderBottom: '1.5px solid var(--acc)' }}>AKATech Studio</a>, un espace où je donne forme à des idées web modernes et concrètes.</p>
             <div className={`about-tags ${dark ? 'about-tags--dark' : ''}`}>{["Esprit d'équipe", "Créativité", "Rigueur", "Adaptabilité", "Innovation"].map(t => <span key={t}>{t}</span>)}</div>
             <MagBtn className={`btn ${dark ? 'btn--neon' : 'btn--primary'} mi-glint`} onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}>Disponible pour opportunités →</MagBtn>
           </div>
@@ -3644,7 +3644,7 @@ function AnimatedBeamMobile({ dark }) {
     { id: 'mob-cojn-linkedin', href: 'https://www.linkedin.com/in/m-bollo-aka', label: 'LinkedIn', icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FF5500" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7H10V9h4v2a6 6 0 0 1 6-3z" /><rect x="2" y="9" width="4" height="12" /><circle cx="4" cy="4" r="2" /></svg> },
     { id: 'mob-cojn-facebook', href: 'https://web.facebook.com/profile.php?id=61577494705852', label: 'Facebook', icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FF5500" strokeWidth="1.8" strokeLinecap="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg> },
     { id: 'mob-cojn-whatsapp', href: 'https://wa.me/2250142507750', label: 'WhatsApp', icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FF5500" strokeWidth="1.8" strokeLinecap="round"><path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" /></svg> },
-    { id: 'mob-cojn-akatech', href: 'https://akatech.vercel.app/', label: 'AKATech', icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FF5500" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 0 20M12 2a15.3 15.3 0 0 0 0 20" /></svg> },
+    { id: 'mob-cojn-akatech', href: 'https://akatech.vercel.app/', label: 'AKATech Studio', icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FF5500" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 0 20M12 2a15.3 15.3 0 0 0 0 20" /></svg> },
     { id: 'mob-cojn-gmail', href: 'mailto:wthomasss06@gmail.com', label: 'Gmail', icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FF5500" strokeWidth="1.8" strokeLinecap="round"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="M2 7l10 7 10-7" /></svg> },
     { id: 'mob-cojn-uvci', href: 'https://uvci.edu.ci/', label: 'UVCI', icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FF5500" strokeWidth="1.8" strokeLinecap="round"><path d="M2 10l10-7 10 7v11a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg> },
     { id: 'mob-cojn-cv', href: '/assets/CV_MBOLLO_AKA_ELVIS.pdf', label: 'Mon CV', download: true, icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FF5500" strokeWidth="1.8" strokeLinecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg> },
@@ -3739,12 +3739,12 @@ function AnimatedBeamMobile({ dark }) {
               <div className="mob-node-circle mob-node-main">
                 <img
                   src={cld("/assets/images/logo-akatech.webp")}
-                  alt="AKATech"
+                  alt="AKATech Studio"
                   style={{ width: '80px', height: '80px', objectFit: 'contain', borderRadius: '50%' }}
                   onError={e => { e.target.style.display = 'none' }}
                 />
               </div>
-              <span className="mob-node-label" style={{ color: 'rgba(255,85,0,.8)' }}>AKATech</span>
+              <span className="mob-node-label" style={{ color: 'rgba(255,85,0,.8)' }}>AKATech Studio</span>
             </div>
           </div>
           {/* Rangée basse */}
@@ -3922,7 +3922,7 @@ function GitHubInteractiveCard({ dark }) {
               (ghRepos.length > 0 ? ghRepos : [
                 { name: 'ShopCI', description: 'Marketplace E-commerce avec mobile money.', stargazers_count: 14, forks_count: 4, language: 'JavaScript' },
                 { name: 'TerraSafe', description: "Plateforme foncière anti-arnaque.", stargazers_count: 8, forks_count: 2, language: 'Python' },
-                { name: 'AKATech', description: 'Site officiel de mon agence digitale.', stargazers_count: 21, forks_count: 5, language: 'TypeScript' },
+                { name: 'AKATech Studio', description: 'Site officiel de mon agence digitale.', stargazers_count: 21, forks_count: 5, language: 'TypeScript' },
                 { name: 'chap-chapMAP', description: "Cartographie interactive de livraison.", stargazers_count: 5, forks_count: 1, language: 'JavaScript' },
               ]).map((repo, i) => {
                 const langColor = { JavaScript: '#f1e05a', Python: '#3572A5', TypeScript: '#2b7489', HTML: '#e34c26', CSS: '#563d7c' }
@@ -4142,7 +4142,7 @@ const Footer = ({ dark }) => (
         <a href="https://github.com/wthomasss06-stack" target="_blank" rel="noreferrer"><LI name="github" color={dark ? "#ffffff" : "#1a1a1a"} /></a>
         <a href="https://www.linkedin.com/in/m-bollo-aka" target="_blank" rel="noreferrer"><LI name="linkedin" color={dark ? "#ffffff" : "#1a1a1a"} /></a>
         <a href={FACEBOOK_URL} target="_blank" rel="noreferrer"><LI name="facebook" color={dark ? "#ffffff" : "#1a1a1a"} /></a>
-        <a href="https://akatech.vercel.app/" target="_blank" rel="noreferrer" title="AKATech"><LI name="globe" color={dark ? "#fff" : "#1a1a1a"} /></a>
+        <a href="https://akatech.vercel.app/" target="_blank" rel="noreferrer" title="AKATech Studio"><LI name="globe" color={dark ? "#fff" : "#1a1a1a"} /></a>
         <a href="mailto:wthomasss06@gmail.com"><LI name="envelope" color="#ff5500" size={16} /></a>
       </div>
     </div>

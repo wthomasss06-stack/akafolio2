@@ -48,7 +48,7 @@ const SLIDES = [
   {
     num: '04 — Autodidacte',
     title: 'CURIEUX\n& AUTODIDACTE',
-    body: "Je suis en grande partie autodidacte. J'apprends vite, j'expérimente beaucoup et je progresse projet après projet. akaTech est devenu mon terrain d'expression pour transformer mes idées en expériences web concrètes.",
+    body: "Je suis en grande partie autodidacte. J'apprends vite, j'expérimente beaucoup et je progresse projet après projet. AKATech Studio. est devenu mon terrain d'expression pour transformer mes idées en expériences web concrètes.",
     cls: 'as-s4',
     bg: 'var(--bg)',
     dotsClass: 'bg-dots',

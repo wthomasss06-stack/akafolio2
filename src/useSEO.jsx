@@ -20,11 +20,11 @@
 
 export const SEO_CONFIG = {
   default: {
-    title: "M'Bollo aka — Développeur Web Full Stack à Abidjan | akaTech",
+    title: "M'Bollo Aka — Développeur Web Full Stack à Abidjan | AKATech Studio.",
     description:
       "M'Bollo aka, développeur web full stack à Abidjan (Côte d'Ivoire) : sites vitrines, e-commerce, applications React/Django/Flask. Devis rapide, livraison sous 3 à 14 jours, nom de domaine et hébergement offerts 1 an.",
     keywords:
-      "développeur web Abidjan, développeur full stack Côte d'Ivoire, créer un site web Abidjan, développeur React Django, akaTech, agence web Abidjan, création site e-commerce Côte d'Ivoire",
+      "développeur web Abidjan, développeur full stack Côte d'Ivoire, créer un site web Abidjan, développeur React Django, AKATech Studio, agence web Abidjan, création site e-commerce Côte d'Ivoire",
     url: 'https://mbolloaka-dev.vercel.app/',
     image: 'https://mbolloaka-dev.vercel.app/assets/images/IMG_20250124_124101KK.webp',
   },
@@ -40,7 +40,7 @@ export const STRUCTURED_DATA = {
     image: 'https://mbolloaka-dev.vercel.app/assets/images/IMG_20250124_124101KK.webp',
     jobTitle: 'Développeur Web Full Stack',
     description:
-      "Développeur web full stack basé à Abidjan, Côte d'Ivoire, spécialisé en React, Django et Flask. Fondateur de akaTech.",
+      "Développeur web full stack basé à Abidjan, Côte d'Ivoire, spécialisé en React, Django et Flask. Fondateur de AKATech Studio.",
     address: {
       '@type': 'PostalAddress',
       addressLocality: 'Abidjan',
@@ -50,7 +50,7 @@ export const STRUCTURED_DATA = {
     telephone: '+225-01-42-50-77-50',
     worksFor: {
       '@type': 'Organization',
-      name: 'akaTech',
+      name: 'AKATech Studio',
       url: 'https://akatech.vercel.app/',
     },
     alumniOf: {
@@ -81,7 +81,7 @@ export const STRUCTURED_DATA = {
   localBusiness: {
     '@context': 'https://schema.org',
     '@type': 'ProfessionalService',
-    name: 'akaTech',
+    name: 'AKATech Studio',
     founder: {
       '@type': 'Person',
       name: "M'Bollo aka",
@@ -90,7 +90,7 @@ export const STRUCTURED_DATA = {
     logo: 'https://akatech.vercel.app/favicon.png',
     image: 'https://mbolloaka-dev.vercel.app/assets/images/IMG_20250124_124101KK.webp',
     description:
-      "akaTech accompagne les entrepreneurs et PME en Côte d'Ivoire avec des solutions digitales sur-mesure : sites vitrines, e-commerce, applications SaaS et portfolios modernes.",
+      "AKATech Studio accompagne les entrepreneurs et PME en Côte d'Ivoire avec des solutions digitales sur-mesure : sites vitrines, e-commerce, applications SaaS et portfolios modernes.",
     address: {
       '@type': 'PostalAddress',
       addressLocality: 'Abidjan',
@@ -111,7 +111,7 @@ export const STRUCTURED_DATA = {
     },
     hasOfferCatalog: {
       '@type': 'OfferCatalog',
-      name: 'Services Web akaTech',
+      name: 'Services Web AKATech Studio',
       itemListElement: [
         {
           '@type': 'Offer',

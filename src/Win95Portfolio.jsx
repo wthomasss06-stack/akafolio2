@@ -14,6 +14,7 @@ import React, {
 import {
   CONTACT as ME, PROJECTS, TIMELINE, PRICING_TABS, FAQ_ITEMS as FAQ,
 } from './data/portfolioData.js';
+import { cld } from './lib/cloudinary';
 
 // ═══════════════════════════════════════════════════════════════
 // 0. DONNÉES
@@ -155,7 +156,7 @@ a{color:inherit;text-decoration:none;}
   width:100vw;height:100vh;position:relative;overflow:hidden;
   font-family:var(--font-ui);
   user-select:none;
-  background-image: url('/assets/images/Windows_XP_Background__2001_.webp');
+  background-image: url('${cld('/assets/images/Windows_XP_Background__2001_.webp')}');
   background-size:cover;
   background-position:center;
   background-repeat:no-repeat;

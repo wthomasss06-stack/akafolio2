@@ -10,6 +10,7 @@ import { gsap } from 'gsap';
 import SoundToggle from './components/SoundToggle.jsx';
 import { useImmersiveSound } from './hooks/useImmersiveSound.js';
 import { PROJECTS, PRICING_TABS, FAQ_ITEMS, WRITING_POSTS, CONTACT } from './data/portfolioData.js';
+import { cld } from './lib/cloudinary'
 
 
 /* ── SVG icon replacements (pas de dépendance lucide-react) ── */
@@ -356,7 +357,7 @@ const SvgCpu = ({ size = 14 }) => (
 const AkafolioLogo = ({ size = 58, dark = true, onClick, animate = true }) => {
   return (
     <img
-      src="/assets/images/logo-akatech.webp"
+      src={cld("/assets/images/logo-akatech.webp")}
       alt="AKATech Logo"
       onClick={onClick}
       style={{
@@ -389,22 +390,22 @@ const FACEBOOK_URL = "https://web.facebook.com/profile.php?id=61577494705852";
 
 
 const SERVICES = [
-  { n: "01", icon: "globe", title: "Conception de Site Web", sub: "Votre présence en ligne professionnelle", desc: "Création de sites web modernes, responsive et optimisés pour convertir vos visiteurs en clients.", img: "/assets/images/service/creation de site web.webp", features: ["Sites responsive & modernes", "Optimisés pour la conversion", "Du portfolio à l'e-commerce"] },
-  { n: "02", icon: "chart-bar", title: "Cartes Interactives & Dashboards", sub: "Cartes Mapbox et visualisation de données", desc: "Intégration de cartes interactives Mapbox / Leaflet et de dashboards de visualisation de données.", img: "/assets/images/service/dasbord.webp", features: ["Cartes Mapbox / Leaflet", "Dashboards de données", "Interfaces lisibles & actionnables"] },
-  { n: "03", icon: "server", title: "API & Backend Robustes", sub: "Connectez et automatisez vos systèmes", desc: "Conception d'API RESTful sécurisées avec Django ou Flask, auth JWT et déploiement.", img: "/assets/images/service/api.webp", features: ["API RESTful Django / Flask", "Auth JWT & gestion des rôles", "Intégration Mobile Money"] },
-  { n: "04", icon: "tools", title: "Maintenance & Support", sub: "Votre projet performant, sécurisé et à jour", desc: "Suivi technique, corrections de bugs, mises à jour de sécurité et améliorations continues.", img: "/assets/images/service/maintenence.webp", features: ["Suivi technique continu", "Mises à jour de sécurité", "Améliorations sur la durée"] },
-  { n: "05", icon: "map-marked-alt", title: "Fiche Google My Business", sub: "Soyez visible sur Google Maps et la recherche locale", desc: "Création ou optimisation de votre fiche Google et suivi mensuel : avis, publications et statistiques.", img: "/assets/images/service/fiche-google.webp", features: ["Création ou optimisation de la fiche", "Description optimisée SEO local", "Suivi mensuel : avis & statistiques"] },
+  { n: "01", icon: "globe", title: "Conception de Site Web", sub: "Votre présence en ligne professionnelle", desc: "Création de sites web modernes, responsive et optimisés pour convertir vos visiteurs en clients.", img: cld("/assets/images/service/creation de site web.webp"), features: ["Sites responsive & modernes", "Optimisés pour la conversion", "Du portfolio à l'e-commerce"] },
+  { n: "02", icon: "chart-bar", title: "Cartes Interactives & Dashboards", sub: "Cartes Mapbox et visualisation de données", desc: "Intégration de cartes interactives Mapbox / Leaflet et de dashboards de visualisation de données.", img: cld("/assets/images/service/dasbord.webp"), features: ["Cartes Mapbox / Leaflet", "Dashboards de données", "Interfaces lisibles & actionnables"] },
+  { n: "03", icon: "server", title: "API & Backend Robustes", sub: "Connectez et automatisez vos systèmes", desc: "Conception d'API RESTful sécurisées avec Django ou Flask, auth JWT et déploiement.", img: cld("/assets/images/service/api.webp"), features: ["API RESTful Django / Flask", "Auth JWT & gestion des rôles", "Intégration Mobile Money"] },
+  { n: "04", icon: "tools", title: "Maintenance & Support", sub: "Votre projet performant, sécurisé et à jour", desc: "Suivi technique, corrections de bugs, mises à jour de sécurité et améliorations continues.", img: cld("/assets/images/service/maintenence.webp"), features: ["Suivi technique continu", "Mises à jour de sécurité", "Améliorations sur la durée"] },
+  { n: "05", icon: "map-marked-alt", title: "Fiche Google My Business", sub: "Soyez visible sur Google Maps et la recherche locale", desc: "Création ou optimisation de votre fiche Google et suivi mensuel : avis, publications et statistiques.", img: cld("/assets/images/service/fiche-google.webp"), features: ["Création ou optimisation de la fiche", "Description optimisée SEO local", "Suivi mensuel : avis & statistiques"] },
 ];
 
 /* ─── Processus A à Z — de l'acompte à la livraison ─── */
 const PROCESS_STEPS = [
-  { n: "01", title: "Prise de contact & Brief", tag: "1 à 2 jours", desc: "On discute de votre projet : besoins, objectifs, exemples qui vous plaisent. Je vous propose ensuite le pack le plus adapté.", img: "/assets/images/process/prise de contact.webp", imgAlt: "Prise de contact et brief" },
-  { n: "02", title: "Devis & Conditions", tag: "1 jour", desc: "Je vous envoie un devis clair : prix total, acompte de 50%, délai de livraison et liste des prestations incluses.", img: "/assets/images/process/devis et condition.webp", imgAlt: "Devis et conditions" },
-  { n: "03", title: "Acompte reçu", tag: "Feu vert", desc: "Une fois l'acompte versé, je récupère vos contenus — logo, textes, photos — et je lance le développement.", img: "/assets/images/process/acompte.webp", imgAlt: "Acompte reçu" },
-  { n: "04", title: "Création du site", tag: "Délai annoncé", desc: "Je construis votre site de A à Z : pages, design responsive, animations, formulaire de contact, SEO de base. J'active aussi l'hébergement et le nom de domaine.", img: "/assets/images/process/creation du site.webp", imgAlt: "Création du site" },
-  { n: "05", title: "Livraison & Validation", tag: "1 à 2 jours", desc: "Vous testez le site sur un lien de prévisualisation et me partagez vos retours avant la mise en ligne.", img: "/assets/images/process/livraison.webp", imgAlt: "Livraison et validation" },
-  { n: "06", title: "Solde payé", tag: "Fichiers transmis", desc: "Une fois le solde réglé, je vous transmets les fichiers sources, les accès à l'hébergement et au nom de domaine, plus le mot de passe d'administration.", img: "/assets/images/process/solde.webp", imgAlt: "Solde payé" },
-  { n: "07", title: "Mise en ligne & Support", tag: "Projet livré", desc: "Votre site est en ligne. Un mois de support est inclus selon le pack, et je reste disponible pour le renouvellement après la première année.", img: "/assets/images/process/mise en ligne.webp", imgAlt: "Mise en ligne et support" },
+  { n: "01", title: "Prise de contact & Brief", tag: "1 à 2 jours", desc: "On discute de votre projet : besoins, objectifs, exemples qui vous plaisent. Je vous propose ensuite le pack le plus adapté.", img: cld("/assets/images/process/prise de contact.webp"), imgAlt: "Prise de contact et brief" },
+  { n: "02", title: "Devis & Conditions", tag: "1 jour", desc: "Je vous envoie un devis clair : prix total, acompte de 50%, délai de livraison et liste des prestations incluses.", img: cld("/assets/images/process/devis et condition.webp"), imgAlt: "Devis et conditions" },
+  { n: "03", title: "Acompte reçu", tag: "Feu vert", desc: "Une fois l'acompte versé, je récupère vos contenus — logo, textes, photos — et je lance le développement.", img: cld("/assets/images/process/acompte.webp"), imgAlt: "Acompte reçu" },
+  { n: "04", title: "Création du site", tag: "Délai annoncé", desc: "Je construis votre site de A à Z : pages, design responsive, animations, formulaire de contact, SEO de base. J'active aussi l'hébergement et le nom de domaine.", img: cld("/assets/images/process/creation du site.webp"), imgAlt: "Création du site" },
+  { n: "05", title: "Livraison & Validation", tag: "1 à 2 jours", desc: "Vous testez le site sur un lien de prévisualisation et me partagez vos retours avant la mise en ligne.", img: cld("/assets/images/process/livraison.webp"), imgAlt: "Livraison et validation" },
+  { n: "06", title: "Solde payé", tag: "Fichiers transmis", desc: "Une fois le solde réglé, je vous transmets les fichiers sources, les accès à l'hébergement et au nom de domaine, plus le mot de passe d'administration.", img: cld("/assets/images/process/solde.webp"), imgAlt: "Solde payé" },
+  { n: "07", title: "Mise en ligne & Support", tag: "Projet livré", desc: "Votre site est en ligne. Un mois de support est inclus selon le pack, et je reste disponible pour le renouvellement après la première année.", img: cld("/assets/images/process/mise en ligne.webp"), imgAlt: "Mise en ligne et support" },
 ];
 
 /* ─── Questions fréquentes ─── */
@@ -1690,7 +1691,7 @@ const Hero = ({ dark }) => {
 
             <div className="hv4-photo-mob hv4-rv" style={{ '--d': '0.3s' }}>
               <div className="hv4-photo-mob-inner">
-                <img src="/assets/images/IMG_20250124_124101KK.webp" alt="M'Bollo Aka" className={`hv4-photo photo-bw ${heroPhotoColor ? 'photo-bw--on' : ''}`} />
+                <img src={cld("/assets/images/IMG_20250124_124101KK.webp")} alt="M'Bollo Aka" className={`hv4-photo photo-bw ${heroPhotoColor ? 'photo-bw--on' : ''}`} />
                 <div className="hv4-photo-mob-badge"><span className="hero-dot" /><span>disponible</span></div>
               </div>
             </div>
@@ -1733,7 +1734,7 @@ const Hero = ({ dark }) => {
           {/* ════ RIGHT ════ */}
           <div className="hv4-right hv4-rv" style={{ '--d': '0.32s' }} ref={rightRef}>
             <div className="hv4-photo-wrap hv4-photo-wrap--full">
-              <img src="/assets/images/IMG_20250124_124101KK.webp" alt="M'Bollo Aka" className={`hv4-photo hv4-photo--portrait photo-bw ${heroPhotoColor ? 'photo-bw--on' : ''}`} />
+              <img src={cld("/assets/images/IMG_20250124_124101KK.webp")} alt="M'Bollo Aka" className={`hv4-photo hv4-photo--portrait photo-bw ${heroPhotoColor ? 'photo-bw--on' : ''}`} />
               <div className="hv4-photo-overlay">
                 <span><LI name="map-marker-alt" color={dark ? "#aaa" : "#666"} size={12} /> Abidjan, CI</span>
                 <span><LI name="code" color="#ff5500" size={12} /> Full-Stack Dev</span>
@@ -2613,7 +2614,7 @@ const About = ({ dark }) => {
               <div style={{ position: 'relative', zIndex: 1 }}><p>"Ce n'est pas important de réussir du premier coup. L'essentiel est de réussir au final."</p><span>— Kevin Ressegaire</span></div>
             </div>
             <div className="about-img-wrap">
-              <img src="/assets/images/IMG_20250124_124101KK.webp" alt="M'Bollo Aka" className={`about-img photo-bw ${aboutPhotoColor ? 'photo-bw--on' : ''}`} />
+              <img src={cld("/assets/images/IMG_20250124_124101KK.webp")} alt="M'Bollo Aka" className={`about-img photo-bw ${aboutPhotoColor ? 'photo-bw--on' : ''}`} />
               <div className="about-badges"><span><LI name="code" color="#ff5500" size={13} /> Pro</span><span><LI name="lightbulb" color="#ff5500" size={13} /> Créatif</span><span><LI name="eye" color={dark ? "#fff" : "#1a1a1a"} /> Curieux</span></div>
             </div>
           </div>
@@ -3737,7 +3738,7 @@ function AnimatedBeamMobile({ dark }) {
             <div id={centerId} className="mob-node-link" style={{ pointerEvents: 'none' }}>
               <div className="mob-node-circle mob-node-main">
                 <img
-                  src="/assets/images/logo-akatech.webp"
+                  src={cld("/assets/images/logo-akatech.webp")}
                   alt="AKATech"
                   style={{ width: '80px', height: '80px', objectFit: 'contain', borderRadius: '50%' }}
                   onError={e => { e.target.style.display = 'none' }}
@@ -4108,7 +4109,7 @@ const Contact = ({ dark }) => {
               <SpotlightCard style={{ height: '100%' }}>
                 <div className="cv-v2-inner">
                   <div className="cv-v2-qr-wrap">
-                    <img src="/assets/images/qrcodeCV.webp" alt="QR Code CV" className="cv-v2-qr" />
+                    <img src={cld("/assets/images/qrcodeCV.webp")} alt="QR Code CV" className="cv-v2-qr" />
                     <div className="cv-v2-qr-badge"><LI name="mobile-alt" size={12} color="#ff5500" /> Scanner</div>
                   </div>
                   <div className="cv-v2-text">

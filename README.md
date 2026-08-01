@@ -1,5 +1,5 @@
 <div align="center">
-<img src="public/assets/images/logo-akatech.webp" alt="akaTech Logo" width="200" />
+<img src="public/assets/images/logo-akatech.webp" alt="AKATech Logo" width="200" />
 
 <br /><br />
 # AKAFOLIO — M'Bollo Aka

@@ -170,10 +170,10 @@ export const PROJECTS = [
     result: "Livré et en ligne — génère des demandes de contact directement depuis le site."
   },
   {
-    id: 19, title: 'Chez Florence', sub: 'Vente & Réservation de Lapins', cat: 'en-ligne', img: cld('/assets/images/projects/chez-florence-preview.webp'), responsive: cld('/assets/images/projects/chez-florence-responsive.webp'), responsive2: cld('/assets/images/projects/chez-florence-responsive2.webp'), imgFb: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=600', tech: ['Next.js 14', 'Express.js', 'Prisma', 'PostgreSQL (Neon)', 'Cloudinary'], url: 'https://chez-florence.vercel.app/', github: 'https://github.com/wthomasss06-stack/lapinou', desc: "Plateforme de présentation et réservation de lapins pour éleveurs et particuliers : fiches par race, réservation en ligne, stock synchronisé en temps réel et notification WhatsApp automatique.", year: '2026',
-    problem: "Les éleveurs de lapins n'avaient aucune vitrine en ligne pour présenter leurs races et centraliser les réservations.",
-    solution: "App Next.js/Express avec fiches détaillées par race, réservation en ligne (quantité, stock auto-décrémenté) et double notification — email admin et WhatsApp pré-rempli.",
-    result: "PWA installable avec tableau de bord admin (stock, réservations, stats de vente) — livré et en production."
+    id: 19, title: 'Chez Florence', sub: 'Vente & Réservation de Lapins', cat: 'en-ligne', img: cld('/assets/images/projects/chez-florence-preview.webp'), responsive: cld('/assets/images/projects/chez-florence-responsive.webp'), responsive2: cld('/assets/images/projects/chez-florence-responsive2.webp'), imgFb: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=600', tech: ['Next.js 14', 'Express.js', 'Prisma', 'PostgreSQL (Neon)', 'Cloudinary'], url: 'https://chez-florence.vercel.app/', github: 'https://github.com/wthomasss06-stack/lapinou', desc: "Plateforme web complète pour vente et réservation de lapins : fiches par race, stock temps réel, réservation en ligne, notifications WhatsApp et administration sécurisée.", year: '2026',
+    problem: "Les sites d'élevage étaient trop similaires et incapables de convertir les visiteurs en clients tout en gérant le stock et les réservations en temps réel.",
+    solution: "Application Next.js / Express avec fiches détaillées par race, sélection de quantité, stock synchronisé, ouverture automatique de WhatsApp et tableau de bord admin pour gérer les stocks, les réservations et les ventes.",
+    result: "PWA installable en production, centralise les réservations et le stock, rend l'achat plus rapide et automatise la conversion client via WhatsApp et notification admin."  
   },
 ]
 export const PRICING_TABS = [

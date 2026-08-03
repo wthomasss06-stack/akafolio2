@@ -1794,7 +1794,7 @@ const FeaturedCreation = ({ dark }) => {
   return (
     <section id="creations" ref={ref} className={`creations-section ${vis ? 'creations-section--vis' : ''} ${dark ? 'section--dark' : ''}`}>
       <WindowChrome title="Vitrine" dark={dark} />
-      <div className={`s-hd ${dark ? 's-hd--dark' : ''}`}><h2 className="s-ttl">Projets<br />en ligne.</h2></div>
+      <div className={`s-hd ${dark ? 's-hd--dark' : ''}`}><h2 className="s-ttl">Dernieres<br />realistations.</h2></div>
       <div className={`cr-showcase ${fading ? 'cr-showcase--fade' : ''}`}>
         <div className="cr-mockups">
 

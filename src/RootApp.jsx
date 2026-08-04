@@ -26,34 +26,22 @@
 //      --fd, --fb, --muted... avec des valeurs différentes). Les
 //      fichiers pointés sont pré-compilés par
 //      scripts/compile-mode-styles.mjs (voir ce fichier).
-//
-// ── AKATECH V2 (ajout) ────────────────────────────────────────────
-// 4e mode, chargé la même façon (dynamic + ssr:false). Contrairement
-// à app/appmobile, il n'a pas besoin d'un <link> togglé séparément :
-// AKATECH.jsx importe sa propre CSS scopée sous .akatech-root (voir
-// src/akatech/AKATECH.css), donc rien à ajouter ici côté feuilles de
-// style. Il devient le mode PAR DÉFAUT (nouveaux visiteurs + cycle du
-// switcher) ; app/appmobile restent dans le code et dans VALID_MODES
-// (rien de cassé pour quelqu'un qui aurait encore l'ancien mode en
-// localStorage) mais sortent du cycle visible du switcher.
 // ════════════════════════════════════════════════════════════════
 
 import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 
-// ── Les quatre portfolios — chargés à la demande, un seul monté à la fois.
-const AkatechApp = dynamic(() => import('./akatech/AKATECH.jsx'), { ssr: false, loading: () => <RootLoader /> })
-const ModernApp  = dynamic(() => import('./App.jsx'), { ssr: false, loading: () => <RootLoader /> })
-const AppMobile  = dynamic(() => import('./Appmobile.jsx'), { ssr: false, loading: () => <RootLoader /> })
-const Win95App   = dynamic(() => import('./Win95Portfolio.jsx'), { ssr: false, loading: () => <RootLoader /> })
+// ── Les trois portfolios — chargés à la demande, un seul monté à la fois.
+const ModernApp = dynamic(() => import('./App.jsx'), { ssr: false, loading: () => <RootLoader /> })
+const AppMobile = dynamic(() => import('./Appmobile.jsx'), { ssr: false, loading: () => <RootLoader /> })
+const Win95App  = dynamic(() => import('./Win95Portfolio.jsx'), { ssr: false, loading: () => <RootLoader /> })
 
-const MODE_KEY           = 'akafolio-mode'
-const VALID_MODES        = ['akatech', 'app', 'appmobile', 'win95']
+const MODE_KEY         = 'akafolio-mode'
+const VALID_MODES      = ['app', 'appmobile', 'win95']
 const DESKTOP_ONLY_MODES = ['app']
 const MOBILE_ONLY_MODES  = ['appmobile']
-// akatech est responsive dans un seul composant (pas de split desktop/
-// mobile) → un seul cycle, plus besoin de le dédoubler par device.
-const CYCLE = ['akatech', 'win95']
+const DESKTOP_CYCLE    = ['app', 'win95']
+const MOBILE_CYCLE     = ['appmobile', 'win95']
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(
@@ -87,14 +75,20 @@ const switcherStyle = {
   userSelect: 'none', whiteSpace: 'nowrap',
 }
 
-const NEXT_LABEL = {
-  akatech: { label: '🖥 Mode Win95', title: 'Passer au mode Win95' },
-  win95:   { label: '🌐 AKATECH',    title: 'Revenir au portfolio AKATECH' },
+const NEXT_LABEL_DESKTOP = {
+  app:   { label: '🖥 Mode Win95',   title: 'Passer au mode Win95' },
+  win95: { label: '🌐 Mode Moderne', title: 'Revenir au mode moderne' },
 }
 
-function SwitcherBtn({ mode, onToggle }) {
+const NEXT_LABEL_MOBILE = {
+  win95:     { label: '🌐 Mode Moderne', title: 'Passer au portfolio moderne' },
+  appmobile: { label: '🖥 Mode Win95',   title: 'Passer au mode Win95' },
+}
+
+function SwitcherBtn({ mode, isMobile, onToggle }) {
   const [hovered, setHovered] = useState(false)
-  const current = NEXT_LABEL[mode] || NEXT_LABEL.akatech
+  const map     = isMobile ? NEXT_LABEL_MOBILE : NEXT_LABEL_DESKTOP
+  const current = map[mode] || NEXT_LABEL_DESKTOP.app
   return (
     <button
       style={{ ...switcherStyle, background: hovered ? '#d4d4d4' : '#c0c0c0', transition: 'background .1s' }}
@@ -137,12 +131,12 @@ export default function RootApp() {
   const [mode, setMode] = useState(() => {
     const saved = readSavedMode()
     if (saved) return saved
-    return 'akatech'
+    return isMobile ? 'appmobile' : 'app'
   })
 
   useEffect(() => {
     if (!VALID_MODES.includes(mode)) {
-      setMode('akatech')
+      setMode(isMobile ? 'appmobile' : 'app')
       return
     }
     if (isMobile  && DESKTOP_ONLY_MODES.includes(mode)) setMode('appmobile')
@@ -171,9 +165,10 @@ export default function RootApp() {
   }, [mode])
 
   const toggle = () => {
+    const cycle = isMobile ? MOBILE_CYCLE : DESKTOP_CYCLE
     setMode(m => {
-      const idx = CYCLE.indexOf(m)
-      return CYCLE[(idx === -1 ? 0 : idx + 1) % CYCLE.length]
+      const idx = cycle.indexOf(m)
+      return cycle[(idx === -1 ? 0 : idx + 1) % cycle.length]
     })
   }
 
@@ -183,16 +178,14 @@ export default function RootApp() {
           remplace l'injection de <style> par texte (`?inline` Vite).
           Une seule des deux est jamais active : leurs variables --border,
           --fd, --fb, --muted etc. portent les mêmes noms avec des valeurs
-          incompatibles. AKATECH gère sa propre CSS scopée (import direct
-          dans AKATECH.jsx), donc rien à toggler ici pour ce mode. */}
+          incompatibles. */}
       <link rel="stylesheet" href="/styles/style.compiled.css" disabled={mode !== 'app'} />
       <link rel="stylesheet" href="/styles/stylemobile.compiled.css" disabled={mode !== 'appmobile'} />
 
-      {mode === 'akatech'   && <AkatechApp />}
       {mode === 'win95'     && <div style={{ height: '100%' }}><Win95App /></div>}
       {mode === 'appmobile' && <AppMobile />}
       {mode === 'app'       && <ModernApp />}
-      <SwitcherBtn mode={mode} onToggle={toggle} />
+      <SwitcherBtn mode={mode} isMobile={isMobile} onToggle={toggle} />
     </div>
   )
 }

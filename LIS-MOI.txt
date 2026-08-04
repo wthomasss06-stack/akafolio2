@@ -1,0 +1,55 @@
+AKATECH — corrections (seule chose à toucher : 2 fichiers + 1 dépendance)
+══════════════════════════════════════════════════════════════════════════
+
+Seuls AKATECH.css et Navbar.jsx changent. Tout le reste de ton repo (dont
+PageShell.jsx, le système de thème clair/sombre, les 7 pages) n'est pas
+touché — j'ai lu ton état actuel et corrigé par-dessus.
+
+1) INSTALLE LA POLICE (obligatoire, sinon le CSS ne trouve pas le fichier) :
+   npm install @fontsource/bitcount-prop-single
+
+2) REMPLACE ces 2 fichiers dans ton repo :
+   src/akatech/AKATECH.css
+   src/akatech/components/Navbar.jsx
+
+CE QUI ÉTAIT CASSÉ ET POURQUOI
+────────────────────────────────
+• "La page coupée en deux" (ton image1) : PageShell.jsx pose un halo +
+  un quadrillage de fond avec un mask-image qui s'estompe sur un
+  pourcentage de la hauteur de .akatech-page-shell. Ce conteneur n'a
+  pas de hauteur propre — il s'étire pour contenir tout le contenu
+  d'une page (Histoire, Méthode, Projets... plusieurs écrans de haut).
+  Sur une page longue, le dégradé finissait son fondu très loin dans
+  le scroll → ligne de coupure visible pile à cet endroit. Fix : toute
+  la déco est maintenant bornée à 100vh fixe en haut de page, plus
+  jamais dépendante de la hauteur du contenu.
+
+• Le header et le curseur avaient un filter: invert(...) permanent,
+  appliqué sans condition — reste d'une ancienne version avant le
+  passage à un vrai système clair/sombre. Retiré (le thème clair gère
+  maintenant tout via les variables CSS, pas un filtre).
+
+• Menu qui s'ouvre/se ferme de façon imprévisible au scroll : la nav
+  se révélait au survol CSS (:hover) du logo. Avec un header fixed, le
+  curseur reste immobile à l'écran pendant que la page défile dessous
+  — ce qui pouvait déclencher ou couper le survol en pleine action de
+  scroll. Retiré : ouverture au clic uniquement sur le bouton menu,
+  fermeture automatique dès qu'on change de page (y compris via
+  "Continuer à me lire", qui ne passait pas par le même code que les
+  liens de la nav).
+  Au passage : fond du panneau plus opaque + ombre portée, pour qu'il
+  se détache clairement du texte derrière au lieu de faire une tache
+  translucide (visible sur ton image2).
+
+AUTRES CHANGEMENTS DEMANDÉS
+──────────────────────────────
+• Police unique : Bitcount Prop Single, partout (titres, mono, tout).
+  Importée seulement dans AKATECH.css — les 3 autres modes du switcher
+  gardent leurs polices habituelles, rien de partagé n'est touché.
+• Plus de nuances de gris : --text-dim, --elevated-2, --border-strong
+  ajoutés à la palette (dark ET light) ; tous les paragraphes du site
+  utilisent maintenant --text-dim au lieu du --muted plus plat.
+
+VALIDATION
+──────────
+npm install + npm run build passent sans erreur avec la police installée.

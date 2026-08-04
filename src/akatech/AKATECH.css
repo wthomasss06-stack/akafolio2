@@ -1,0 +1,579 @@
+/* ═══════════════════════════════════════════════════════════════
+   AKATECH V2 — Design System
+   ───────────────────────────────────────────────────────────────
+   Scopé sous .akatech-root (les 3 autres modes du switcher
+   partagent le même DOM sans reload, donc rien ici ne doit pouvoir
+   fuiter en dehors de .akatech-root).
+
+   Police unique : Bitcount Prop Single, propre à ce mode (les 3
+   autres gardent leurs polices habituelles) — importée ici plutôt
+   que dans src/fonts.css pour ne pas l'embarquer partout.
+   ═══════════════════════════════════════════════════════════════ */
+@import '@fontsource/bitcount-prop-single/400.css';
+@import '@fontsource/bitcount-prop-single/500.css';
+@import '@fontsource/bitcount-prop-single/600.css';
+@import '@fontsource/bitcount-prop-single/700.css';
+@import '@fontsource/bitcount-prop-single/800.css';
+
+.akatech-root {
+  --bg:          #0A0A0A;
+  --surface:     #131313;
+  --elevated:    #1C1C1C;
+  --elevated-2:  #262626;
+  --text:        #F2EDE8;
+  --text-dim:    #C7C2BC;
+  --muted:       #8C8C8C;
+  --accent:      #FF5500;
+  --accent-dim:  rgba(255, 85, 0, 0.12);
+  --border:      rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --radius:      12px;
+  --radius-sm:   6px;
+  --space:       4vw;
+  --maxw:        1280px;
+  --fd:          'Bitcount Prop Single', sans-serif;
+  --fm:          'Bitcount Prop Single', monospace;
+
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--fd);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* ─── Mode clair ────────────────────────────────────────────────
+   Vraie 2e palette (pas un filter CSS) — chaque variable a son
+   équivalent clair, le reste du fichier ne connaît que var(--*). */
+.akatech-root.akatech-theme-light {
+  --bg:          #F7F0E8;
+  --surface:     #FFFDF9;
+  --elevated:    #F0E4D6;
+  --elevated-2:  #E6D8C6;
+  --text:        #16130F;
+  --text-dim:    #3A342C;
+  --muted:       #6B6259;
+  --accent:      #FF5500;
+  --accent-dim:  rgba(255, 85, 0, 0.14);
+  --border:      rgba(17, 17, 17, 0.12);
+  --border-strong: rgba(17, 17, 17, 0.22);
+}
+
+.akatech-root .akatech-header {
+  background: rgba(10, 10, 10, 0.5);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  transition: background 0.4s ease;
+}
+.akatech-root.akatech-theme-light .akatech-header {
+  background: rgba(247, 240, 232, 0.6);
+}
+
+.akatech-root,
+.akatech-root * {
+  box-sizing: border-box;
+}
+.akatech-root * {
+  margin: 0;
+  padding: 0;
+}
+
+.akatech-root ::selection {
+  background: var(--accent);
+  color: #fff;
+}
+.akatech-root ::-webkit-scrollbar { width: 6px; }
+.akatech-root ::-webkit-scrollbar-track { background: var(--bg); }
+.akatech-root ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+/* ─── Curseur personnalisé (effet Gemini) ──────────────────────
+   Désactivé sur tactile/trackpad sans souris fine : un curseur
+   custom n'a pas de sens sans pointeur précis, et le laisser actif
+   sur mobile crée un point fantôme inutile. */
+.akatech-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 26px;
+  height: 26px;
+  background: var(--text);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 300;
+  mix-blend-mode: difference;
+  transform: translate(-50%, -50%) scale(1);
+  transition: transform 0.15s ease-out;
+  will-change: transform;
+}
+.akatech-cursor.is-hovering {
+  transform: translate(-50%, -50%) scale(2.2);
+}
+@media not all and (hover: hover) and (pointer: fine) {
+  .akatech-cursor { display: none; }
+}
+
+/* ─── Utilitaires ─────────────────────────────────────────────── */
+.akatech-root .container {
+  width: 100%;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 clamp(2rem, 5vw, 4rem);
+}
+.akatech-root .section {
+  padding: clamp(5rem, 12vh, 8rem) 0;
+  position: relative;
+}
+.akatech-page-shell__content {
+  position: relative;
+  z-index: 2;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 3vw, 2rem);
+}
+.akatech-root .accent { color: var(--accent); }
+.akatech-root .muted { color: var(--muted); }
+.akatech-root .mono { font-family: var(--fm); }
+
+/* ─── En-tête fixe (logo + nav empilée à gauche, toggle + contact
+   à droite) — layout repris du fichier de référence Gemini ────── */
+.akatech-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.6rem var(--space);
+  pointer-events: none;
+}
+.akatech-header-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.9rem;
+  pointer-events: auto;
+}
+.akatech-logo-row { display: flex; align-items: center; gap: 0.6rem; }
+
+.akatech-logo-badge {
+  width: 46px;
+  height: 46px;
+  background: var(--accent);
+  border-radius: 12px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #fff;
+  font-family: var(--fd);
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: -0.02em;
+  box-shadow: 0 8px 20px rgba(255, 85, 0, 0.3);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.akatech-logo-badge:hover { transform: scale(1.08) rotate(-4deg); }
+
+.akatech-menu-toggle {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+.akatech-menu-toggle:hover,
+.akatech-menu-toggle[aria-expanded="true"] {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+.akatech-menu-toggle svg { width: 16px; height: 16px; }
+
+.akatech-stacked-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.9rem 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s;
+}
+/* Ouverture au clic uniquement (bouton menu) — pas de :hover ici :
+   avec un header fixed, le curseur reste immobile à l'écran pendant
+   qu'on scrolle la page en dessous, ce qui pouvait déclencher/couper
+   le survol de façon imprévisible pendant le scroll. */
+.akatech-stacked-nav.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.akatech-stacked-nav button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--muted);
+  font-family: var(--fm);
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  transition: color 0.25s ease, transform 0.25s ease;
+  white-space: nowrap;
+}
+.akatech-stacked-nav button:hover,
+.akatech-stacked-nav button.is-active {
+  color: var(--accent);
+  transform: translateX(4px);
+}
+.akatech-stacked-nav .akatech-nav-num { opacity: 0.55; font-size: 0.68rem; }
+
+.akatech-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  pointer-events: auto;
+}
+
+.akatech-toggle-theme {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.35s ease, background 0.25s ease;
+  flex-shrink: 0;
+}
+.akatech-toggle-theme:hover {
+  transform: rotate(180deg);
+  background: rgba(255, 255, 255, 0.12);
+}
+.akatech-toggle-theme svg { width: 18px; height: 18px; }
+
+.akatech-btn-contact {
+  background: var(--text);
+  color: var(--bg);
+  font-family: var(--fd);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.8rem 1.5rem;
+  border-radius: 40px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+.akatech-btn-contact:hover {
+  transform: translateY(-2px);
+  background: var(--accent);
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .akatech-header { padding: 1.1rem 1.1rem; }
+  .akatech-stacked-nav {
+    position: fixed;
+    top: 4.5rem;
+    left: 1.1rem;
+    right: 1.1rem;
+  }
+  .akatech-btn-contact { padding: 0.7rem 1.1rem; font-size: 0.65rem; }
+  .akatech-logo-badge { width: 40px; height: 40px; }
+  .akatech-toggle-theme { width: 38px; height: 38px; }
+}
+
+/* ─── Shell visuel commun des pages ─────────────────────────────
+   BUG corrigé : glow--two utilisait bottom:4rem et le grid inset:0
+   sur .akatech-page-shell — un conteneur qui n'a pas de hauteur
+   propre, il s'étire pour contenir tout le contenu de la page
+   (plusieurs écrans sur Story/Méthode/Projets). Le mask-image du
+   grid fondait donc sur un pourcentage d'une hauteur variable et
+   énorme : sur une page longue, le dégradé finissait son fondu
+   très loin dans le scroll, ce qui dessinait une vraie ligne de
+   coupure visible à cet endroit-là (le "coupé en deux"). Fix :
+   toute la déco est bornée à une zone fixe de 100vh en haut de la
+   page — plus jamais dépendante de la hauteur du contenu. */
+.akatech-page-shell {
+  position: relative;
+  isolation: isolate;
+  padding: clamp(1.5rem, 3vw, 2.5rem) 0 0;
+}
+.akatech-page-shell__content {
+  position: relative;
+  z-index: 2;
+}
+.akatech-page-shell__glow {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(120px);
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 0;
+}
+.akatech-page-shell__glow--one {
+  width: 22rem;
+  height: 22rem;
+  top: -3rem;
+  right: -6rem;
+  background: var(--accent);
+}
+.akatech-page-shell__glow--two {
+  width: 16rem;
+  height: 16rem;
+  top: 32rem;
+  left: -5rem;
+  background: #8b5cf6;
+}
+.akatech-page-shell__grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(180deg, rgba(0,0,0,0.9), transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,0.9), transparent 100%);
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ─── Typo ────────────────────────────────────────────────────── */
+.akatech-root h1,
+.akatech-root h2,
+.akatech-root h3,
+.akatech-root h4 {
+  font-family: var(--fd);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.akatech-root p {
+  color: var(--text-dim);
+  max-width: 55ch;
+}
+.akatech-root a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* ─── Hero (page Home) ──────────────────────────────────────────
+   Typo géante + éléments flottants abstraits en parallax souris —
+   même comportement que le fichier de référence, formes propres à
+   AKATECH plutôt que les visuels stock du gabarit d'origine. */
+.akatech-hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 7rem var(--space) 4rem;
+  overflow: hidden;
+}
+.akatech-hero-title {
+  position: relative;
+  z-index: 2;
+  font-size: clamp(3rem, 10vw, 8.5rem);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+}
+.akatech-hero-shape {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.9;
+}
+.akatech-hero-shape--ring {
+  top: 14%; right: 9%;
+  width: clamp(70px, 11vw, 140px);
+  height: clamp(70px, 11vw, 140px);
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  opacity: 0.5;
+}
+.akatech-hero-shape--square {
+  bottom: 20%; left: 6%;
+  width: clamp(34px, 5vw, 60px);
+  height: clamp(34px, 5vw, 60px);
+  border: 2px solid var(--border);
+  transform: rotate(18deg);
+}
+.akatech-hero-shape--dot {
+  top: 22%; left: 12%;
+  width: 10px; height: 10px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+@media (max-width: 768px) {
+  .akatech-hero-shape { display: none; }
+}
+
+/* ─── Boutons ─────────────────────────────────────────────────── */
+.akatech-root .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.9rem 1.8rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--fd);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: 1.5px solid transparent;
+}
+.akatech-root .btn-fill {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.akatech-root .btn-fill:hover {
+  background: transparent;
+  color: var(--accent);
+}
+.akatech-root .btn-ghost {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--border);
+}
+.akatech-root .btn-ghost:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ─── Grille responsive ───────────────────────────────────────── */
+.akatech-root .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+.akatech-root .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.akatech-root .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+
+@media (max-width: 1024px) {
+  .akatech-root .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .akatech-root { --space: 1.25rem; }
+  .akatech-root .grid-2,
+  .akatech-root .grid-3,
+  .akatech-root .grid-4 { grid-template-columns: 1fr; }
+}
+
+/* ─── Pages : une à la fois, transition à l'entrée ──────────────
+   Remplace l'ancien scroll continu + IntersectionObserver : chaque
+   page est montée seule, on repart en haut au changement (géré en
+   JS dans AKATECH.jsx), et un léger fade-up marque l'arrivée. */
+.akatech-page {
+  animation: akatechPageIn 0.5s ease both;
+}
+@keyframes akatechPageIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .akatech-page { animation: none; }
+}
+
+/* ─── Animations d'entrée génériques ────────────────────────────── */
+@keyframes akatechFadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.akatech-root .anim-fade-up {
+  animation: akatechFadeUp 0.8s ease both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .akatech-root .anim-fade-up { animation: none; }
+}
+
+/* ─── Fin de page : CTA + Footer + "Continuer à me lire" ────────
+   Présent sur les 7 pages, juste avant le composant Footer. */
+.akatech-page-cta {
+  padding: 5rem var(--space) 1rem;
+  text-align: center;
+  border-top: 1px solid var(--border);
+  margin-top: 3rem;
+}
+.akatech-page-cta h3 {
+  font-size: clamp(1.6rem, 4vw, 2.5rem);
+  margin-bottom: 0.75rem;
+}
+.akatech-page-cta p {
+  margin: 0 auto 1.75rem;
+  text-align: center;
+}
+.akatech-page-cta .btn { margin: 0 auto; }
+
+.akatech-continue {
+  width: 100%;
+  padding: 2.25rem var(--space) 2.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--border);
+  cursor: pointer;
+  color: var(--text);
+}
+.akatech-continue-label {
+  font-family: var(--fm);
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.akatech-continue-next {
+  font-family: var(--fd);
+  font-weight: 700;
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  transition: gap 0.25s ease, color 0.25s ease;
+}
+.akatech-continue:hover .akatech-continue-next { gap: 1rem; color: var(--accent); }
+.akatech-continue-arrow { transition: transform 0.25s ease; flex-shrink: 0; }
+.akatech-continue:hover .akatech-continue-arrow { transform: translateY(4px); }
+
+/* ─── Focus clavier visible ────────────────────────────────────
+   Contact.jsx met outline:none en inline style sur les champs —
+   sans ceci, un visiteur au clavier perd toute trace du focus.
+   !important nécessaire : un style inline ne peut pas être
+   surchargé par une règle externe sans lui, même ciblée sur :focus. */
+.akatech-root input:focus,
+.akatech-root select:focus,
+.akatech-root textarea:focus,
+.akatech-root button:focus-visible {
+  border-color: var(--accent) !important;
+  outline: 2px solid var(--accent-dim) !important;
+  outline-offset: 1px;
+}

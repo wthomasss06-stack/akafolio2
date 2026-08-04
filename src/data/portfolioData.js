@@ -480,3 +480,49 @@ export const WRITING_POSTS = [
     url: 'https://www.linkedin.com/posts/m-bollo-aka_faut-arr%C3%AAter-de-confondre-les-choses-un-activity-7450893414918746112-bWWb',
   },
 ]
+
+// ─── AKATECH V2 — nav, méthode, philosophie, bac à sable ─────────
+// Propre au nouveau mode akatech (src/akatech/) : pas consommé par
+// App.jsx / Appmobile.jsx / Win95Portfolio.jsx, ajouté sans toucher
+// à un seul export existant ci-dessus.
+export const NAV_LINKS = [
+  { id: 'home', label: 'Accueil', num: '00', sub: "M'Bollo Aka" },
+  { id: 'story', label: 'Mon histoire', num: '01', sub: 'Pourquoi autodidacte' },
+  { id: 'method', label: 'Ma méthode', num: '02', sub: 'Comment je travaille' },
+  { id: 'projects', label: 'Projets', num: '03', sub: '19 réalisations' },
+  { id: 'sandbox', label: 'Bac à sable', num: '04', sub: 'Expérimentations' },
+  { id: 'services', label: 'Services', num: '05', sub: 'Prestations & tarifs' },
+  { id: 'contact', label: 'Contact', num: '06', sub: 'Discutons' },
+]
+
+export const METHOD_STEPS = [
+  { num: '01', title: 'Une frustration', desc: "Je note une idée, un problème, une remarque d'un client, une opportunité." },
+  { num: '02', title: 'Je cherche', desc: "ChatGPT, Perplexity, Kimi. Je ne cherche pas une réponse, je cherche plusieurs points de vue." },
+  { num: '03', title: 'Je décide', desc: "L'IA propose. Moi je décide. Choix techniques, architecture, UX, animation, business." },
+  { num: '04', title: 'Claude devient mon développeur', desc: "AKATech Skills : un système de prompts organisés (Backend, Frontend, Design) — comme une équipe." },
+  { num: '05', title: 'Je livre vite', desc: "Une V1 imparfaite en ligne vaut mieux qu'une V1 parfaite qui n'existe pas." },
+  { num: '06', title: 'Les utilisateurs décident', desc: "Je pensais… Les utilisateurs ont fait… J'ai changé. Le produit évolue avec les retours." },
+  { num: '07', title: 'Le laboratoire', desc: "Tous mes composants commencent ici. Une animation, un shader, un prototype. Si ça marche, ça rejoint un projet réel." },
+]
+
+// Chapitre 06 : apostrophe dans "qu'il" corrigée en guillemets doubles
+// (l'original en quotes simples cassait la string JS — 'qu'il' se
+// referme après "qu", laissant "il fallait..." comme code invalide).
+export const PHILOSOPHY_CHAPTERS = [
+  { num: '01', before: 'Je pensais que coder vite était le plus important.', after: "Comprendre le problème est plus important que commencer à coder. Aujourd'hui je peux passer des heures sans écrire une ligne." },
+  { num: '02', before: "Je pensais qu'un beau site suffisait.", after: "Un beau site qui ne convertit personne est un échec. Je regarde le temps passé, le taux de clic, le parcours utilisateur." },
+  { num: '03', before: "Je pensais qu'utiliser l'IA faisait de moi un moins bon développeur.", after: "Je ne demande plus à une IA de réfléchir à ma place. Je lui demande d'exécuter plus vite mes idées." },
+  { num: '04', before: 'Je pensais que finir un projet était la priorité.', after: "Je préfère sortir une V1, observer, écouter, puis construire une V2. Les utilisateurs trouvent les problèmes que je n'avais pas imaginés." },
+  { num: '05', before: 'Je pensais que plus un projet était complexe, meilleur il était.', after: "La simplicité est beaucoup plus difficile. Supprimer une fonctionnalité est parfois plus intelligent que d'en ajouter." },
+  { num: '06', before: "Je pensais qu'il fallait maîtriser toutes les technologies.", after: "Je préfère maîtriser une façon de résoudre les problèmes. Les frameworks changent. La logique reste." },
+  { num: '07', before: 'Je pensais que mon portfolio devait montrer ce que je sais.', after: "Je préfère montrer comment je réfléchis. Parce que React s'apprend. La façon de penser, beaucoup moins." },
+]
+
+export const SANDBOX_ITEMS = [
+  { title: 'Mouse Trail', type: 'Prototype', status: 'Actif' },
+  { title: 'Liquid Cursor', type: 'Open Source', status: 'Actif' },
+  { title: 'Glass Morph', type: 'Prototype', status: 'En test' },
+  { title: 'Infinite Gallery', type: 'Open Source', status: 'Actif' },
+  { title: '3D Cards', type: 'Expérience', status: 'En test' },
+  { title: 'AI Chat', type: 'Abandonné', status: 'Archivé' },
+]

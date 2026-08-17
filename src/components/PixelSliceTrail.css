@@ -1,0 +1,140 @@
+.skl-trail-zone {
+  position: relative !important;
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.skl-trail-zone > .pix-slice-trail {
+  position: relative !important;
+  inset: auto !important;
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.skl-trail-zone .skill-hover-grid {
+  position: relative !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  grid-auto-rows: minmax(132px, auto) !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 528px !important;
+  max-height: none !important;
+  margin: 0 !important;
+  overflow: visible !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.skl-trail-zone .skill-hover-tile {
+  position: relative !important;
+  display: flex !important;
+  min-width: 0 !important;
+  min-height: 132px !important;
+  height: auto !important;
+  overflow: hidden !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.skl-trail-zone .skill-hover-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.skl-trail-zone .skl-trail-hint {
+  display: none !important;
+}
+
+@media (max-width: 800px) {
+  .skl-trail-zone .skill-hover-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-auto-rows: minmax(112px, auto) !important;
+    min-height: 448px !important;
+  }
+  .skl-trail-zone .skill-hover-tile { min-height: 112px !important; }
+}
+
+@media (max-width: 520px) {
+  .skl-trail-zone .skill-hover-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-auto-rows: minmax(100px, auto) !important;
+    min-height: 1200px !important;
+  }
+  .skl-trail-zone .skill-hover-tile { min-height: 100px !important; }
+}
+
+/* Thème clair : la grille suit les variables du site au lieu de rester noire. */
+body.light-mode .skl-trail-zone .skill-hover-grid {
+  background: rgba(10, 10, 10, .12) !important;
+  border-color: rgba(10, 10, 10, .16) !important;
+  box-shadow: 0 18px 50px rgba(10, 10, 10, .12) !important;
+}
+body.light-mode .skl-trail-zone .skill-hover-tile {
+  background: #FFFFFF !important;
+  color: var(--text) !important;
+}
+body.light-mode .skl-trail-zone .skill-hover-tile > span {
+  color: rgba(10, 10, 10, .58) !important;
+}
+body.light-mode .skl-trail-zone .skill-hover-tile:hover > span {
+  color: #0A0A0A !important;
+}
+body.light-mode .skl-trail-zone .skill-hover-overlay {
+  background: var(--accent) !important;
+  color: #0A0A0A !important;
+}
+body.light-mode .skl-trail-zone .skill-hover-overlay span {
+  color: #0A0A0A !important;
+}
+
+/* AKATech neo-brutalism : cartes nettes, bordure franche et shadow offset. */
+.skl-trail-zone .skill-hover-grid {
+  gap: 2px !important;
+  border: 2px solid var(--text) !important;
+  border-radius: 0 !important;
+  background: var(--text) !important;
+  box-shadow: 8px 8px 0 var(--accent) !important;
+}
+.skl-trail-zone .skill-hover-tile {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: var(--bg) !important;
+  transition: transform .22s ease, background .22s ease, color .22s ease !important;
+}
+.skl-trail-zone .skill-hover-tile:hover {
+  transform: translate(-3px, -3px) !important;
+  z-index: 3 !important;
+  background: var(--bg) !important;
+}
+.skl-trail-zone .skill-hover-overlay {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: var(--accent) !important;
+}
+.skl-trail-zone .skill-hover-tile > img,
+.skl-trail-zone .skill-hover-overlay img {
+  image-rendering: auto;
+}
+body.light-mode .skl-trail-zone .skill-hover-grid {
+  background: #0A0A0A !important;
+  border-color: #0A0A0A !important;
+  box-shadow: 8px 8px 0 var(--accent) !important;
+}
+body.light-mode .skl-trail-zone .skill-hover-tile {
+  background: #FFFFFF !important;
+}
+@media (max-width: 520px) {
+  .skl-trail-zone .skill-hover-grid { box-shadow: 5px 5px 0 var(--accent) !important; }
+  .skl-trail-zone .skill-hover-tile:hover { transform: translate(-2px, -2px) !important; }
+}

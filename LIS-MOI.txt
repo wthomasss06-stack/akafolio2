@@ -1,0 +1,54 @@
+AKATECH — passage minimaliste
+
+8 fichiers :
+  src/akatech/AKATECH.css
+  src/akatech/components/PageShell.jsx
+  src/akatech/components/SectionHeading.jsx
+  src/akatech/pages/Story.jsx
+  src/akatech/pages/Method.jsx
+  src/akatech/pages/Sandbox.jsx
+  src/akatech/pages/Services.jsx
+  src/akatech/pages/Contact.jsx
+
+DÉCORATION RETIRÉE
+────────────────────
+PageShell ne pose plus le halo + quadrillage de fond — juste un
+passthrough maintenant. Retiré aussi des 5 pages qui l'appelaient
+(Method, Sandbox, Services, Contact, Story) : plus la peine de le
+garder si vide.
+
+TITRES DE SECTION (image1)
+─────────────────────────────
+SectionHeading refait : titre en gros + "/0X" aligné à droite sur la
+même ligne, comme "CREATIVE INSPIRATION_BLOCKS /01". Plus de petit
+label mono au-dessus, plus de ligne d'accent sous le titre.
+
+PARAGRAPHE ÉDITORIAL (image1)
+──────────────────────────────────
+Nouvelle classe .akatech-editorial-p : plus grand que le sous-titre
+de l'en-tête, aligné à droite (margin-left:auto, largeur limitée) —
+appliquée à l'intro de Story, Method, Sandbox, Services.
+
+BOUTONS (image2)
+────────────────────
+.btn-fill refait : pilule dégradée magenta → orange + cercle blanc
+avec flèche, qui pivote à 45° au survol.
+
+"CE QUE J'AI CHANGÉ D'AVIS" RETIRÉ
+───────────────────────────────────────
+Toute la section chapitres philosophiques a disparu de Story.jsx
+(import PHILOSOPHY_CHAPTERS retiré aussi). L'export reste dans
+portfolioData.js au cas où — dis-le si tu veux que je le supprime
+de là aussi.
+
+PARCOURS — animation "Radial Fan Burst" (variante 03 du html)
+───────────────────────────────────────────────────────────────────
+La référence est un jeu de cartes cliquable (une carte s'évente en
+éventail puis s'envole) — adapté ici en entrée au scroll pour la
+liste PARCOURS : chaque ligne démarre tournée + décalée en éventail
+depuis le centre, puis "explose" vers sa position alignée avec un
+effet ressort (back.out), en cascade.
+
+VALIDATION
+──────────
+npm run build passe sans erreur.

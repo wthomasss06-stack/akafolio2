@@ -1,0 +1,60 @@
+# dependencies
+node_modules/
+
+# next.js
+.next/
+out/
+
+# CSS compilées par scripts/compile-mode-styles.mjs — régénérées
+# automatiquement à chaque `npm run dev` / `npm run build` (voir
+# les hooks predev/prebuild dans package.json), inutile de committer.
+/public/styles/*.compiled.css
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# env
+.env
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+bien
+.env.example
+.env.example
+bien
+elvis-portfolio-nextjs.zip
+.gitignore
+fix-hover-lightmode.zip
+elvis-portfolio-nextjsf.zip
+elvis-portfolio-explorer-update.zip
+elvis-portfolio-recent-projects-v2.zip
+elvis-portfolio-fix-cascade-grid.zip
+elvis-portfolio-fix-hero-overlap.zip
+elvis-portfolio-fix-recent-projects.zip
+elvis-portfolio-marquee-cleanup.zip
+elvis-portfolio-neon-flicker.zip
+elvis-portfolio-nextjsnnnnnn.zip
+elvis-portfolio-pcard-unified.zip
+elvis-portfolio-neon-flicker-fix.zip
+hover video.html
+elvis-portfolio-neon-flicker-fix (1).zip
+elvis-portfolio-session-complete.zip
+elvis-portfolio-neon-flicker-fixb.zip
+src/App.jsx
+elvis-portfolio-nextjs2.zip
+public/assets/images/AKATECH STUDIO.zip
+elvis-portfolio-nextjsHHH.zip
+elvis-portfolio-nextjs  a jour.zip

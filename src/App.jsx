@@ -1,0 +1,4265 @@
+﻿'use client'
+
+import { createContext, useContext, useState, useEffect, useRef, useCallback, useMemo, Children, isValidElement, cloneElement } from 'react'
+import './style.css'
+import Shuffle from './components/Shuffle.jsx'
+import AnimatedCounter from './components/AnimatedCounter.jsx'
+import ScrollReveal from './components/ScrollReveal.jsx'
+import TargetCursor from './components/TargetCursor.jsx'
+import TextPressure from './components/TextPressure.jsx'
+import Iridescence from './components/Iridescence.jsx'
+
+// NOTE perf : InfiniteMenu (gl-matrix + shaders) était importé mais jamais rendu
+// nulle part dans ce fichier -> pur poids mort dans le bundle. Retiré.
+import PageTransitionOverlay from './akatech/components/PageTransitionOverlay.jsx'
+// ImageTrail (marquee logos) remplacé par PixelSliceTrail dans SkillsSection —
+// import retiré, le fichier components/ImageTrail.jsx reste disponible si besoin.
+import DissolveTransition, { VERTEX_SHADER, FRONT_FRAGMENT_SHADER, BACK_FRAGMENT_SHADER } from './components/DissolveTransition.jsx'
+import Loader from './components/Loader.jsx'
+import HoverFadeText from './components/HoverFadeText.jsx'
+import PixelSliceTrail from './components/PixelSliceTrail.jsx'
+import CardSwap, { Card } from './components/CardSwap.jsx'
+import FlowingMenu from './components/FlowingMenu.jsx'
+import { PROJECTS, PRICING_TABS, FAQ_ITEMS, WRITING_POSTS, CONTACT } from './data/portfolioData.js'
+
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import StaggeredMenu from './components/StaggeredMenu.jsx'
+import dynamic from 'next/dynamic'
+import ProjectDetailModal from './components/ProjectDetailModal.jsx'
+const HeroZoomSection = dynamic(() => import('./components/HeroZoomSection.jsx'), { ssr: false })
+const ProjectsTunnel = dynamic(() => import('./components/ProjectsTunnel.jsx'), { ssr: false })
+import { cld } from './lib/cloudinary'
+gsap.registerPlugin(ScrollTrigger)
+
+
+const PageTransitionContext = createContext(null)
+
+function hardJumpToSection(sectionId) {
+  const el = document.getElementById(sectionId)
+  if (!el) return
+  const top = el.getBoundingClientRect().top + window.scrollY
+  const root = document.documentElement
+  const previous = root.style.scrollBehavior
+  root.style.scrollBehavior = 'auto'
+  window.scrollTo({ top, left: 0, behavior: 'instant' })
+  root.style.scrollBehavior = previous
+  ScrollTrigger.update()
+}
+
+function usePageTransition() {
+  const transition = useContext(PageTransitionContext)
+  return transition || hardJumpToSection
+}
+
+/* ════════════════════════════════════════════
+ NAV_LINKS — source unique des liens de navigation.
+ Utilisé par le drawer hamburger (Navbar) ET par le
+ footer (Footer), pour qu'ils ciblent TOUJOURS les
+ mêmes id de section, avec le même libellé. Ne plus
+ dupliquer cette liste ailleurs dans le fichier.
+ ════════════════════════════════════════════ */
+const NAV_LINKS = [
+  { id: 'hero', label: 'Accueil', num: '00', sub: 'M\'Bollo Aka' },
+  { id: 'projets-section', label: 'Projets', num: '01', sub: null },  // sub calculé dynamiquement juste après PROJECTS ↓
+  { id: 'about-section', label: 'À propos', num: '02', sub: 'Parcours & stack' },
+  { id: 'process-section', label: 'Process', num: '03', sub: 'De l\'acompte à la livraison' },
+  { id: 'faq-section', label: 'FAQ', num: '04', sub: 'Questions fréquentes' },
+  { id: 'contact', label: 'Contact', num: '05', sub: 'Discutons de ton projet' },
+]
+
+/* ════════════════════════════════════════════
+ SH CYCLE-TEXT — même mécanique que le Menu/Close
+ du StaggeredMenu (textCycleAnim) : pile de lignes
+ dans un viewport overflow:hidden, on glisse en
+ yPercent pour atterrir sur le texte final. Ici on
+ "scramble" les caractères avant l'atterrissage.
+ ════════════════════════════════════════════ */
+const SH_GLITCH_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#+*/=<>'
+
+function shScrambleLine(text) {
+  return text.split('').map(ch => (
+    /[a-zA-Z0-9]/.test(ch) ? SH_GLITCH_CHARS[Math.floor(Math.random() * SH_GLITCH_CHARS.length)] : ch
+  )).join('')
+}
+
+function shBuildCycleSequence(opening, finalText, cycles = 3) {
+  // opening (entrée section)  → atterrit sur le texte réel
+  // closing (sortie section)  → atterrit sur une ligne glitch (texte qui se "dissout")
+  const landing = opening ? finalText : shScrambleLine(finalText)
+  const start = opening ? shScrambleLine(finalText) : finalText
+  const seq = [start]
+  for (let i = 0; i < cycles; i++) seq.push(shScrambleLine(finalText))
+  seq.push(landing)
+  seq.push(landing)
+  return seq
+}
+
+/* Variante sans scramble — même texte répété, pure mécanique de défilement yPercent */
+function shBuildPlainSequence(finalText, cycles = 3) {
+  const seq = []
+  for (let i = 0; i < cycles + 2; i++) seq.push(finalText)
+  return seq
+}
+
+/* Hook : une ligne de texte qui "roule" (yPercent)
+   scramble=true  → glitch chars (pour sh-sub)
+   scramble=false → même texte en boucle (pour sh-title) */
+function useSHCycleText(text, scramble = true) {
+  const innerRef = useRef(null)
+  const tweenRef = useRef(null)
+  const [lines, setLines] = useState([text])
+
+  const play = useCallback((opening = true) => {
+    if (!text) return
+    tweenRef.current?.kill()
+    const seq = scramble
+      ? shBuildCycleSequence(opening, text, 3)
+      : shBuildPlainSequence(text, 3)
+    setLines(seq)
+    requestAnimationFrame(() => {
+      const inner = innerRef.current
+      if (!inner) return
+      gsap.set(inner, { yPercent: 0 })
+      const finalShift = ((seq.length - 1) / seq.length) * 100
+      tweenRef.current = gsap.to(inner, {
+        yPercent: -finalShift,
+        duration: 0.5 + seq.length * 0.07,
+        ease: 'power4.out',
+        overwrite: 'auto',
+      })
+    })
+  }, [text, scramble])
+
+  return { innerRef, lines, play }
+}
+
+/* ════════════════════════════════════════════
+ SH GHOST SCROLL — texte fantôme en contour (stroke)
+ superposé au titre de section. Même mécanique que
+ useSHCycleText (scramble → cycle → texte final,
+ sens inverse à la sortie), piloté par le MÊME
+ IntersectionObserver que titleCyc/subCyc — se
+ déclenche à l'entrée/sortie du viewport, pas au hover.
+ ════════════════════════════════════════════ */
+function useSHGhostScroll(text, cycles = 3) {
+  const innerRef = useRef(null)
+  const tweenRef = useRef(null)
+  const [lines, setLines] = useState([text])
+
+  const play = useCallback((opening = true) => {
+    if (!text) return
+    tweenRef.current?.kill()
+    const seq = shBuildCycleSequence(opening, text, cycles)
+    setLines(seq)
+    requestAnimationFrame(() => {
+      const inner = innerRef.current
+      if (!inner) return
+      gsap.set(inner, { yPercent: 0 })
+      const finalShift = ((seq.length - 1) / seq.length) * 100
+      tweenRef.current = gsap.to(inner, {
+        yPercent: -finalShift,
+        duration: 0.42 + seq.length * 0.055,
+        ease: 'power4.out',
+        overwrite: 'auto',
+      })
+    })
+  }, [text, cycles])
+
+  return { innerRef, lines, play }
+}
+
+/* ════════════════════════════════════════════
+ HERO NAME CYCLE — même texte qui défile (plain)
+ déclenché par IntersectionObserver sur le hero
+ ════════════════════════════════════════════ */
+function useSHNameCycle(text) {
+  const innerRef = useRef(null)
+  const tweenRef = useRef(null)
+  const [lines, setLines] = useState([text])
+  const hasEnteredRef = useRef(false)
+
+  const play = useCallback((opening = true) => {
+    if (!text) return
+    tweenRef.current?.kill()
+    const seq = shBuildPlainSequence(text, 3)
+    setLines(seq)
+    requestAnimationFrame(() => {
+      const inner = innerRef.current
+      if (!inner) return
+      gsap.set(inner, { yPercent: 0 })
+      const finalShift = ((seq.length - 1) / seq.length) * 100
+      tweenRef.current = gsap.to(inner, {
+        yPercent: -finalShift,
+        duration: 0.55 + seq.length * 0.08,
+        ease: 'power4.out',
+        overwrite: 'auto',
+      })
+    })
+  }, [text])
+
+  useEffect(() => {
+    const el = innerRef.current?.closest('#hero')
+    if (!el) return
+    const io = new IntersectionObserver(entries => entries.forEach(entry => {
+      if (entry.isIntersecting) { hasEnteredRef.current = true; play(true) }
+      else if (hasEnteredRef.current) { play(false) }
+    }), { threshold: 0.3 })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [play])
+
+  return { innerRef, lines }
+}
+
+/* ════════════════════════════════════════════
+ HERO ROTATING CYCLE — tourne en boucle auto
+ entre plusieurs mots (scramble glitch chars)
+ ════════════════════════════════════════════ */
+function useSHRotatingCycle(texts, interval = 2500) {
+  const innerRef = useRef(null)
+  const tweenRef = useRef(null)
+  const idxRef = useRef(0)
+  const [lines, setLines] = useState([texts[0]])
+
+  const runCycle = useCallback(() => {
+    const text = texts[idxRef.current]
+    tweenRef.current?.kill()
+    const seq = shBuildCycleSequence(true, text, 2)
+    setLines(seq)
+    requestAnimationFrame(() => {
+      const inner = innerRef.current
+      if (!inner) return
+      gsap.set(inner, { yPercent: 0 })
+      const finalShift = ((seq.length - 1) / seq.length) * 100
+      tweenRef.current = gsap.to(inner, {
+        yPercent: -finalShift,
+        duration: 0.45 + seq.length * 0.06,
+        ease: 'power4.out',
+        overwrite: 'auto',
+      })
+    })
+  }, [texts])
+
+  useEffect(() => {
+    runCycle()
+    const timer = setInterval(() => {
+      idxRef.current = (idxRef.current + 1) % texts.length
+      runCycle()
+    }, interval)
+    return () => clearInterval(timer)
+  }, [runCycle, texts, interval])
+
+  return { innerRef, lines }
+}
+
+function GhostParticleText({ text = '', className = '' }) {
+  const rootRef = useRef(null)
+  const safeText = text || ''
+  const stateRef = useRef({
+    origTxt: safeText,
+    origChars: safeText.split(''),
+    isAnim: false,
+    isHover: false,
+    waves: [],
+    animId: null,
+    cursorPos: 0,
+    origW: null,
+    dur: 900,
+    chars: '*+;·:. ',
+    preserveSpaces: true,
+    spread: 1.0,
+  })
+
+  useEffect(() => {
+    const el = rootRef.current
+    if (!el || !safeText) return
+
+    const state = stateRef.current
+    state.origTxt = safeText
+    state.origChars = safeText.split('')
+    el.textContent = safeText
+
+    const updateCursorPos = (e) => {
+      const rect = el.getBoundingClientRect()
+      const x = e.clientX - rect.left
+      const len = state.origChars.length
+      const pos = Math.round((x / rect.width) * len)
+      state.cursorPos = Math.max(0, Math.min(pos, len - 1))
+    }
+
+    const stop = () => {
+      el.textContent = state.origTxt
+      state.isAnim = false
+      if (state.animId) {
+        cancelAnimationFrame(state.animId)
+        state.animId = null
+      }
+      if (state.origW !== null) {
+        el.style.width = ''
+        state.origW = null
+      }
+    }
+
+    const calcWaveEffect = (charIdx, t) => {
+      let resultChar = state.origChars[charIdx]
+      let shouldAnim = false
+      for (const wave of state.waves) {
+        const age = t - wave.startTime
+        const prog = Math.min(age / state.dur, 1)
+        const dist = Math.abs(charIdx - wave.startPos)
+        const maxDist = Math.max(wave.startPos, state.origChars.length - wave.startPos - 1)
+        const rad = (prog * (maxDist + 5)) / state.spread
+        if (dist <= rad) {
+          shouldAnim = true
+          const intens = Math.max(0, rad - dist)
+          if (intens <= 3 && intens > 0) {
+            const index = (dist * 3 + Math.floor(age / 40)) % state.chars.length
+            resultChar = state.chars[index]
+          }
+        }
+      }
+      return { shouldAnim, char: resultChar }
+    }
+
+    const genScrambledTxt = (t) => state.origChars
+      .map((ch, i) => {
+        if (state.preserveSpaces && ch === ' ') return ' '
+        const { shouldAnim, char } = calcWaveEffect(i, t)
+        return shouldAnim ? char : ch
+      })
+      .join('')
+
+    const animate = () => {
+      const now = Date.now()
+      state.waves = state.waves.filter(w => now - w.startTime < state.dur)
+      if (state.waves.length === 0) {
+        stop()
+        return
+      }
+      el.textContent = genScrambledTxt(now)
+      state.animId = requestAnimationFrame(animate)
+    }
+
+    const start = () => {
+      if (state.isAnim) return
+      if (state.origW === null) {
+        state.origW = el.getBoundingClientRect().width
+        el.style.width = `${state.origW}px`
+      }
+      state.isAnim = true
+      state.animId = requestAnimationFrame(animate)
+    }
+
+    const startWave = () => {
+      state.waves.push({ startPos: state.cursorPos, startTime: Date.now() })
+      if (!state.isAnim) start()
+    }
+
+    const onMouseEnter = (e) => {
+      state.isHover = true
+      updateCursorPos(e)
+      startWave()
+    }
+
+    const onMouseMove = (e) => {
+      if (!state.isHover) return
+      const previous = state.cursorPos
+      updateCursorPos(e)
+      if (state.cursorPos !== previous) startWave()
+    }
+
+    const onMouseLeave = () => {
+      state.isHover = false
+    }
+
+    el.addEventListener('mouseenter', onMouseEnter)
+    el.addEventListener('mousemove', onMouseMove)
+    el.addEventListener('mouseleave', onMouseLeave)
+
+    return () => {
+      el.removeEventListener('mouseenter', onMouseEnter)
+      el.removeEventListener('mousemove', onMouseMove)
+      el.removeEventListener('mouseleave', onMouseLeave)
+      if (state.animId) cancelAnimationFrame(state.animId)
+    }
+  }, [text])
+
+  return (
+    <span
+      ref={rootRef}
+      className={`ascii-ripple ${className}`}
+      data-variant="ghost"
+      data-dur="900"
+      data-spread="1.0"
+      data-chars="*+;·:. "
+      aria-hidden="true"
+    >
+      {text}
+    </span>
+  )
+}
+
+/* ════════════════════════════════════════════
+ SECTION HEADING — num + titre + sous-titre
+ Miroir visuel du drawer hamburger dans la page
+ Titre/sous-titre se "décodent" (cycle-text) à
+ chaque entrée de la section dans le viewport
+ ════════════════════════════════════════════ */
+function SectionHeading({ num, title, sub, subAs = 'h2', className = '', style = {}, kinetic = true }) {
+  const Sub = subAs === 'h2' ? 'h2' : 'p'
+  const wrapRef = useRef(null)
+  const titleElRef = useRef(null)
+  const subCyc = useSHCycleText(sub, true)    // garde le scramble de caractères
+
+  useEffect(() => {
+    const el = wrapRef.current
+    if (!el) return
+    let hasEntered = false
+    const io = new IntersectionObserver(
+      entries => entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          hasEntered = true
+          subCyc.play(true)
+        } else if (hasEntered) {
+          // sortie de section (scroll monte ou descend) → cycle en sens inverse
+          subCyc.play(false)
+        }
+      }),
+      { threshold: 0.4, rootMargin: '0px 0px -10% 0px' }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [subCyc.play])
+
+  /* ── Effet "LA CINÉTIQUE" — le grand titre glisse de la gauche
+     vers la droite en fonction du scroll (GSAP ScrollTrigger scrub,
+     comme .marquee-container dans le prototype HTML de référence).
+     Départ poussé loin à gauche (xPercent -65) et arrivée poussée
+     loin à droite (xPercent 65) pour un glissement beaucoup plus
+     marqué, presque jusqu'au bord de l'écran (body est en
+     overflow-x:hidden, pas de scrollbar horizontale parasite).
+     Fenêtre de scroll resserrée (start/end à 85%/15% du viewport
+     au lieu de top bottom/bottom top) pour que le glissement se
+     joue plus vite, concentré sur le passage central du titre.
+     Ancré sur le passage du titre lui-même dans le viewport
+     (pas sur toute la section, souvent bien plus haute) pour que le
+     glissement reste visible à chaque fois, quelle que soit la
+     hauteur de la section. Désactivable via kinetic={false}
+     (ex. section Stack, laissée telle quelle). ── */
+  useEffect(() => {
+    if (!kinetic || !title) return
+    const titleEl = titleElRef.current
+    const wrapEl = wrapRef.current
+    if (!titleEl || !wrapEl) return
+
+    gsap.set(titleEl, { xPercent: -65 })
+    const tween = gsap.to(titleEl, {
+      xPercent: 65,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: wrapEl,
+        start: 'top 85%',
+        end: 'bottom 15%',
+        scrub: true,
+      },
+    })
+    return () => {
+      tween.scrollTrigger?.kill()
+      tween.kill()
+      gsap.set(titleEl, { xPercent: 0 })
+    }
+  }, [kinetic, title])
+
+  return (
+    <div className={`sh-wrap ${className}`} style={style} ref={wrapRef}>
+      <span className="sh-num">{num}</span>
+      <div className="sh-body">
+        <h2 className="sh-title" ref={titleElRef} aria-label={title}>
+          <GhostParticleText text={title} className="ascii-ripple sh-title-particle" />
+        </h2>
+        {sub && (
+          <Sub className="sh-sub">
+            <span className="sh-cycle-wrap">
+              <span className="sh-cycle-inner" ref={subCyc.innerRef}>
+                {subCyc.lines.map((l, i) => <span className="sh-cycle-line" key={i}>{l}</span>)}
+              </span>
+            </span>
+          </Sub>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/* ════════════════════════════════════════════
+ ANIMATED SVG ICONS (replaces emojis)
+ ════════════════════════════════════════════ */
+const AnimIcon = ({ type, size = 15, color = '#FF5500', className = '' }) => {
+  const icons = {
+    globe: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" className={`anim-icon ${className}`}><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg>,
+    monitor: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" className={`anim-icon ${className}`}><rect x="2" y="3" width="20" height="14" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>,
+    tool: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" className={`anim-icon ${className}`}><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>,
+    grad: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" className={`anim-icon ${className}`}><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" /></svg>,
+    rocket: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" className={`anim-icon ${className}`}><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" /><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" /><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" /><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" /></svg>,
+    x: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" className={`anim-icon ${className}`}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>,
+    warn: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" className={`anim-icon ${className}`}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>,
+    plus: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" className={`anim-icon ${className}`}><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>,
+    clock: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" className={`anim-icon ${className}`}><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>,
+    shield: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" className={`anim-icon ${className}`}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>,
+    star: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" className={`anim-icon ${className}`}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>,
+    check: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" className={`anim-icon ${className}`}><polyline points="20 6 9 17 4 12" /></svg>,
+    zap: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" className={`anim-icon ${className}`}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>,
+    github: <svg width={size} height={size} viewBox="0 0 24 24" fill={color} className={`anim-icon ${className}`}><path d="M12 .5C5.73.5.98 5.24.98 11.52c0 5.02 3.26 9.28 7.78 10.78.57.1.78-.25.78-.55 0-.27-.01-1.16-.02-2.1-3.17.69-3.84-1.36-3.84-1.36-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.75 1.18 1.75 1.18 1.02 1.75 2.68 1.24 3.33.95.1-.74.4-1.24.72-1.53-2.53-.29-5.19-1.27-5.19-5.63 0-1.24.44-2.26 1.17-3.06-.12-.29-.51-1.45.11-3.02 0 0 .96-.31 3.14 1.17a10.9 10.9 0 0 1 5.72 0c2.18-1.48 3.14-1.17 3.14-1.17.62 1.57.23 2.73.11 3.02.73.8 1.17 1.82 1.17 3.06 0 4.37-2.67 5.34-5.21 5.62.41.36.77 1.06.77 2.14 0 1.55-.01 2.79-.01 3.17 0 .3.2.66.79.55 4.52-1.51 7.77-5.77 7.77-10.79C23.02 5.24 18.27.5 12 .5z" /></svg>,
+    lock: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={`anim-icon ${className}`}><rect x="3" y="11" width="18" height="10" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>,
+    flip: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={`anim-icon ${className}`}><path d="M17 2.1l4 4-4 4" /><path d="M3 12.6v-2a4 4 0 0 1 4-4h14" /><path d="M7 21.9l-4-4 4-4" /><path d="M21 11.4v2a4 4 0 0 1-4 4H3" /></svg>,
+    compass: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={`anim-icon ${className}`}><circle cx="12" cy="12" r="10" /><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" /></svg>,
+  }
+  return icons[type] || null
+}
+
+/* ════════════════════════════════════════════
+ TECH ICONS — remplace le texte des pills fc-tag par les icônes
+ devicon déjà présentes dans /public/assets/icons/devicon/ (même
+ dossier utilisé par SKILLS plus bas). Matching par mot-clé, du plus
+ spécifique au plus générique, sur le libellé brut du projet (qui peut
+ être composé, ex. "HTML / Tailwind CSS"). Si aucune correspondance
+ fiable, ou si l'icône ne charge pas, on retombe sur le texte — jamais
+ d'icône cassée affichée. ════════════════════════════════════════════ */
+const TECH_ICON_RULES = [
+  ['next.js', '/assets/icons/devicon/nextjs/nextjs-original.svg'],
+  ['nodejs', '/assets/icons/devicon/nodejs/nodejs-original.svg'],
+  ['node.js', '/assets/icons/devicon/nodejs/nodejs-original.svg'],
+  ['express', '/assets/icons/devicon/express/express-original.svg'],
+  ['chart.js', '/assets/icons/devicon/chartjs/chartjs-original.svg'],
+  ['django rest', '/assets/icons/devicon/django/django-plain.svg'],
+  ['django', '/assets/icons/devicon/django/django-plain.svg'],
+  ['flask', '/assets/icons/devicon/flask/flask-original.svg'],
+  ['python', '/assets/icons/devicon/python/python-original.svg'],
+  ['postgresql', '/assets/icons/devicon/postgresql/postgresql-original.svg'],
+  ['mysql', '/assets/icons/devicon/mysql/mysql-original.svg'],
+  ['redis', '/assets/icons/devicon/redis/redis-original.svg'],
+  ['react router', '/assets/icons/devicon/reactrouter/reactrouter-original.svg'],
+  ['tailwind', '/assets/icons/devicon/tailwindcss/tailwindcss-original.svg'],
+  ['bootstrap', '/assets/icons/devicon/bootstrap/bootstrap-original.svg'],
+  ['bulma', '/assets/icons/devicon/bulma/bulma-plain.svg'],
+  ['framer motion', '/assets/icons/devicon/framermotion/framermotion-original.svg'],
+  ['vite', '/assets/icons/devicon/vitejs/vitejs-original.svg'],
+  ['react', '/assets/icons/devicon/react/react-original.svg'],
+  ['vercel', '/assets/icons/devicon/vercel/vercel-original.svg'],
+  ['github', '/assets/icons/devicon/github/github-original.svg'],
+  ['prisma', '/assets/icons/devicon/prisma/prisma-original.svg'],
+  ['html', '/assets/icons/devicon/html5/html5-original.svg'],
+  ['css', '/assets/icons/devicon/css3/css3-original.svg'],
+  ['javascript', '/assets/icons/devicon/javascript/javascript-original.svg'],
+  ['git', '/assets/icons/devicon/git/git-original.svg'],
+  // Set Simple Icons (logo officiel injecté en fill, devicon ne les propose pas)
+  ['cloudinary', '/assets/icons/simple-icons/cloudinary.svg'],
+  ['gsap', '/assets/icons/simple-icons/gsap.svg'],
+  ['leaflet', '/assets/icons/simple-icons/leaflet.svg'],
+  ['webgl', '/assets/icons/simple-icons/webgl.svg'],
+  // Set custom — pictogrammes maison (aucun logo officiel n'existe pour ces API/libs)
+  ['camera api', '/assets/icons/custom/camera-api.svg'],
+  ['canvas api', '/assets/icons/custom/canvas-api.svg'],
+  ['emailjs', '/assets/icons/custom/emailjs.svg'],
+  ['geolocation', '/assets/icons/custom/geolocation-api.svg'],
+  ['howler', '/assets/icons/custom/howlerjs.svg'],
+  ['localstorage', '/assets/icons/custom/localstorage.svg'],
+  ['osrm', '/assets/icons/custom/osrm-api.svg'],
+  ['websocket', '/assets/icons/custom/websockets.svg'],
+]
+
+function resolveTechIcon(label) {
+  const low = label.toLowerCase()
+  const rule = TECH_ICON_RULES.find(([key]) => low.includes(key))
+  return rule ? rule[1] : null
+}
+
+function TechTag({ label }) {
+  const iconSrc = useMemo(() => resolveTechIcon(label), [label])
+  const [broken, setBroken] = useState(false)
+
+  if (!iconSrc || broken) {
+    return <span className="fc-tag">{label}</span>
+  }
+  return (
+    <span className="fc-tag fc-tag--icon" title={label}>
+      <img src={iconSrc} alt={label} loading="lazy" onError={() => setBroken(true)} />
+    </span>
+  )
+}
+
+/* ════════════════════════════════════════════
+ HORIZONTAL PARALLAX SCROLL — prochain.html style
+ Scroll vertical → translation horizontale des slides
+ + titres qui glissent en contre-sens (parallax heading)
+ ════════════════════════════════════════════ */
+const HPSLIDES = [
+  { word: 'REACT', color: '#61DAFB', icon: '/assets/icons/devicon/react/react-original.svg', label: 'Frontend Library' },
+  { word: 'JAVASCRIPT', color: '#F7DF1E', icon: '/assets/icons/devicon/javascript/javascript-original.svg', label: 'Langage Universel' },
+  { word: 'NEXT.JS', color: '#F2EDE8', lightColor: '#1A1A1A', icon: '/assets/icons/devicon/nextjs/nextjs-original.svg', label: 'React Framework' },
+  { word: 'GSAP', color: '#0AE448', icon: '/assets/icons/simple-icons/gsap.svg', label: 'Animations & ScrollTrigger' },
+  { word: 'WEBGL', color: '#990000', icon: '/assets/icons/simple-icons/webgl.svg', label: 'Rendu 3D Temps Réel' },
+  { word: 'PYTHON', color: '#4B8BBE', icon: '/assets/icons/devicon/python/python-original.svg', label: 'Backend & Data' },
+  { word: 'DJANGO', color: '#44B78B', icon: '/assets/icons/devicon/django/django-plain.svg', label: 'Web Framework' },
+  { word: 'MYSQL', color: '#F29111', icon: '/assets/icons/devicon/mysql/mysql-original.svg', label: 'Base de Données' },
+]
+
+function HorizontalParallax() {
+  const sectionRef = useRef(null)
+  const trackRef = useRef(null)
+
+  useEffect(() => {
+    const section = sectionRef.current
+    const track = trackRef.current
+    if (!section || !track) return
+
+    const headings = track.querySelectorAll('.hpx-word')
+    const totalSlides = headings.length
+
+    const update = () => {
+      const rect = section.getBoundingClientRect()
+      const sectionH = section.offsetHeight
+      const viewH = window.innerHeight
+      let progress = -rect.top / (sectionH - viewH)
+      progress = Math.max(0, Math.min(1, progress))
+
+      /* ── 1. Translation horizontale du carrousel ── */
+      const maxVW = (totalSlides - 1) * 100
+      track.style.transform = `translateX(-${progress * maxVW}vw)`
+
+      /* ── 2. Parallax heading — chaque titre glisse en contre-sens ── */
+      const seg = 1 / totalSlides
+      headings.forEach((h, i) => {
+        const start = i * seg
+        const end = (i + 1) * seg
+        let xOffset
+        if (progress >= start && progress <= end) {
+          const local = (progress - start) / seg // 0 → 1 dans la slide
+          xOffset = 600 - local * 1200 // +600px → -600px
+        } else if (progress < start) {
+          xOffset = 600
+        } else {
+          xOffset = -600
+        }
+        h.style.transform = `translateX(${xOffset}px)`
+      })
+    }
+
+    window.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update)
+    update()
+    return () => {
+      window.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
+    }
+  }, [])
+
+  return (
+    <section ref={sectionRef} id="hpx-section" className="hpx-section">
+      {/* Zone sticky : l'écran reste figé, le carrousel glisse */}
+      <div className="hpx-sticky">
+        <ul ref={trackRef} id="hpx-track" className="hpx-track">
+          {HPSLIDES.map((s, i) => (
+            <li key={i} className="hpx-slide" style={{ '--hpx-color': s.color, '--hpx-color-light': s.lightColor || s.color }}>
+              {/* Grille de fond */}
+              <div className="hpx-slide-grid" />
+
+              {/* Titre géant — parallax heading contre-sens */}
+              <h2 className="hpx-word" style={{ color: s.color }}>{s.word}</h2>
+
+              {/* Logo tech centré — remplace les images Unsplash */}
+              <div className="hpx-logo-wrap" style={{ '--glow': s.color }}>
+                <img
+                  src={s.icon}
+                  alt={s.word}
+                  className="hpx-logo-img"
+                  loading="lazy"
+                  onError={e => { e.target.style.opacity = '0' }}
+                />
+              </div>
+
+              {/* Label sous-titre */}
+              <span className="hpx-sublabel" style={{ color: s.color }}>{s.label}</span>
+
+              {/* Numéro de slide */}
+              <span className="hpx-num">0{i + 1}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+/* ════════════════════════════════════════════
+ GSAP MAGNETIC BUTTON HOOK
+ ════════════════════════════════════════════ */
+function useMagneticButtons() {
+  useEffect(() => {
+    // Délai court pour laisser tous les enfants React se monter en prod
+    const timer = setTimeout(() => {
+      const els = document.querySelectorAll('.btn-fill, .btn-ghost, .mag-btn')
+      const cleanups = []
+      els.forEach(el => {
+        const onMove = e => {
+          const rect = el.getBoundingClientRect()
+          const x = e.clientX - rect.left - rect.width / 2
+          const y = e.clientY - rect.top - rect.height / 2
+          gsap.to(el, { x: x * 0.28, y: y * 0.28, duration: 0.35, ease: 'power3.out' })
+        }
+        const onLeave = () => gsap.to(el, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1,0.5)' })
+        el.addEventListener('mousemove', onMove)
+        el.addEventListener('mouseleave', onLeave)
+        cleanups.push(() => { el.removeEventListener('mousemove', onMove); el.removeEventListener('mouseleave', onLeave) })
+      })
+      // Stocker les cleanups dans le ref pour le retour
+      timerRef._cleanups = cleanups
+    }, 300)
+    const timerRef = { _cleanups: [] }
+    return () => {
+      clearTimeout(timer)
+      timerRef._cleanups.forEach(fn => fn())
+    }
+  }, [])
+}
+
+/* ════════════════════════════════════════════
+ GSAP SCROLL ANIMATIONS HOOK
+ ════════════════════════════════════════════ */
+function useScrollAnimations() {
+  useEffect(() => {
+    // ─── FIX PROD ────────────────────────────────────────────────────────────
+    // En prod (bundle Vite), React monte App et déclenche useEffect AVANT que
+    // Hero/About/Timeline etc. aient peuplé le DOM → gsap.utils.toArray retourne [].
+    // Fix : double rAF + délai 100ms + retry automatique si aucun élément trouvé.
+    // ─────────────────────────────────────────────────────────────────────────
+    let killed = false
+
+    const initAnimations = () => {
+      if (killed) return
+      const hasElements = document.querySelector(
+        '.gs-reveal, .gs-stagger, .gs-skill, .gs-title, .gs-card, .gs-timeline-item, .gs-counter, .gs-line, .about-text-lg'
+      )
+      if (!hasElements) {
+        setTimeout(() => { if (!killed) initAnimations() }, 500)
+        return
+      }
+      /* Fade + slide up for generic reveal elements */
+      // filter/blur retire : anime en continu a chaque frame de la
+      // transition (recalcul du flou), plus couteux qu'opacity/y qui
+      // passent par le compositeur GPU sans repeindre le flou a chaque
+      // etape - rendu final identique, juste sans le flou de depart.
+      gsap.utils.toArray('.gs-reveal').forEach(el => {
+        gsap.fromTo(el,
+          { opacity: 0, y: 48 },
+          {
+            opacity: 1, y: 0, duration: 0.9, ease: 'power3.out',
+            scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none reverse' }
+          }
+        )
+      })
+      /* Stagger children groups */
+      gsap.utils.toArray('.gs-stagger').forEach(parent => {
+        gsap.fromTo(parent.children,
+          { opacity: 0, y: 32, scale: 0.96 },
+          {
+            opacity: 1, y: 0, scale: 1, duration: 0.72, ease: 'power3.out', stagger: 0.1,
+            scrollTrigger: { trigger: parent, start: 'top 85%', toggleActions: 'play none none reverse' }
+          }
+        )
+      })
+      /* Skill icons — bounce in */
+      gsap.utils.toArray('.gs-skill').forEach((el, i) => {
+        gsap.fromTo(el,
+          { opacity: 0, y: 20, scale: 0.8, rotation: -8 },
+          {
+            opacity: 1, y: 0, scale: 1, rotation: 0, duration: 0.55,
+            ease: 'back.out(1.8)', delay: i * 0.04,
+            scrollTrigger: { trigger: el, start: 'top 92%', toggleActions: 'play none none reverse' }
+          }
+        )
+      })
+      /* Section titles — clip-path wipe */
+      gsap.utils.toArray('.gs-title').forEach(el => {
+        gsap.fromTo(el,
+          { clipPath: 'inset(100% 0 0 0)', opacity: 0 },
+          {
+            clipPath: 'inset(0% 0 0 0)', opacity: 1, duration: 1.1, ease: 'expo.out',
+            scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none reverse' }
+          }
+        )
+      })
+      /* Pricing cards — cascade */
+      gsap.utils.toArray('.gs-card').forEach((el, i) => {
+        gsap.fromTo(el,
+          { opacity: 0, y: 60, rotateX: 12 },
+          {
+            opacity: 1, y: 0, rotateX: 0, duration: 0.78, ease: 'power3.out', delay: i * 0.12,
+            scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none reverse' }
+          }
+        )
+      })
+      /* Timeline items — slide from left/right alternately */
+      gsap.utils.toArray('.gs-timeline-item').forEach((el, i) => {
+        const fromLeft = i % 2 === 0
+        gsap.fromTo(el,
+          { opacity: 0, x: fromLeft ? -60 : 60, scale: 0.95 },
+          {
+            opacity: 1, x: 0, scale: 1, duration: 0.85, ease: 'power3.out',
+            scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none reverse' }
+          }
+        )
+      })
+      /* Stats counter animation */
+      document.querySelectorAll('.gs-counter').forEach(el => {
+        const target = parseFloat(el.dataset.target)
+        const suffix = el.dataset.suffix || ''
+        const obj = { val: 0 }
+        gsap.to(obj, {
+          val: target, duration: 1.8, ease: 'power2.out',
+          onUpdate: () => { el.textContent = (Number.isInteger(target) ? Math.round(obj.val) : obj.val.toFixed(1)) + suffix },
+          scrollTrigger: { trigger: el, start: 'top 90%', once: true }
+        })
+      })
+      /* Horizontal line drawing */
+      gsap.utils.toArray('.gs-line').forEach(el => {
+        gsap.fromTo(el,
+          { scaleX: 0, transformOrigin: 'left center' },
+          {
+            scaleX: 1, duration: 1.2, ease: 'expo.out',
+            scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none reverse' }
+          }
+        )
+      })
+      /* ── About-text-lg ScrollReveal — texte qui s'illumine au scroll ──
+         :not(.nf-flicker) : les paragraphes About passés dans
+         NeonFlickerText gèrent déjà leur propre reveal (letter-by-
+         letter, scrubbé) ; sans cette exclusion, ce vieux système en
+         background-position tournerait pour rien dessus (le CSS
+         bypass .nf-flicker a de toute façon retiré le background-image
+         qui rendrait ce scrub visible, mais autant ne pas monter un
+         ScrollTrigger scrub inutile). */
+      document.querySelectorAll('.about-text-lg:not(.nf-flicker)').forEach(el => {
+        if (el.dataset.srReveal) return
+        el.dataset.srReveal = '1'
+
+        gsap.fromTo(
+          el,
+          { backgroundPosition: '100% 0' },
+          {
+            backgroundPosition: '0% 0',
+            ease: 'none',
+            scrollTrigger: {
+              trigger: el,
+              start: 'top 90%',
+              end: 'bottom 55%',
+              scrub: 0.8,
+            }
+          }
+        )
+      })
+
+      ScrollTrigger.refresh()
+    }
+
+    let rafId
+    rafId = requestAnimationFrame(() => {
+      rafId = requestAnimationFrame(() => {
+        setTimeout(initAnimations, 100)
+      })
+    })
+
+    /* Filet de sécurité : certains .about-text / .about-text-lg
+    (ex. blocs plus bas dans la page) peuvent être montés après
+    le premier passage ci-dessus. On retente le split + le
+    ScrollTrigger.refresh() une fois la page bien stabilisée,
+    sans toucher aux éléments déjà traités (dataset.srSplit). */
+    const lateTimeoutId = setTimeout(() => {
+      if (killed) return
+      initAnimations()
+    }, 1200)
+
+    return () => {
+      killed = true
+      cancelAnimationFrame(rafId)
+      clearTimeout(lateTimeoutId)
+      ScrollTrigger.getAll().forEach(t => t.kill())
+    }
+  }, [])
+}
+
+/* ════════════════════════════════════════════
+ DONNÉES
+ ════════════════════════════════════════════ */
+NAV_LINKS.find(l => l.id === 'projets-section').sub = `${PROJECTS.length} réalisations`
+
+const SERVICES = [
+  { n: '01', title: 'Applications Web', desc: 'Apps CRUD complètes, dashboards de gestion, solutions sur-mesure.' },
+  { n: '02', title: 'API RESTful', desc: 'APIs Python/Flask documentées, sécurisées, prêtes pour la production.' },
+  { n: '03', title: 'Interfaces Responsives', desc: "Design et intégration d'interfaces modernes et adaptatives." },
+  { n: '04', title: 'Bases de Données', desc: 'Conception et optimisation de bases de données MySQL.' },
+  { n: '05', title: 'Sécurité Applicative', desc: 'Bonnes pratiques de sécurité intégrées dès la conception.' },
+  { n: '06', title: 'Support Technique', desc: 'Maintenance informatique et assistance technique utilisateur.' },
+]
+
+/* ─── Processus A à Z — de l'acompte à la livraison ─── */
+const PROCESS_STEPS = [
+  { n: '01', title: 'Prise de contact & Brief', tag: '1 à 2 jours', desc: "On discute de votre projet : besoins, objectifs, exemples qui vous plaisent. Je vous propose ensuite le pack le plus adapté.", img: cld('/assets/images/process/prise de contact.webp'), imgAlt: 'Prise de contact et brief' },
+  { n: '02', title: 'Devis & Conditions', tag: '1 jour', desc: "Je vous envoie un devis clair : prix total, acompte de 50%, délai de livraison et liste des prestations incluses.", img: cld('/assets/images/process/devis et condition.webp'), imgAlt: 'Devis et conditions' },
+  { n: '03', title: 'Acompte reçu', tag: 'Feu vert', desc: "Une fois l'acompte versé, je récupère vos contenus — logo, textes, photos — et je lance le développement.", img: cld('/assets/images/process/acompte.webp'), imgAlt: 'Acompte reçu' },
+  { n: '04', title: 'Création du site', tag: 'Délai annoncé', desc: "Je construis votre site de A à Z : pages, design responsive, animations, formulaire de contact, SEO de base. J'active aussi l'hébergement et le nom de domaine.", img: cld('/assets/images/process/creation du site.webp'), imgAlt: 'Création du site' },
+  { n: '05', title: 'Livraison & Validation', tag: '1 à 2 jours', desc: "Vous testez le site sur un lien de prévisualisation et me partagez vos retours avant la mise en ligne.", img: cld('/assets/images/process/livraison.webp'), imgAlt: 'Livraison et validation' },
+  { n: '06', title: 'Solde payé', tag: 'Fichiers transmis', desc: "Une fois le solde réglé, je vous transmets les fichiers sources, les accès à l'hébergement et au nom de domaine, plus le mot de passe d'administration.", img: cld('/assets/images/process/solde.webp'), imgAlt: 'Solde payé' },
+  { n: '07', title: 'Mise en ligne & Support', tag: 'Projet livré', desc: "Votre site est en ligne. Un mois de support est inclus selon le pack, et je reste disponible pour le renouvellement après la première année.", img: cld('/assets/images/process/mise en ligne.webp'), imgAlt: 'Mise en ligne et support' },
+]
+
+/* ─── Données pricing — format matrice ───────────────────────────
+   Chaque tab a : plans[] (entête + prix) et rows[] (lignes de features).
+   Chaque cellule peut être : true (check vert) | false (tiret) | 'Limité' | 'Texte'
+   ─────────────────────────────────────────────────────────────────── */
+const SKILLS = {
+  frontend: [
+    { name: 'React', icon: '/assets/icons/devicon/react/react-original.svg', color: '#61DAFB' },
+    { name: 'JavaScript', icon: '/assets/icons/devicon/javascript/javascript-original.svg', color: '#F7DF1E' },
+    { name: 'TypeScript', icon: '/assets/icons/devicon/typescript/typescript-original.svg', color: '#3178C6' },
+    { name: 'Next.js', icon: '/assets/icons/devicon/nextjs/nextjs-original.svg', color: '#ffffff' },
+    { name: 'Tailwind', icon: '/assets/icons/devicon/tailwindcss/tailwindcss-original.svg', color: '#38BDF8' },
+    { name: 'HTML5', icon: '/assets/icons/devicon/html5/html5-original.svg', color: '#E34F26' },
+    { name: 'CSS3', icon: '/assets/icons/devicon/css3/css3-original.svg', color: '#1572B6' },
+    { name: 'Bootstrap', icon: '/assets/icons/devicon/bootstrap/bootstrap-original.svg', color: '#7952B3' },
+    { name: 'GSAP', icon: '/assets/icons/simple-icons/gsap.svg', color: '#0AE448' },
+    { name: 'WebGL', icon: '/assets/icons/simple-icons/webgl.svg', color: '#990000' },
+    { name: 'Chart.js', icon: '/assets/icons/devicon/chartjs/chartjs-original.svg', color: '#FF6384' },
+    { name: 'Leaflet.js', icon: '/assets/icons/simple-icons/leaflet.svg', color: '#199900' },
+  ],
+  backend: [
+    { name: 'Python', icon: '/assets/icons/devicon/python/python-original.svg', color: '#4B8BBE' },
+    { name: 'Flask', icon: '/assets/icons/devicon/flask/flask-original.svg', color: '#AAAAAA' },
+    { name: 'Django', icon: '/assets/icons/devicon/django/django-plain.svg', color: '#44B78B' },
+    { name: 'Node.js', icon: '/assets/icons/devicon/nodejs/nodejs-original.svg', color: '#539E43' },
+    { name: 'Express.js', icon: '/assets/icons/devicon/express/express-original.svg', color: '#444444' },
+    { name: 'MySQL', icon: '/assets/icons/devicon/mysql/mysql-original.svg', color: '#F29111' },
+  ],
+  tools: [
+    { name: 'Git', icon: '/assets/icons/devicon/git/git-original.svg', color: '#F05032' },
+    { name: 'VS Code', icon: '/assets/icons/devicon/vscode/vscode-original.svg', color: '#007ACC' },
+    { name: 'GitHub', icon: '/assets/icons/devicon/github/github-original.svg', color: '#ffffff' },
+    { name: 'Vercel', icon: '/assets/icons/devicon/vercel/vercel-original.svg', color: '#ffffff' },
+    { name: 'Prisma', icon: '/assets/icons/devicon/prisma/prisma-original.svg', color: '#2D3748' },
+    { name: 'Cloudinary', icon: '/assets/icons/simple-icons/cloudinary.svg', color: '#3448C5' },
+  ],
+}
+
+const TIMELINE = [
+  { date: '2025–2026', title: 'Développeur Freelance Fullstack', company: 'AKATech Studio', items: ["Conception et déploiement de +10 Projets web (SaaS, e-commerce, plateformes)", "Développement d'API REST avec Django et Flask", "Mise en place de dashboards et systèmes de gestion de données"], tags: ['Freelance', 'Full-Stack', 'Django', 'React', 'SaaS'] },
+  { date: 'Mai–Nov. 2025', title: 'Informaticien Stagiaire', company: "Mairie d'Agboville", items: ['Maintenance du parc informatique et du réseau', 'Support technique aux utilisateurs', 'Contribution à la gestion et numérisation des données'], tags: ['Maintenance', 'Réseau', 'Support'] },
+  { date: '2023–2024', title: 'Projet Académique – ARTICI', company: 'UVCI', items: ["Plateforme web de promotion de l'artisanat local", "Travail collaboratif en équipe pluridisciplinaire", "Intégration de bonnes pratiques de sécurité"], tags: ['Frontend', 'Backend', 'Sécurité'] },
+  { date: '2023–2024', title: 'Licence Réseau et Sécurité Informatique', company: 'UVCI', items: ['Formation complète en développement web, bases de données et sécurité', 'Certification E-Banking — Réf: CC/24-002485'], tags: ['Diplôme', 'Certification'] },
+  { date: '2020–2021', title: 'Baccalauréat Série D', company: "Lycée Moderne d'Arrah", items: ['Mention : Assez Bien'], tags: ['Diplôme'] },
+]
+
+const ABOUT_IMAGES = [
+  cld('/assets/images/IMG_20250124_124101KK.webp'),
+  cld('/assets/images/moi/93027469_127097918918167_9124333187680436224_n.webp'),
+  cld('/assets/images/moi/CamScanner 24-02-2026 14.43.webp'),
+  cld('/assets/images/moi/CamScanner 24-02-2026 17.16 (1) (1).webp'),
+  cld('/assets/images/moi/ChatGPT Image 26 avr. 2026, 00_44_06.webp'),
+  cld('/assets/images/moi/ChatGPT Image 26 avr. 2026, 00_47_11.webp'),
+  cld('/assets/images/moi/ChatGPT Image 26 avr. 2026, 00_49_13.webp'),
+  cld('/assets/images/moi/ChatGPT Image 26 avr. 2026, 00_52_59.webp'),
+  cld('/assets/images/moi/FB_IMG_17092288705757644.webp'),
+  cld('/assets/images/moi/IMG-20260203-WA0012.webp'),
+  cld('/assets/images/moi/IMG-20260203-WA0014.webp'),
+  cld('/assets/images/moi/IMG-20260222-WA0020.webp'),
+  cld('/assets/images/moi/IMG-20260222-WA0091.webp'),
+  cld('/assets/images/moi/IMG-20260222-WA0096.webp'),
+  cld('/assets/images/moi/IMG-20260222-WA0109.webp'),
+  cld('/assets/images/moi/IMG_20200414_130507_968.webp'),
+  cld('/assets/images/moi/IMG_20200426_182719033.webp'),
+  cld('/assets/images/moi/IMG_20211205_173445935 (2).webp'),
+  cld('/assets/images/moi/IMG_20240331_135514.webp'),
+  cld('/assets/images/moi/IMG_20240404_145052.webp'),
+  cld('/assets/images/moi/IMG_20250604_220919.webp'),
+  cld('/assets/images/moi/IMG_20250608_174833.webp'),
+  cld('/assets/images/moi/Snapchat-1841890434.webp'),
+  cld('/assets/images/moi/Snapchat-304169344-COLLAGE.webp'),
+]
+
+const ABOUT_ITEMS = ABOUT_IMAGES.map(img => ({ image: img, link: '#', title: '', description: '' }))
+
+const TESTIMONIALS = [
+  { name: 'Koné Ibrahima', role: 'Fondateur · TechFlow', avatar: 'K', proj: 'Site Vitrine', text: "Elvis a livré notre site vitrine en un temps record. Design moderne, responsive, exactement ce qu'on voulait. Très professionnel." },
+  { name: 'Calvin Dexter', role: 'Gérant · New Horizon Service', avatar: 'C', proj: 'Location Résidences', text: 'La plateforme de location est impeccable. Les clients peuvent réserver facilement, le backend est solide. Je recommande à 100%.' },
+  { name: 'Mory Koné', role: 'Graphiste · MK Portfolio', avatar: 'M', proj: 'Portfolio Créatif', text: "Mon portfolio reflète parfaitement mon univers créatif. Elvis a su traduire ma vision en une expérience visuelle mémorable." },
+  { name: 'Tatiana D.', role: 'Influenceuse · Tatii', avatar: 'T', proj: 'Portfolio', text: "Super boulot ! Mon site de présentation est élégant, rapide et je reçois beaucoup de compliments. Merci Elvis !" },
+  { name: 'Manobeat 777', role: 'Beatmaker · ManoBeat', avatar: 'B', proj: 'Beat Store', text: "La boutique de beats marche très bien. Les clients achètent facilement via WhatsApp. Interface propre et professionnelle." },
+]
+
+/* ─── FAQ — 6 questions les plus pertinentes avant/pendant une commande ─── */
+
+/* ════════════════════════════════════════════
+ NAVBAR
+ ════════════════════════════════════════════ */
+function Navbar({ theme, onToggleTheme, onToggleExplorer, isExplorerOpen }) {
+  const [activeSection, setActiveSection] = useState('hero')
+  const [clock, setClock] = useState({ date: '', time: '' })
+  const [scrolled, setScrolled] = useState(false)
+  const [inFooterZone, setInFooterZone] = useState(false)
+
+  const navLinks = NAV_LINKS
+
+  /* Regroupe les ids de sous-sections sous l'id de leur lien de nav parent */
+  const SECTION_NAV_GROUPS = {
+    'hero': 'hero',
+    'projets-section': 'projets-section',
+    'hscroll-section': 'projets-section',
+    'hero-dissolve': 'about-section',
+    'about-section': 'about-section',
+    'timeline-section': 'about-section',
+    'hpx-section': 'about-section',
+    'skew-section': 'about-section',
+    'skills-section': 'about-section',
+    'process-section': 'process-section',
+    'services-section': 'process-section',
+    'pricing-section': 'process-section',
+    'testimonials-section': 'process-section',
+    'faq-section': 'faq-section',
+    'cta-dissolve': 'contact',
+    'contact': 'contact',
+  }
+
+  /* Horloge */
+  useEffect(() => {
+    const pad = n => String(n).padStart(2, '0')
+    const MONTHS = ['JAN', 'FEV', 'MAR', 'AVR', 'MAI', 'JUN', 'JUL', 'AOÛ', 'SEP', 'OCT', 'NOV', 'DEC']
+    const tick = () => {
+      const d = new Date()
+      setClock({ date: `${pad(d.getDate())} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`, time: `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}` })
+    }
+    tick(); const iv = setInterval(tick, 1000); return () => clearInterval(iv)
+  }, [])
+
+  const navTo = usePageTransition()
+
+  /* Section active */
+  useEffect(() => {
+    const onScroll = () => {
+      let id = 'hero'
+      document.querySelectorAll('section[id]').forEach(s => {
+        if (window.scrollY >= s.getBoundingClientRect().top + window.scrollY - 160) id = s.id
+      })
+      const atBottom = window.scrollY >= document.documentElement.scrollHeight - window.innerHeight - 2
+      if (atBottom) {
+        const sections = document.querySelectorAll('section[id]')
+        if (sections.length) id = sections[sections.length - 1].id
+      }
+      setActiveSection(SECTION_NAV_GROUPS[id] || id)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  /* ── refs pour la micro-interaction phase 1 ↔ 2 ── */
+  const prevScrolledRef = useRef(false)
+  const leftRef = useRef(null)
+  const centerRef = useRef(null)
+
+  /* Navbar transparent → solid au scroll + micro-animation GSAP.
+     Phase 2 se déclenche quand #projets-section a suffisamment avancé
+     dans le viewport (son haut passe sous les 55% hauts de l'écran,
+     donc le hero est entièrement recouvert) — et RESTE en phase 2 pour
+     tout le reste du scroll, jusqu'au footer inclus.
+     Volontairement PAS une IntersectionObserver sur 'is-currently-
+     visible' : ça redeviendrait faux dès qu'on scrolle plus loin que
+     #projets-section (about/process/faq/contact...), et la navbar
+     repartirait à tort en phase 1 en pleine page contact. Ici on compare
+     juste rect.top au seuil à chaque scroll : une fois #projets-section
+     dépassée, rect.top est négatif et reste 'sous' le seuil pour de bon.
+     Seul un retour scroll au-dessus du seuil repasse en phase 1. */
+  useEffect(() => {
+    const projetsEl = document.getElementById('projets-section')
+    if (!projetsEl) {
+      const onScroll = () => setScrolled(window.scrollY > 60)
+      onScroll()
+      window.addEventListener('scroll', onScroll, { passive: true })
+      return () => window.removeEventListener('scroll', onScroll)
+    }
+    const onScroll = () => {
+      const top = projetsEl.getBoundingClientRect().top
+      setScrolled(top <= window.innerHeight * 0.55)
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  /* ── Full écran footer : la navbar s'efface une fois la zone
+     .full-beams-zone atteinte — même trigger que la fusée
+     #scroll-top-btn (IntersectionObserver sur #main-footer,
+     threshold 0.05) pour que les deux basculent ensemble : la navbar
+     disparaît pendant que la fusée prend le relais comme seule
+     action de retour en haut. ── */
+  useEffect(() => {
+    const footer = document.getElementById('main-footer')
+    if (!footer) return
+    const obs = new IntersectionObserver(
+      entries => entries.forEach(e => setInFooterZone(e.isIntersecting)),
+      { root: null, threshold: 0.05 }
+    )
+    obs.observe(footer)
+    return () => obs.disconnect()
+  }, [])
+
+  /* ── GSAP micro-animation au changement de phase ── */
+  useEffect(() => {
+    const wasScrolled = prevScrolledRef.current
+    prevScrolledRef.current = scrolled
+
+    const leftEl = leftRef.current
+    const centerEl = centerRef.current
+
+    if (scrolled && !wasScrolled) {
+      /* phase 1 → 2 : logo gauche slide in depuis gauche / center slide out haut */
+      if (centerEl) {
+        gsap.fromTo(centerEl,
+          { opacity: 1, y: 0, scale: 1 },
+          {
+            opacity: 0, y: -10, scale: 0.92, duration: 0.2, ease: 'power2.in',
+            onComplete: () => { gsap.set(centerEl, { clearProps: 'all' }) }
+          }
+        )
+      }
+      if (leftEl) {
+        gsap.fromTo(leftEl,
+          { opacity: 0, x: -14, scale: 0.9 },
+          {
+            opacity: 1, x: 0, scale: 1, duration: 0.36,
+            ease: 'expo.out', delay: 0.06, clearProps: 'all'
+          }
+        )
+      }
+    } else if (!scrolled && wasScrolled) {
+      /* phase 2 → 1 : logo gauche slide out vers gauche / center fade in */
+      if (leftEl) {
+        gsap.fromTo(leftEl,
+          { opacity: 1, x: 0, scale: 1 },
+          {
+            opacity: 0, x: -10, scale: 0.94, duration: 0.18, ease: 'power2.in',
+            onComplete: () => { gsap.set(leftEl, { clearProps: 'all' }) }
+          }
+        )
+      }
+      if (centerEl) {
+        gsap.fromTo(centerEl,
+          { opacity: 0, y: 8, scale: 0.94 },
+          {
+            opacity: 1, y: 0, scale: 1, duration: 0.3,
+            ease: 'expo.out', delay: 0.08, clearProps: 'all'
+          }
+        )
+      }
+    }
+  }, [scrolled])
+
+  const scrollTo = id => {
+    const el = document.getElementById(id)
+    if (!el) return
+    window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY, behavior: 'auto' })
+    /* Même correctif que hardJumpTo (PageTransitionOverlay) : force
+       ScrollTrigger à relâcher tout de suite un pin actif (tunnel
+       WebGL des projets) au lieu d'attendre son prochain tick. */
+    ScrollTrigger.update()
+  }
+
+  /* Socials pour StaggeredMenu */
+  const SM_SOCIALS = [
+    { label: 'WhatsApp', link: 'https://wa.me/2250142507750' },
+    { label: 'LinkedIn', link: 'https://www.linkedin.com/in/m-bollo-aka' },
+    { label: 'GitHub', link: 'https://github.com/wthomasss06-stack' },
+    { label: 'Facebook', link: 'https://web.facebook.com/profile.php?id=61577494705852' },
+    { label: 'AKATech Studio', link: 'https://akatech.vercel.app/' },
+    { label: 'Mon CV', link: '/assets/CV_MBOLLO_AKA_ELVIS.pdf' },
+  ]
+
+  /* SM_ITEMS : transforme NAV_LINKS en format attendu par StaggeredMenu */
+  const SM_ITEMS = navLinks.map(l => ({ label: l.label, id: l.id }))
+
+  /* ── Toggle thème clair / sombre ── */
+  const AnimatedThemeToggler = ({ theme: t, onClick }) => (
+    <button
+      className="nb-theme-btn att-btn"
+      onClick={onClick}
+      title="Basculer thème"
+      aria-label={t === 'light' ? 'Passer en mode sombre' : 'Passer en mode clair'}
+    >
+      <span className="att-track" data-theme={t}>
+        <span className="att-icon att-sun" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" width="15" height="15">
+            <circle cx="12" cy="12" r="4" />
+            <line x1="12" y1="2" x2="12" y2="4" /><line x1="12" y1="20" x2="12" y2="22" />
+            <line x1="2" y1="12" x2="4" y2="12" /><line x1="20" y1="12" x2="22" y2="12" />
+          </svg>
+        </span>
+        <span className="att-icon att-moon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" width="15" height="15">
+            <path d="M20 13.5A8.5 8.5 0 1 1 10.5 4a6.5 6.5 0 0 0 9.5 9.5z" />
+          </svg>
+        </span>
+      </span>
+    </button>
+  )
+
+  const logoBlock = (
+    <>
+      <img src={cld("/assets/images/logo-akatech.webp")} alt="AKATech Studio" className="nb-logo-img"
+        onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'inline' }}
+      />
+      <span className="nb-logo-text" style={{ display: 'none' }}>AKA<span className="nb-logo-acc">TECH</span></span>
+    </>
+  )
+
+  return (
+    <>
+      <TargetCursor targetSelector=".btn-fill, .btn-ghost, .mag-btn, a, button, .cursor-target, .sm-panel-item" />
+
+      {/* ── TOPBAR ── */}
+      <header className={`nb-topbar${scrolled ? ' scrolled' : ''}${inFooterZone ? ' nb-hidden' : ''}`}>
+
+        {/* Gauche */}
+        <div className="nb-topbar-left" ref={leftRef}>
+          {scrolled ? (
+            <div className="nb-topbar-logoblock" onClick={() => scrollTo('hero')}>{logoBlock}</div>
+          ) : (
+            <div className="nb-topbar-clock">
+              <span>{clock.date}</span><span className="nb-sep">·</span><span>{clock.time}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Centre */}
+        <div className="nb-topbar-center" ref={centerRef}>
+          {!scrolled && (
+            <div className="nb-topbar-logoblock nb-topbar-logoblock--hero" onClick={() => scrollTo('hero')}>
+              {logoBlock}
+            </div>
+          )}
+        </div>
+
+        {/* Droite */}
+        <div className="nb-topbar-right">
+          <button type="button" className="nb-explore-btn" onClick={onToggleExplorer} aria-pressed={isExplorerOpen}>
+            <AnimIcon type={isExplorerOpen ? 'x' : 'compass'} size={13} color="currentColor" />
+            <HoverFadeText tag="span">{isExplorerOpen ? 'Fermer' : 'Explorer'}</HoverFadeText>
+          </button>
+          <AnimatedThemeToggler theme={theme} onClick={onToggleTheme} />
+          <StaggeredMenu
+            items={SM_ITEMS}
+            socialItems={SM_SOCIALS}
+            activeSection={activeSection}
+            onItemClick={id => navTo(id)}
+          />
+        </div>
+
+            </header>
+    </>
+  )
+}
+/* ════════════════════════════════════════════
+ HERO — Plasma WebGL + ScrambleText
+ ════════════════════════════════════════════ */
+const HERO_ROTATING_WORDS = ['Full-Stack', 'React & Python', 'Django & Flask', 'orienté produit', 'Data & Carto']
+
+function Hero() {
+  const scrollTo = id => {
+    const el = document.getElementById(id)
+    if (!el) return
+    const top = el.getBoundingClientRect().top + window.scrollY
+    window.scrollTo({ top, behavior: 'auto' })
+    /* Idem Navbar/PageTransitionOverlay : force ScrollTrigger à relâcher tout
+       de suite un pin actif au lieu d'attendre son prochain tick. */
+    ScrollTrigger.update()
+  }
+
+  /* Nom — cycle plain sur le même texte, réutilisé pour le calque
+     contour (avant-plan) du portrait sandwich ci-dessous */
+  const nameLine1 = useSHNameCycle("M'BOLLO")
+  const nameLine2 = useSHNameCycle("Aka")
+
+  /* Mots rotatifs — glitch scramble en boucle auto */
+  const rotating = useSHRotatingCycle(HERO_ROTATING_WORDS, 2500)
+
+  const heroRef = useRef(null)
+  const photoRef = useRef(null)
+
+  /* ── Parallaxe souris sur la photo centrale — reprise et adaptée
+     du prototype de référence (setupParallax), en gsap.quickTo()
+     pour rester fluide à 60fps (cf. skill gsap-performance). La
+     bordure/ombre du cadre reste fixe, seule l'image glisse dedans
+     (overflow:hidden côté CSS). Désactivée au tactile et si
+     prefers-reduced-motion, pour l'accessibilité. ── */
+  useEffect(() => {
+    const section = heroRef.current
+    const photo = photoRef.current
+    if (!section || !photo) return
+    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (!canHover || reduceMotion) return
+
+    const xTo = gsap.quickTo(photo, 'x', { duration: 0.5, ease: 'power2.out' })
+    const yTo = gsap.quickTo(photo, 'y', { duration: 0.5, ease: 'power2.out' })
+
+    const onMove = e => {
+      const r = section.getBoundingClientRect()
+      xTo(((e.clientX - r.left) / r.width - 0.5) * 26)
+      yTo(((e.clientY - r.top) / r.height - 0.5) * 16)
+    }
+    const onLeave = () => { xTo(0); yTo(0) }
+
+    section.addEventListener('pointermove', onMove)
+    section.addEventListener('pointerleave', onLeave)
+    return () => {
+      section.removeEventListener('pointermove', onMove)
+      section.removeEventListener('pointerleave', onLeave)
+    }
+  }, [])
+
+  return (
+    <section id="hero" ref={heroRef}>
+      <div className="hv4-grain" aria-hidden="true" />
+      <div className="hv4-god-rays" id="hv4-rays" aria-hidden="true" />
+      <div className="hv4-bg-layer" id="hv4-bg-layer" aria-hidden="true">
+        <Iridescence
+          color={[1, 0.22, 0.04]}
+          speed={0.42}
+          amplitude={0.08}
+          mouseReact={false}
+        />
+      </div>
+      <div className="hv4-scan" aria-hidden="true" />
+      <div className="hero-vignette" />
+
+      <div className="hv4-scene-wrap" id="hv4-scene">
+
+        {/* ── Portrait central — nom en sandwich (fond plein + contour)
+           avec la photo carrée qui vient "trancher" les deux lignes,
+           repris du prototype de référence (variante Double Stack) ── */}
+        <div className="hv4-portrait">
+          <h1 className="hv4-portrait-name" aria-label="M'Bollo Aka">
+            <span className="hv4-portrait-row hv4-portrait-row--top">
+              <span className="hv4-portrait-bg hv4-rv" style={{ '--d': '.1s' }} aria-hidden="true">M'BOLLO</span>
+              <span className="hv4-portrait-fg" aria-hidden="true">
+                <span className="sh-cycle-wrap" style={{ height: '0.86em', verticalAlign: 'bottom' }}>
+                  <span className="sh-cycle-inner" ref={nameLine1.innerRef}>
+                    {nameLine1.lines.map((l, i) => <span className="sh-cycle-line" style={{ height: '0.86em', lineHeight: '0.86em' }} key={i}>{l}</span>)}
+                  </span>
+                </span>
+              </span>
+            </span>
+            <span className="hv4-portrait-row hv4-portrait-row--bottom">
+              <span className="hv4-portrait-bg hv4-rv" style={{ '--d': '.16s' }} aria-hidden="true">Aka</span>
+              <span className="hv4-portrait-fg" aria-hidden="true">
+                <span className="sh-cycle-wrap" style={{ height: '0.86em', verticalAlign: 'bottom' }}>
+                  <span className="sh-cycle-inner" ref={nameLine2.innerRef}>
+                    {nameLine2.lines.map((l, i) => <span className="sh-cycle-line" style={{ height: '0.86em', lineHeight: '0.86em' }} key={i}>{l}</span>)}
+                  </span>
+                </span>
+              </span>
+            </span>
+          </h1>
+
+          <div className="hv4-portrait-photo">
+            <img
+              ref={photoRef}
+              className="hv4-rv"
+              style={{ '--d': '.26s' }}
+              src={cld("/assets/images/MBA.webp")}
+              alt="M'Bollo Aka"
+              onError={e => { e.target.src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600' }}
+            />
+          </div>
+        </div>
+
+        {/* ── Coin gauche — mot rotatif, CTA, disponibilité
+           (centré verticalement à gauche via CSS) ── */}
+        <div className="hv4-corner hv4-corner--left">
+
+          {/* Rotating words — cycle-text scramble */}
+          <h3 className="hv4-typed hv4-rv" style={{ '--d': '.48s' }}>
+            Développeur&nbsp;<span className="hero-word" style={{ color: '#ffffff', display: 'inline-block' }}>
+              <span className="sh-cycle-wrap">
+                <span className="sh-cycle-inner" ref={rotating.innerRef}>
+                  {rotating.lines.map((l, i) => <span className="sh-cycle-line" key={i}>{l}</span>)}
+                </span>
+              </span>
+            </span>
+          </h3>
+
+          {/* CTA */}
+          <div className="hv4-ctas hv4-rv" style={{ '--d': '.6s' }}>
+            <a
+              href="#contact"
+              className="btn-fill"
+              onClick={e => { e.preventDefault(); scrollTo('contact') }}
+            >
+              <HoverFadeText>Contactez-moi</HoverFadeText>
+              <span className="btn-arr" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg></span>
+            </a>
+          </div>
+
+          {/* Réassurance CRO — sous le bouton */}
+          <div className="hero-availability hv4-rv" style={{ '--d': '.7s' }}>
+            <span className="hero-dot" aria-hidden="true" />
+            <span>Disponible maintenant · réponse sous 24h</span>
+          </div>
+        </div>
+
+      </div>
+      <div className="hero-scroll"><span>scroll</span><div className="hsl" /></div>
+    </section>
+  )
+}
+
+
+
+
+
+function useProjectSelection() {
+  const [selectedProject, setSelectedProject] = useState(null)
+  const [caseFlipped, setCaseFlipped] = useState(false)
+  const select = useCallback(p => { setSelectedProject(p); setCaseFlipped(false) }, [])
+  const close = useCallback(() => { setSelectedProject(null); setCaseFlipped(false) }, [])
+  return { selectedProject, caseFlipped, select, close, setCaseFlipped }
+}
+
+/* Marquee défilante des technos utilisées, superposée en bas de
+   l'image de chaque carte — reprise à l'identique de dernier_projet
+   .html / slide_pour_app.html (fade-mask gauche/droite, défilement
+   GSAP infini x = -scrollWidth/2, piste dupliquée x2). */
+/* Découpe récursive du texte en lettres, en préservant les balises
+   (ex. <strong>) rencontrées au passage — nécessaire car plusieurs
+   .about-text contiennent du texte en gras au milieu de la phrase. */
+function splitTextToLetters(node, keyPrefix) {
+  if (typeof node === 'string') {
+    return node.split(/(\s+)/).map((chunk, i) => {
+      if (chunk === '') return null
+      if (/^\s+$/.test(chunk)) {
+        return <span key={`${keyPrefix}-sp-${i}`}>{chunk}</span>
+      }
+      return (
+        <span key={`${keyPrefix}-w-${i}`} className="nf-word">
+          {chunk.split('').map((ch, j) => (
+            <span key={`${keyPrefix}-w-${i}-l-${j}`} className="nf-letter">{ch}</span>
+          ))}
+        </span>
+      )
+    })
+  }
+  if (isValidElement(node)) {
+    return cloneElement(node, {
+      children: Children.map(node.props.children, (child, i) => splitTextToLetters(child, `${keyPrefix}-${i}`)),
+    })
+  }
+  return node
+}
+
+/* NEON FLICKER — reprise de text2prooo.html ("04. Cyberpunk Neon
+   Flicker") : chaque lettre flashe en couleur accent avec un halo
+   néon puis se stabilise, décalée de 0.02s par lettre, le tout
+   scrubbé au scroll (avance/recule avec le scroll, pas une lecture
+   figée).
+   Correctifs vs la version précédente (voir image de référence) :
+   - Couleur de repos : avant lue via getComputedStyle(el).color, or
+     .about-text force color:transparent pour l'ancien reveal en
+     background-clip:text (voir plus haut dans ce fichier) — chaque
+     lettre finissait donc invisible une fois "stabilisée". Lue ici
+     directement sur --text (bypass CSS .nf-flicker dans style.css),
+     donc suit vraiment le thème clair/sombre.
+   - Couleur du flash : #00f0ff (cyan de la démo) remplacé par
+     var(--accent) du site (orange), lu au montage — une seule
+     source de vérité, jamais de couleur en dur.
+   - clearProps une fois la lettre stabilisée : l'inline style posé
+     par GSAP est retiré, donc si le thème change après coup la
+     lettre suit --text en direct au lieu de rester figée sur la
+     valeur lue au montage.
+   - État "éteint" avant révélation : chaque lettre part de
+     color:transparent via un .fromTo(), pas une règle CSS séparée.
+     Transparent plutôt que --bg : marche même sur les sections à
+     fond non uni (dégradés, textures — ex. Contact) où --bg seul ne
+     matchait pas exactement le rendu réel. (Une opacité réduite
+     d'une couleur CLAIRE comme --text en mode sombre ne devient
+     jamais aussi sombre que le fond ; transparent, si, toujours.
+     Une règle CSS concurrente aurait aussi cassé le fallback --text
+     de clearProps une fois la lettre stabilisée — voir plus haut.)
+   - Respecte prefers-reduced-motion (même pattern que HeroPhoto plus
+     haut) : texte affiché stable d'emblée, sans flicker ni halo. */
+function NeonFlickerText({ children, tag: Tag = 'h3', className = '', ...rest }) {
+  const ref = useRef(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const letters = el.querySelectorAll('.nf-letter')
+    if (!letters.length) return
+
+    const cs = getComputedStyle(el)
+    const accent = (cs.getPropertyValue('--accent') || '#FF5500').trim()
+    const restColor = (cs.getPropertyValue('--text') || '#F2EDE8').trim()
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    if (reduceMotion) {
+      gsap.set(letters, { color: restColor, textShadow: '0 0 0px transparent' })
+      return
+    }
+
+    const glow = `0 0 12px ${accent}, 0 0 30px ${accent}`
+    const tl = gsap.timeline({
+      scrollTrigger: { trigger: el, start: 'top 85%', end: 'bottom 55%', scrub: true },
+    })
+    /* stagger natif GSAP plutôt qu'une boucle créant 2×N tweens
+       individuels : sur un gros bloc de texte (About fusionné en un
+       seul paragraphe, 500+ lettres), 2×N tweens séparés dans un
+       même timeline scrubbé devenait perceptiblement moins fluide
+       que sur un texte court. stagger:0.02 reproduit exactement le
+       même décalage par lettre (index*0.02) mais en 2 tweens au
+       total au lieu de 2×N — GSAP l'optimise nativement en interne. */
+    tl.fromTo(letters,
+      { color: 'transparent' },
+      { color: accent, textShadow: glow, duration: 0.1, stagger: 0.02 },
+      0
+    ).to(letters, {
+      color: restColor,
+      textShadow: '0 0 0px transparent',
+      duration: 0.1,
+      stagger: 0.02,
+      clearProps: 'color,textShadow',
+    }, 0.15)
+
+    return () => {
+      tl.scrollTrigger?.kill()
+      tl.kill()
+    }
+  }, [])
+
+
+  return (
+    <Tag ref={ref} className={`${className} nf-flicker`} {...rest}>
+      {Children.map(children, (child, i) => splitTextToLetters(child, `nf-${i}`))}
+    </Tag>
+  )
+}
+
+function ProjectMarquee({ tech }) {
+  const trackRef = useRef(null)
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track) return
+    const width = track.scrollWidth / 2
+    const tween = gsap.to(track, { x: -width, duration: 12, ease: 'none', repeat: -1 })
+    return () => tween.kill()
+  }, [])
+  const items = [...tech, ...tech]
+  return (
+    <div className="proj-marquee-wrap">
+      <div className="proj-marquee-track" ref={trackRef}>
+        {items.map((t, i) => <span key={i} className="proj-marquee-item">{t} •</span>)}
+      </div>
+    </div>
+  )
+}
+
+
+const projectMediaSlug = (title = '') => title
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .toLowerCase()
+  .replace(/·/g, '-')
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/^-+|-+$/g, '')
+
+const projectVideoPath = (project) => {
+  if (project.hoverVideo) return cld(project.hoverVideo)
+  const imageName = (project.img || '').split('/').pop()?.split('?')[0] || `${projectMediaSlug(project.title)}-preview.webp`
+  const imageStem = imageName.replace(/\.(webp|png|jpe?g)$/i, '')
+  return cld(`/assets/images/projects/${imageStem}.webm`)
+}
+
+function ProjectVideoMedia({ project }) {
+  const videoRef = useRef(null)
+  const wrapRef = useRef(null)
+  const [videoFailed, setVideoFailed] = useState(false)
+  const image = project.img || project.responsive
+  const video = projectVideoPath(project)
+
+  const stop = useCallback(() => {
+    if (!videoRef.current) return
+    videoRef.current.pause()
+    videoRef.current.currentTime = 0
+  }, [])
+
+  const start = useCallback(() => {
+    const el = videoRef.current
+    if (!el || videoFailed || document.visibilityState !== 'visible') return
+    if (!el.src) {
+      el.src = video
+      el.load()
+    }
+    el.play().catch(() => {})
+  }, [video, videoFailed])
+
+  useEffect(() => {
+    const wrap = wrapRef.current
+    if (!wrap) return
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && entry.intersectionRatio >= 0.12) start()
+      else stop()
+    }, { threshold: [0, 0.12] })
+    observer.observe(wrap)
+    const onVisibility = () => document.visibilityState === 'visible' ? start() : stop()
+    document.addEventListener('visibilitychange', onVisibility)
+    return () => {
+      observer.disconnect()
+      document.removeEventListener('visibilitychange', onVisibility)
+      stop()
+    }
+  }, [start, stop])
+
+  return (
+    <div ref={wrapRef} className={`pcard-primary-media${videoFailed ? ' pcard-primary-media--fallback' : ''}`}>
+      <img className="pcard-primary-fallback" src={image} alt={`${project.title} — aperçu`} loading="lazy" />
+      <video
+        ref={videoRef}
+        className="pcard-primary-video"
+        data-src={video}
+        poster={image}
+        muted
+        loop
+        playsInline
+        preload="none"
+        aria-label={`${project.title} — aperçu vidéo`}
+        onError={() => { stop(); setVideoFailed(true) }}
+      />
+    </div>
+  )
+}
+
+const RECENT_PROJECT_TITLES = ['ChapChap Bara', 'NEXURA', 'Chez Florence', 'KokoEat', 'Jean Edy · Portfolio']
+
+const RECENT_PROJECTS = RECENT_PROJECT_TITLES
+  .map(t => PROJECTS.find(p => p.title === t))
+  .filter(Boolean)
+
+function RecentProjects() {
+  const { selectedProject, caseFlipped, select, close, setCaseFlipped } = useProjectSelection()
+  const trackWrapRef = useRef(null)
+  const pausedRef = useRef(false)
+  const nudgeTimerRef = useRef(null)
+  const cascadeRefs = useRef([])
+
+  /* Piste dupliquée x2 pour boucle infinie — scroll réel (scrollLeft
+     + rAF), pas une animation CSS, pour que les boutons prev/next
+     marchent vraiment. */
+  const loopedProjects = [...PROJECTS, ...PROJECTS]
+
+  useEffect(() => {
+    const wrap = trackWrapRef.current
+    if (!wrap) return
+    const SPEED = 0.5 // px / frame (~30px/s à 60fps)
+    let raf
+    const step = () => {
+      if (!pausedRef.current) {
+        wrap.scrollLeft += SPEED
+        const half = wrap.scrollWidth / 2
+        if (wrap.scrollLeft >= half) wrap.scrollLeft -= half
+      }
+      raf = requestAnimationFrame(step)
+    }
+    raf = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(raf)
+  }, [])
+
+  /* Entrée des 4 cartes vedettes au scroll — reprise à l'identique de
+     dernier_projet.html : cartes de gauche (index pair) depuis la
+     gauche, cartes de droite (index impair) depuis la droite. */
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      cascadeRefs.current.forEach((el, i) => {
+        if (!el) return
+        gsap.from(el, {
+          x: i % 2 === 0 ? -120 : 120,
+          autoAlpha: 0,
+          scale: 0.95,
+          scrollTrigger: { trigger: el, start: 'top 85%', end: 'top 45%', scrub: 2 },
+        })
+      })
+    })
+    return () => ctx.revert()
+  }, [])
+
+  const pause = () => { pausedRef.current = true }
+  const resume = () => { pausedRef.current = false }
+  const nudge = (dir) => {
+    const wrap = trackWrapRef.current
+    if (!wrap) return
+    pause()
+    wrap.scrollBy({ left: dir * wrap.clientWidth * 0.7, behavior: 'smooth' })
+    window.clearTimeout(nudgeTimerRef.current)
+    nudgeTimerRef.current = window.setTimeout(resume, 2200)
+  }
+
+  return (
+    <section className="recent-projects-section" id="projets-section">
+      <SectionHeading num="01" title="Projets" sub={`${PROJECTS.length} réalisations`} />
+      <NeonFlickerText className="about-text" style={{ maxWidth: '640px', margin: '0 0 3vh 4vw' }}>
+        Voici mes derniers projets de cette année, et l'ensemble de mes
+        réalisations juste en dessous.
+      </NeonFlickerText>
+
+      {/* ── Sous-section 1 : 4 projets vedettes en cascade (dernier_projet.html) ── */}
+      <div className="rp-featured-grid">
+        {RECENT_PROJECTS.map((p, i) => (
+          <div
+            key={p.id}
+            ref={el => (cascadeRefs.current[i] = el)}
+            className="pcard"
+            onClick={() => select(p)}
+          >
+            <span className={`pcard-badge pcard-badge--${p.cat}`}>
+              {p.cat === 'en-ligne' ? 'Live' : p.cat === 'demo' ? 'Démo' : 'En cours'}
+            </span>
+            <div className="pcard-upper">
+              <ProjectVideoMedia project={p} />
+            </div>
+            <div className="pcard-hover-reveal">
+              <img src={p.responsive || p.img} alt={`${p.title} — aperçu WebP au survol`} loading="lazy" />
+            </div>
+            <ProjectMarquee tech={p.tech} />
+            <div className="pcard-bottom">
+              <span className="pcard-title">{p.title}</span>
+              <span className="pcard-year">{p.year}'</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Sous-section 2 : Mes réalisations, piste infinie (slide_pour_app.html) ── */}
+      <div className="rp-slider-header">
+        <h3 className="rp-slider-title">Mes réalisations</h3>
+        <span>{PROJECTS.length} projets · défilement automatique, survolez pour mettre en pause</span>
+        <div className="rp-slider-controls">
+          <button type="button" className="pe-nav-btn" onClick={() => nudge(-1)} aria-label="Précédent">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
+          </button>
+          <button type="button" className="pe-nav-btn" onClick={() => nudge(1)} aria-label="Suivant">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
+          </button>
+        </div>
+      </div>
+
+      <div className="rp-track-wrap" ref={trackWrapRef} onMouseEnter={pause} onMouseLeave={resume}>
+        <div className="rp-track">
+          {loopedProjects.map((p, i) => (
+            <div key={`${p.id}-${i}`} className="pcard" onClick={() => select(p)}>
+              <span className={`pcard-badge pcard-badge--${p.cat}`}>
+                {p.cat === 'en-ligne' ? 'Live' : p.cat === 'demo' ? 'Démo' : 'En cours'}
+              </span>
+              <div className="pcard-upper">
+                <ProjectVideoMedia project={p} />
+              </div>
+              <div className="pcard-hover-reveal">
+                <img src={p.responsive || p.img} alt={`${p.title} — aperçu WebP au survol`} loading="lazy" />
+              </div>
+              <ProjectMarquee tech={p.tech} />
+              <div className="pcard-bottom">
+                <span className="pcard-title">{p.title}</span>
+                <span className="pcard-year">{p.year}'</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <ProjectDetailModal
+        project={selectedProject}
+        caseFlipped={caseFlipped}
+        onFlip={setCaseFlipped}
+        onClose={close}
+      />
+    </section>
+  )
+}
+
+
+
+function ProjectsExplorer({ isOpen, onClose }) {
+  /* Le tunnel (WebGL) n'est monté que quand l'overlay est réellement
+     ouvert — évite de faire tourner un renderer Three.js en arrière-
+     plan quand c'est fermé. Démontage retardé de 550ms à la fermeture
+     pour laisser le fondu CSS (.pe-overlay, transition .5s) se
+     terminer avant de libérer les ressources WebGL. */
+  const [mounted, setMounted] = useState(isOpen)
+
+  useEffect(() => {
+    let t
+    if (isOpen) {
+      setMounted(true)
+    } else {
+      t = setTimeout(() => setMounted(false), 550)
+    }
+    return () => clearTimeout(t)
+  }, [isOpen])
+
+  useEffect(() => {
+    if (!isOpen) return
+    const onKey = e => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [isOpen, onClose])
+
+  useEffect(() => {
+    /* Verrouille le scroll du body tant que l'overlay est ouvert —
+       sinon la page défile sous le plein-écran fixe derrière lui. */
+    if (!isOpen) return
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = prevOverflow }
+  }, [isOpen])
+
+  return (
+    <div className={`pe-overlay${isOpen ? ' is-open' : ''}`} aria-hidden={!isOpen}>
+      {mounted && <ProjectsTunnel />}
+    </div>
+  )
+}
+/* ════════════════════════════════════════════
+ ABOUT STATS — colonne gauche, slide auto 4s
+ chiffre en count-up + label, façon "30+ awards"
+ ════════════════════════════════════════════ */
+const ABOUT_STATS = [
+  { target: PROJECTS.length, suffix: '', label: 'Projets', sub: 'Livrés sur mesure, du concept au déploiement' },
+  { target: 3, suffix: '+', label: 'Années', sub: 'D’expérience en développement web' },
+  { target: 12, suffix: '', label: 'En prod.', sub: 'Applications actuellement en ligne' },
+  { target: 15, suffix: '', label: 'Outils', sub: 'Technologies maîtrisées au quotidien' },
+  { target: 10, suffix: '+', label: 'Clients', sub: 'Particuliers, startups et PME accompagnés' },
+]
+
+function AboutStatNumber({ target, suffix }) {
+  const ref = useRef(null)
+  const [val, setVal] = useState(0)
+
+  useEffect(() => {
+    setVal(0)
+    const dur = 900
+    const start = performance.now()
+    let raf
+    const step = (now) => {
+      const p = Math.min(1, (now - start) / dur)
+      const eased = 1 - Math.pow(1 - p, 3)
+      setVal(Math.round(eased * target))
+      if (p < 1) raf = requestAnimationFrame(step)
+    }
+    raf = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(raf)
+  }, [target])
+
+  return <span ref={ref}>{val}{suffix}</span>
+}
+
+function AboutStats() {
+  const [i, setI] = useState(0)
+  const SLIDE_MS = 4000
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setI(v => (v + 1) % ABOUT_STATS.length)
+    }, SLIDE_MS)
+    return () => clearInterval(id)
+  }, [])
+
+  const cur = ABOUT_STATS[i]
+
+  return (
+    <div className="about-stats-col">
+      <div className="about-stats-nav">
+        <span className="about-stats-count">{String(i + 1).padStart(2, '0')}/{String(ABOUT_STATS.length).padStart(2, '0')}</span>
+      </div>
+      <div key={i} className="about-stat-fig">
+        <span className="about-stat-num">
+          <AboutStatNumber target={cur.target} suffix={cur.suffix} />
+        </span>
+        <p className="about-stat-label">{cur.label}</p>
+        <p className="about-stat-sub">{cur.sub}</p>
+      </div>
+      <div className="about-stats-progress">
+        <span key={i} className="about-stats-progress-fill" style={{ animationDuration: `${SLIDE_MS}ms` }} />
+      </div>
+    </div>
+  )
+}
+
+function About() {
+  const scrollToSection = (id) => {
+    const el = document.getElementById(id)
+    if (!el) return
+    const root = document.documentElement
+    const prev = root.style.scrollBehavior
+    root.style.scrollBehavior = 'smooth'
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    setTimeout(() => { root.style.scrollBehavior = prev }, 1000)
+  }
+
+  useEffect(() => {
+    document.querySelectorAll('.about-block').forEach((el, i) => {
+      el.style.transitionDelay = `${i * 0.12}s`
+      const obs = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) {
+          el.classList.add('vis')
+          obs.disconnect()
+        }
+      }, { threshold: 0.2 })
+      obs.observe(el)
+    })
+  }, [])
+
+  return (
+    <section
+      id="about-section"
+      className="sec"
+      style={{
+        padding: 'clamp(6rem, 14vh, 9rem) 0 10vh',
+        borderTop: '1px solid rgba(255,85,0,.08)'
+      }}
+    >
+      <div
+        style={{
+          width: '100%',
+          maxWidth: '1280px',
+          margin: '0 auto',
+          padding: '0 1.5rem'
+        }}
+      >
+        <div className="about-block">
+          <SectionHeading num="02" title="À propos" sub="Parcours & stack" style={{ marginBottom: '2rem' }} />
+        </div>
+
+        <div className="about-block about-split">
+          <AboutStats />
+
+          <div className="about-text-col">
+            <NeonFlickerText tag="p" className="about-text-lg">
+              Je suis <strong>M'Bollo Aka</strong> ,développeur web basé à <strong>Abidjan</strong>, avec une vraie envie de
+              créer des produits utiles, beaux et agréables à utiliser.
+              <br /><br />
+              Mon parcours a commencé dans le <strong>réseau</strong> et la
+              <strong> sécurité informatique</strong>, et cette base m’a appris à construire
+              avec méthode, à penser la fiabilité et à garder une vision propre de
+              l’architecture.
+              <br /><br />
+              Avec le temps, j’ai trouvé ma place dans le développement web. Aujourd’hui,
+              j’aime concevoir des interfaces qui respirent, qui bougent, et qui donnent une
+              vraie sensation de produit fini.
+              <br /><br />
+              Je travaille surtout avec <strong>React</strong> et <strong>Django</strong>,
+              tout en explorant <strong>Next.js</strong>, <strong>GSAP</strong>,
+              <strong>Framer Motion</strong> et parfois <strong>Three.js</strong> pour donner
+              plus de vie et de profondeur aux expériences.
+              <br /><br />
+              J’aime créer des applications pensées pour de vrais usages : dashboards, outils
+              métier, plateformes web, SaaS et sites immersifs. Mon approche reste simple :
+              faire quelque chose de clair, solide et agréable à utiliser.
+              <br /><br />
+              En grande partie <strong>autodidacte</strong>, j’apprends en construisant, en
+              testant et en améliorant chaque projet. C’est aussi dans cet esprit que j’ai
+              créé{' '}
+              <a
+                href="https://akatech.vercel.app/"
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  color: 'var(--accent)',
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                  borderBottom: '1.5px solid var(--accent)'
+                }}
+              >
+                AKATech Studio
+              </a>
+              , un espace où je donne forme à des idées web modernes et concrètes.
+            </NeonFlickerText>
+
+            {/* Bloc identitaire */}
+            <div itemScope itemType="https://schema.org/Person" style={{ display: 'flex', alignItems: 'center', gap: '1.1rem', marginTop: '2.5rem' }}>
+              <div style={{
+                width: '56px', height: '56px', borderRadius: '50%',
+                overflow: 'hidden', flexShrink: 0,
+                border: '2px solid var(--accent)',
+              }}>
+                <img
+                  src={cld("/assets/images/IMG_20250124_124101KK.webp")}
+                  alt="M'Bollo Aka" itemProp="image"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 10%' }}
+                  loading="lazy"
+                  onError={e => { e.target.style.display = 'none' }}
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                <h3 itemProp="name" style={{
+                  margin: 0,
+                  fontFamily: 'var(--fd)', fontWeight: 800,
+                  fontSize: '1rem', color: 'var(--text)',
+                  letterSpacing: '-.01em', lineHeight: 1.2,
+                }}>M'bollo Aka</h3>
+                <span itemProp="jobTitle" style={{
+                  fontFamily: "'Space Mono', monospace",
+                  fontSize: '.62rem', letterSpacing: '.06em',
+                  color: 'var(--muted)', textTransform: 'uppercase', lineHeight: 1.3,
+                }}>Développeur Web Full Stack · Fondateur, AKATech Studio</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="about-block" style={{ marginTop: '2rem', textAlign: 'center' }}>
+          <a
+            href="#contact"
+            className="btn-fill"
+            style={{ display: 'inline-flex' }}
+            onClick={e => {
+              e.preventDefault()
+              scrollToSection('contact')
+            }}
+          >
+            <HoverFadeText>Parlons d’un projet</HoverFadeText>
+            <span className="btn-arr" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg></span>
+          </a>
+        </div>
+      </div>
+    </section>
+  )
+}
+/* ════════════════════════════════════════════
+ TIMELINE — Board interactif (repris de super.html) :
+ spotlight qui suit le curseur (color-dodge sur le texte
+ géant en fond) + cartes punaisées en tilt 3D au survol,
+ librement déplaçables par drag. Remplace l'ancien Stack
+ (grid gris) par la même animation / expérience UI-UX que
+ le prototype de référence, en GSAP quickTo/quickSetter
+ (fluide, cf. skill gsap-performance) plutôt que le
+ left/top + WebKitCSSMatrix (déprécié) du prototype d'origine.
+ Drag borné dans la surface du board — le prototype laissait
+ les cartes sortir complètement de l'écran.
+ Sur tactile / sans hover fin : rangée horizontale scroll-
+ snap, sans spotlight ni tilt (même garde-fou `canHover`
+ que la parallaxe souris du Hero ci-dessus).
+ ════════════════════════════════════════════ */
+const TL_BOARD_LAYOUT = [
+  { left: '0%', top: '6%', rot: -7 },
+  { left: '19%', top: '34%', rot: 5 },
+  { left: '38%', top: '4%', rot: -4 },
+  { left: '57%', top: '32%', rot: 8 },
+  { left: '74%', top: '10%', rot: -6 },
+]
+
+function TimelineCard({ item, index, layout, setCardRef }) {
+  return (
+    <div
+      ref={(el) => setCardRef(index, el)}
+      className="tl-card"
+      style={{ left: layout.left, top: layout.top, zIndex: 10 + (TIMELINE.length - index) }}
+    >
+      <svg className="tl-pin" viewBox="0 0 100 100" aria-hidden="true">
+        <ellipse cx="60" cy="85" rx="15" ry="5" fill="rgba(0,0,0,.35)" />
+        <polygon points="50,45 48,85 52,85" fill="#777" />
+        <path d="M30,45 L70,45 L60,25 L40,25 Z" fill="var(--accent)" />
+        <ellipse cx="50" cy="25" rx="15" ry="8" fill="#ff8a3d" />
+      </svg>
+      <div className="tl-sc-header">
+        <span className="tl-sc-idx">0{index + 1} / 0{TIMELINE.length}</span>
+        <span className="tl-sc-date">{item.date}</span>
+      </div>
+      <div className="tl-sc-title">{item.title}</div>
+      <div className="tl-sc-company">
+        <span className="tl-sc-company-icon">◈</span>
+        {item.company}
+      </div>
+      <ul className="tl-sc-items">
+        {item.items.map((li, j) => <li key={j}>→ {li}</li>)}
+      </ul>
+      <div className="tl-sc-tags">
+        {item.tags.map(tag => <span key={tag} className="tl-sc-tag">{tag}</span>)}
+      </div>
+    </div>
+  )
+}
+
+function TimelineBoard() {
+  const boardRef = useRef(null)
+  const spotlightRef = useRef(null)
+  const cardsRef = useRef([])
+  const highestZRef = useRef(30)
+  const draggingRef = useRef(null)
+
+  const setCardRef = useCallback((i, el) => { cardsRef.current[i] = el }, [])
+
+  useEffect(() => {
+    const board = boardRef.current
+    const spotlight = spotlightRef.current
+    const cards = cardsRef.current.filter(Boolean)
+    if (!board || !spotlight || !cards.length) return
+
+    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (!canHover || reduceMotion) return /* le CSS prend le relais : rangée horizontale, cf. style.css */
+
+    /* ── Spotlight — suit le curseur en x/y (transform GSAP), jamais en
+       left/top comme le prototype de référence : reste sur le
+       compositeur, zéro reflow à chaque mousemove. ── */
+    gsap.set(spotlight, { xPercent: -50, yPercent: -50, x: -9999, y: -9999 })
+    const spotX = gsap.quickTo(spotlight, 'x', { duration: 0.35, ease: 'power3.out' })
+    const spotY = gsap.quickTo(spotlight, 'y', { duration: 0.35, ease: 'power3.out' })
+
+    const onBoardEnter = () => gsap.to(spotlight, { opacity: 1, duration: 0.25, overwrite: 'auto' })
+    const onBoardMove = (e) => {
+      const rect = board.getBoundingClientRect()
+      spotX(e.clientX - rect.left)
+      spotY(e.clientY - rect.top)
+    }
+    const onBoardLeave = () => gsap.to(spotlight, { opacity: 0, duration: 0.3, overwrite: 'auto' })
+    board.addEventListener('pointerenter', onBoardEnter)
+    board.addEventListener('pointermove', onBoardMove)
+    board.addEventListener('pointerleave', onBoardLeave)
+
+    /* ── Par carte : position de repos + tilt 3D au survol + drag borné ── */
+    const perCardCleanups = cards.map((card, i) => {
+      gsap.set(card, { x: 0, y: 0, rotation: TL_BOARD_LAYOUT[i]?.rot || 0 })
+
+      const rxTo = gsap.quickTo(card, 'rotationX', { duration: 0.5, ease: 'power2.out' })
+      const ryTo = gsap.quickTo(card, 'rotationY', { duration: 0.5, ease: 'power2.out' })
+      let xSet = null, ySet = null
+      let originX = 0, originY = 0, startX = 0, startY = 0
+      let boundsX = [0, 0], boundsY = [0, 0]
+
+      const bringToFront = () => { highestZRef.current += 1; card.style.zIndex = highestZRef.current }
+
+      const onEnter = () => {
+        if (draggingRef.current !== null) return
+        bringToFront()
+        card.classList.add('tl-card--active')
+      }
+      const onMove = (e) => {
+        if (draggingRef.current !== null) return
+        const rect = card.getBoundingClientRect()
+        ryTo(gsap.utils.mapRange(0, rect.width, -14, 14, e.clientX - rect.left))
+        rxTo(gsap.utils.mapRange(0, rect.height, 14, -14, e.clientY - rect.top))
+      }
+      const onLeave = () => {
+        if (draggingRef.current !== null) return
+        rxTo(0); ryTo(0)
+        card.classList.remove('tl-card--active')
+      }
+
+      const onPointerMove = (e) => {
+        e.preventDefault()
+        xSet(gsap.utils.clamp(boundsX[0], boundsX[1], originX + (e.clientX - startX)))
+        ySet(gsap.utils.clamp(boundsY[0], boundsY[1], originY + (e.clientY - startY)))
+      }
+      const onPointerUp = () => {
+        draggingRef.current = null
+        card.classList.remove('tl-card--dragging')
+        gsap.to(card, { scale: 1, duration: 0.35, ease: 'back.out(2.6)' })
+        window.removeEventListener('pointermove', onPointerMove)
+        window.removeEventListener('pointerup', onPointerUp)
+      }
+      const onPointerDown = (e) => {
+        if (e.button > 0) return
+        draggingRef.current = i
+        bringToFront()
+        card.classList.add('tl-card--dragging')
+        rxTo(0); ryTo(0)
+        gsap.to(card, { scale: 1.03, duration: 0.2 })
+
+        xSet = gsap.quickSetter(card, 'x', 'px')
+        ySet = gsap.quickSetter(card, 'y', 'px')
+        originX = gsap.getProperty(card, 'x')
+        originY = gsap.getProperty(card, 'y')
+        startX = e.clientX
+        startY = e.clientY
+
+        /* Bornes calculées à la volée depuis la position actuelle —
+           tolère un léger débordement (comme un vrai post-it), mais
+           empêche de perdre une carte hors de l'écran (limite du
+           prototype HTML de référence, qui ne bornait rien). */
+        const boardRect = board.getBoundingClientRect()
+        const cardRect = card.getBoundingClientRect()
+        const margin = 50
+        boundsX = [-(cardRect.left - boardRect.left) - margin, (boardRect.right - cardRect.right) + margin]
+        boundsY = [-(cardRect.top - boardRect.top) - margin, (boardRect.bottom - cardRect.bottom) + margin]
+
+        window.addEventListener('pointermove', onPointerMove)
+        window.addEventListener('pointerup', onPointerUp)
+      }
+
+      card.addEventListener('pointerenter', onEnter)
+      card.addEventListener('pointermove', onMove)
+      card.addEventListener('pointerleave', onLeave)
+      card.addEventListener('pointerdown', onPointerDown)
+
+      return () => {
+        card.removeEventListener('pointerenter', onEnter)
+        card.removeEventListener('pointermove', onMove)
+        card.removeEventListener('pointerleave', onLeave)
+        card.removeEventListener('pointerdown', onPointerDown)
+        window.removeEventListener('pointermove', onPointerMove)
+        window.removeEventListener('pointerup', onPointerUp)
+      }
+    })
+
+    /* ── Entrée au scroll : les cartes "tombent" en place, en cascade ── */
+    const introTween = gsap.fromTo(
+      cards,
+      { opacity: 0, y: 46, scale: 0.92 },
+      {
+        opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'power3.out', stagger: 0.09,
+        scrollTrigger: { trigger: board, start: 'top 85%', toggleActions: 'play none none reverse' },
+      }
+    )
+
+    return () => {
+      board.removeEventListener('pointerenter', onBoardEnter)
+      board.removeEventListener('pointermove', onBoardMove)
+      board.removeEventListener('pointerleave', onBoardLeave)
+      perCardCleanups.forEach(fn => fn())
+      introTween.scrollTrigger?.kill()
+      introTween.kill()
+    }
+  }, [])
+
+  return (
+    <div className="tl-board" ref={boardRef}>
+      <div className="tl-board-spotlight" ref={spotlightRef} aria-hidden="true" />
+      <div className="tl-board-bgtext" aria-hidden="true">
+        <span>SÉCURITÉ</span>
+        <span>RÉSEAU</span>
+        <span>DÉVELOPPEMENT</span>
+        <span>WEB</span>
+      </div>
+      <div className="tl-board-cards">
+        {TIMELINE.map((item, i) => (
+          <TimelineCard
+            key={i}
+            item={item}
+            index={i}
+            layout={TL_BOARD_LAYOUT[i] || TL_BOARD_LAYOUT[TL_BOARD_LAYOUT.length - 1]}
+            setCardRef={setCardRef}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function Timeline() {
+  return (
+    <section id="timeline-section" className="sec">
+      <SectionHeading num="02" title="Parcours" sub="Expérience & Formation" style={{ marginBottom: '1.5rem' }} />
+      <NeonFlickerText className="about-text" style={{ maxWidth: '640px', marginBottom: '2.5rem' }}>
+        De la <strong>sécurité informatique</strong> au développement web : chaque étape
+        a renforcé ma méthode et ma rigueur technique.
+      </NeonFlickerText>
+      <p className="tl-board-hint">Glisse les cartes pour explorer</p>
+      <TimelineBoard />
+    </section>
+  )
+}
+
+/* ════════════════════════════════════════════
+ SKEW SECTION — Mon Approche + FlowingMenu
+ ════════════════════════════════════════════ */
+function SkewSection() {
+  const flowItems = [
+    {
+      text: '01 — Code propre & sécurisé',
+      image: cld('/assets/images/projects/CB.webp'),
+      body: "Chaque ligne de code applique les bonnes pratiques : auth, permissions, validation côté serveur. La sécurité n'est pas une option, c'est une fondation.",
+      link: '#contact',
+    },
+    {
+      text: '02 — Interface pensée usages réels',
+      image: cld('/assets/images/projects/jean-edy-preview.webp'),
+      body: "Des interfaces React/Next.js pensées pour l'utilisateur final. Responsive, rapides, accessibles — pas juste belles.",
+      link: '#contact',
+    },
+    {
+      text: '03 — Livraison dans les délais',
+      image: cld('/assets/images/projects/C.webp'),
+      body: "Communication transparente à chaque étape. Vous suivez l'avancement en temps réel, aucune surprise à la livraison.",
+      link: '#contact',
+    },
+    {
+      text: '04 — Data & Carto intégrés',
+      image: cld('/assets/images/projects/A.webp'),
+      body: 'Dashboards interactifs, visualisations Chart.js, cartes Leaflet/OpenStreetMap ou MAPBOX. Je transforme vos données en décisions.',
+      link: '#contact',
+    },
+  ]
+
+  return (
+    <section id="skew-section">
+      <div className="skew-grid">
+        {/* Colonne gauche sticky */}
+        <div className="skew-sticky">
+          <div>
+            <h2 className="sec-eyebrow" style={{ textAlign: 'left' }}>Mon Approche</h2>
+            <h2 className="sec-eyebrow skew-heading" style={{ textAlign: 'left', fontWeight: 700, lineHeight: 1.05, letterSpacing: '-.025em', hyphens: 'none', wordBreak: 'normal', overflowWrap: 'normal' }}>
+              <span style={{ display: 'block' }}>Pourquoi les</span>
+              <span style={{ display: 'block' }}>projets réussissent</span>
+              <span style={{ display: 'block' }}>avec mon approche.</span>
+            </h2>
+          </div>
+        </div>
+
+        {/* Colonne droite — FlowingMenu */}
+        <div className="skew-imgs" style={{ padding: '0', gap: 0, minHeight: '60vh' }}>
+          <FlowingMenu
+            items={flowItems}
+            speed={14}
+            textColor="var(--text)"
+            bgColor="transparent"
+            marqueeBgColor="#FF5500"
+            marqueeTextColor="#fff"
+            borderColor="rgba(255,85,0,.18)"
+          />
+        </div>
+      </div>
+    </section>
+  )
+}
+/* ════════════════════════════════════════════
+ SKILLS
+ ════════════════════════════════════════════ */
+function SkillCard({ sk }) {
+  const [hovered, setHovered] = useState(false)
+  const col = sk.color || '#888888'
+  return (
+    <div
+      key={sk.name}
+      className="skill-card gs-skill"
+      style={hovered ? { borderColor: col + '80', background: col + '12', boxShadow: `0 0 18px ${col}22` } : {}}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <img
+        src={sk.icon}
+        alt={sk.name}
+        style={{ filter: hovered ? 'grayscale(0) brightness(1)' : 'grayscale(1) brightness(0.55)', transition: 'filter .25s' }}
+        loading="lazy"
+        onError={e => { e.target.style.opacity = '.4' }}
+      />
+      <span>{sk.name}</span>
+    </div>
+  )
+}
+
+function SkillBandItem({ sk }) {
+  const [hovered, setHovered] = useState(false)
+  const col = sk.color || '#888888'
+  return (
+    <div
+      className="skill-item"
+      style={hovered ? { borderColor: col, color: 'var(--text)' } : {}}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <img
+        src={sk.icon}
+        alt={sk.name}
+        style={{ filter: hovered ? 'grayscale(0) brightness(1)' : 'grayscale(1) brightness(0.55)', transition: 'filter .25s' }}
+        loading="lazy"
+        onError={e => { e.target.style.opacity = '.4' }}
+      />
+      <span>{sk.name}</span>
+    </div>
+  )
+}
+
+function SkillsSection() {
+  const allSkills = [
+    ...SKILLS.frontend,
+    ...SKILLS.backend,
+    ...SKILLS.tools,
+  ]
+
+  return (
+    <section id="skills-section" className="sec">
+
+      <NeonFlickerText className="about-text" style={{ maxWidth: '640px', marginBottom: '2rem' }}>
+        Un ensemble d'<strong>outils maîtrisés</strong> au fil des projets, du frontend
+        au backend, pour livrer du code fiable.
+      </NeonFlickerText>
+
+      {/* Zone interactive : occupe toute la section (du parallaxe précédent
+          jusqu'au début de Process). Les logos suivent le curseur, révélés
+          en tranches — cf. components/PixelSliceTrail.jsx */}
+      <div className="skl-trail-zone">
+        <PixelSliceTrail items={allSkills} />
+        <span className="skl-trail-hint">Survolez ici</span>
+      </div>
+
+      <h3 style={{ fontFamily: "'Space Mono',monospace", fontSize: '.6rem', color: 'var(--muted)', letterSpacing: '.15em', textAlign: 'center', marginTop: '1rem' }}>
+        React · JavaScript · Next.js · Python · Django · Flask · MySQL · Git · VS Code · GitHub · Vercel · Tailwind
+      </h3>
+    </section>
+  )
+}
+
+/* ════════════════════════════════════════════
+ PRICING — isPopular + 4 onglets
+ ════════════════════════════════════════════ */
+/* Icône check */
+const CheckIcon = () => (
+  <span className="ptbl-check">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  </span>
+)
+/* Icône X */
+const CrossIcon = () => (
+  <span className="ptbl-cross">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round">
+      <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  </span>
+)
+
+/* ════════════════════════════════════════════
+ PROCESS — Accroche avant l'offre : processus A à Z
+ Même expérience UI/UX que SERVICES (stacked cards
+ GSAP/ScrollTrigger), miroir des colonnes :
+ Gauche : images du process empilées (stack crossfade)
+ Droite : textes étape (sticky switch scrub)
+ ════════════════════════════════════════════ */
+/* ════════════════════════════════════════════
+ HOVER IMAGE REVEAL — Process & Services
+ Style : liste avec image qui suit le curseur
+ ════════════════════════════════════════════ */
+function HoverRevealList({ items, eyebrowSuffix = '' }) {
+  const [hovered, setHovered] = useState(null)
+  const containerRef = useRef(null)
+  const wrapRef = useRef(null) /* boîte flottante : position + rotation + scale/opacity */
+  const imgRef = useRef(null) /* <img> interne : petit "punch" au changement d'item */
+  const xTo = useRef(null)
+  const yTo = useRef(null)
+
+  /* ── Suivi du curseur en continu via quickTo — jamais de setState
+     ici, donc jamais de re-render de la liste à chaque mousemove.
+     C'était la cause principale du manque de fluidité : l'ancienne
+     version faisait un setState (via rAF) sur CHAQUE mouvement, avec
+     en plus une transition CSS qui doublait l'easing. ── */
+  useEffect(() => {
+    const wrap = wrapRef.current
+    if (!wrap) return
+    gsap.set(wrap, { opacity: 0, scale: 0.8 })
+    xTo.current = gsap.quickTo(wrap, 'x', { duration: 0.5, ease: 'power3.out' })
+    yTo.current = gsap.quickTo(wrap, 'y', { duration: 0.5, ease: 'power3.out' })
+  }, [])
+
+  /* Petit "punch" (scale + fade) à chaque changement d'item survolé,
+     pour que l'image se sente vivante même quand on glisse d'une
+     ligne à l'autre sans jamais quitter la liste. */
+  useEffect(() => {
+    if (hovered === null || !imgRef.current) return
+    gsap.fromTo(imgRef.current, { opacity: 0, scale: 1.08, y: 22 }, { opacity: 1, scale: 1, y: 0, duration: 0.45, ease: 'power3.out' })
+  }, [hovered])
+
+  const onMouseMove = (e) => {
+    const rect = containerRef.current?.getBoundingClientRect()
+    if (!rect || !xTo.current) return
+    xTo.current(e.clientX - rect.left + 16)
+    yTo.current(e.clientY - rect.top - 34)
+  }
+
+  const onEnter = (i, e) => {
+    const rect = containerRef.current?.getBoundingClientRect()
+    if (rect && wrapRef.current && hovered === null) {
+      /* Premier survol : on cale la boîte directement sur le curseur
+         sans easing, pour éviter qu'elle n'arrive "en volant" depuis
+         le coin (0,0) — ensuite le quickTo prend le relais en continu. */
+      gsap.set(wrapRef.current, { x: e.clientX - rect.left + 16, y: e.clientY - rect.top - 34 })
+    }
+    gsap.to(wrapRef.current, {
+      opacity: 1, scale: 1,
+      rotation: (Math.random() - 0.5) * 8,
+      duration: 0.5, ease: 'power3.out',
+    })
+    setHovered(i)
+  }
+
+  /* Déclenché en quittant TOUTE la liste (pas ligne par ligne) : passer
+     d'une ligne à la suivante ne masque jamais la boîte, elle glisse
+     simplement vers la nouvelle position — plus de clignotement. */
+  const onLeaveList = () => {
+    gsap.to(wrapRef.current, { opacity: 0, scale: 0.8, duration: 0.35, ease: 'power2.inOut' })
+    setHovered(null)
+  }
+
+  return (
+    <div
+      ref={containerRef}
+      className="hvr-list"
+      onMouseMove={onMouseMove}
+      onMouseLeave={onLeaveList}
+    >
+      {items.map((item, i) => (
+        <div key={i} className="hvr-row-wrap">
+          <div
+            className={`hvr-row${hovered === i ? ' hvr-row--active' : ''}`}
+            onMouseEnter={(e) => onEnter(i, e)}
+          >
+            <span className="hvr-title">{item.title}</span>
+
+            {item.tag && (
+              <span className="hvr-tag" style={{
+                opacity: hovered === i ? 1 : 0,
+                transform: hovered === i ? 'translateX(0)' : 'translateX(10px)',
+              }}>
+                {item.tag}
+              </span>
+            )}
+          </div>
+          {/* Séparateur */}
+          <div className="hvr-sep" style={{
+            background: hovered === i
+              ? 'linear-gradient(90deg,rgba(255,85,0,.6) 0%,rgba(255,85,0,.06) 100%)'
+              : 'rgba(255,255,255,0.06)',
+          }} />
+        </div>
+      ))}
+
+      {/* Image curseur 260×260 — position/rotation/scale/opacity 100% GSAP */}
+      <div ref={wrapRef} className="hvr-cursor-img">
+        {hovered !== null && items[hovered]?.img && (
+          <img ref={imgRef} src={items[hovered].img} alt={items[hovered].title} />
+        )}
+      </div>
+    </div>
+  )
+}
+
+function ProcessSection() {
+  return (
+    <section id="process-section" className="proc-section">
+      <div className="proc-header">
+        <SectionHeading num="03" title="Process" sub="De l'acompte à la livraison" subAs="h2" style={{ marginBottom: '.8rem' }} />
+        <NeonFlickerText className="about-text proc-header-text">
+          Un processus clair et transparent, du premier brief à la mise en ligne —
+          vous savez toujours où en est votre projet.
+        </NeonFlickerText>
+      </div>
+      <div className="proc-hvr-wrap">
+        <HoverRevealList items={PROCESS_STEPS} eyebrowSuffix="Process" />
+      </div>
+    </section>
+  )
+}
+
+/* ════════════════════════════════════════════
+ SERVICES SECTION — Stacked Cards GSAP/ScrollTrigger
+ Gauche : textes service (sticky switch scrub)
+ Droite : images empilées (stacked cards animées)
+ ════════════════════════════════════════════ */
+const SERVICES_DATA = [
+  {
+    num: '01',
+    title: 'Conception\nde Site Web',
+    sub: 'Votre présence en ligne professionnelle',
+    desc: "Création de sites web modernes, responsive et optimisés pour convertir vos visiteurs en clients. Du portfolio à la plateforme e-commerce, je conçois chaque page avec soin.",
+    img: cld('/assets/images/service/creation de site web.webp'),
+    imgAlt: 'Conception de site web',
+  },
+  {
+    num: '02',
+    title: 'Cartes Interactives\n& Dashboards',
+    sub: 'Cartes Mapbox et visualisation de données',
+    desc: "Intégration de cartes interactives Mapbox / Leaflet et de dashboards de visualisation de données. Je transforme vos données brutes en interfaces lisibles et actionnables.",
+    img: cld('/assets/images/service/dasbord.webp'),
+    imgAlt: 'Dashboard interactif',
+  },
+  {
+    num: '03',
+    title: 'API & Backend\nRobustes',
+    sub: 'Connectez et automatisez vos systèmes',
+    desc: "Conception d'API RESTful sécurisées avec Django ou Flask. Authentification JWT, gestion des rôles, intégration Mobile Money et déploiement sur Vercel ou PythonAnywhere.",
+    img: cld('/assets/images/service/api.webp'),
+    imgAlt: 'API et backend',
+  },
+  {
+    num: '04',
+    title: 'Maintenance\n& Support',
+    sub: 'Votre projet performant, sécurisé et à jour',
+    desc: "Suivi technique, corrections de bugs, mises à jour de sécurité et améliorations continues. Vous vous concentrez sur votre métier, je m'occupe du reste.",
+    img: cld('/assets/images/service/maintenence.webp'),
+    imgAlt: 'Maintenance et support',
+  },
+  {
+    num: '05',
+    title: 'Fiche Google\nMy Business',
+    sub: 'Soyez visible sur Google Maps et la recherche locale',
+    desc: "Création ou optimisation de votre fiche Google (NAP, catégories, photos, description SEO local) et suivi mensuel : réponse aux avis, publications et statistiques. Plus de clients vous trouvent près de chez eux.",
+    img: cld('/assets/images/service/fiche-google.webp'),
+    imgAlt: 'Fiche Google My Business',
+  },
+]
+
+function ServicesSection() {
+  /* Adapte SERVICES_DATA pour HoverRevealList */
+  const items = SERVICES_DATA.map(s => ({
+    n: s.num, title: s.title, img: s.img, tag: s.sub,
+  }))
+  return (
+    <section id="services-section" className="svc-section">
+      <div className="svc-header">
+        <SectionHeading num="03" title="Services" sub="Ce que je peux faire pour vous" subAs="h2" style={{ marginBottom: '.8rem' }} />
+        <NeonFlickerText className="about-text svc-header-text">
+          Cinq offres complémentaires, de la conception au support continu —
+          pour un projet qui reste performant dans la durée.
+        </NeonFlickerText>
+      </div>
+      <div className="svc-hvr-wrap">
+        <HoverRevealList items={items} />
+      </div>
+    </section>
+  )
+}
+
+/* ── DEAD CODE BELOW — kept to avoid breaking references if used elsewhere ── */
+function _ServicesSection_OLD_UNUSED() {
+  const sectionRef = useRef(null)
+  const panelsRef = useRef([])
+  const imgsRef = useRef([])
+  const total = SERVICES_DATA.length
+
+  useEffect(() => {
+    const section = sectionRef.current
+    if (!section) return
+
+    const panels = panelsRef.current
+    const images = imgsRef.current
+
+    // Init : toutes les images cachées sauf la première
+    gsap.set(images, { y: '110%', scale: 0.9, opacity: 0 })
+    gsap.set(images[0], { y: '0%', scale: 1, opacity: 1 })
+
+    // Timeline scrubée sur le scroll
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 1,
+      },
+    })
+
+    for (let i = 1; i < total; i++) {
+      tl.to(images[i - 1], { scale: 0.93, opacity: 0.55, y: '-4%', ease: 'none' }, `s${i}`)
+      tl.to(images[i], { y: '0%', scale: 1, opacity: 1, ease: 'none' }, `s${i}`)
+    }
+
+    // Textes : switch selon progress
+    const textTrigger = ScrollTrigger.create({
+      trigger: section,
+      start: 'top top',
+      end: 'bottom bottom',
+      onUpdate: self => {
+        const idx = Math.min(total - 1, Math.floor(self.progress * total))
+        panels.forEach((p, i) => {
+          if (!p) return
+          const active = i === idx
+          p.style.opacity = active ? '1' : '0'
+          p.style.transform = active ? 'translateY(0)' : 'translateY(28px)'
+          p.style.pointerEvents = active ? 'all' : 'none'
+        })
+      },
+    })
+
+    return () => {
+      tl.scrollTrigger?.kill()
+      textTrigger.kill()
+    }
+  }, [total])
+
+  return (
+    <section id="services-section" className="svc-section">
+
+      {/* ── En-tête : titre + accroche — scroll LIBRE, hors du sticky ── */}
+      <div className="svc-header">
+        <SectionHeading num="03" title="Services" sub="Ce que je peux faire pour vous" subAs="h2" style={{ marginBottom: '.8rem' }} />
+        <NeonFlickerText className="about-text svc-header-text">
+          Cinq offres complémentaires, de la conception au support continu —
+          pour un projet qui reste performant dans la durée.
+        </NeonFlickerText>
+      </div>
+
+      {/* ── Zone pin : seule cette zone porte le sticky + le scrub GSAP ── */}
+      <div ref={sectionRef} className="svc-pin" style={{ height: `${total * 100}vh` }}>
+        <div className="svc-sticky">
+          <div className="svc-grid">
+
+            {/* ── Gauche : textes service ── */}
+            <div className="svc-text-col">
+              {SERVICES_DATA.map((s, i) => (
+                <div
+                  key={i}
+                  ref={el => panelsRef.current[i] = el}
+                  className="svc-panel"
+                  style={{
+                    opacity: i === 0 ? 1 : 0,
+                    transform: i === 0 ? 'translateY(0)' : 'translateY(28px)',
+                    pointerEvents: i === 0 ? 'all' : 'none',
+                  }}
+                >
+                  <span className="svc-eyebrow">{s.num} — Services</span>
+                  <h2 className="svc-title">{s.title}</h2>
+                  <p className="svc-sub">{s.sub}</p>
+                  <p className="svc-desc">{s.desc}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* ── Droite : images empilées ── */}
+            <div className="svc-img-col">
+              <div className="bg-dots-acc" aria-hidden="true" />
+              <div className="svc-stack">
+                {SERVICES_DATA.map((s, i) => (
+                  <img
+                    key={i}
+                    ref={el => imgsRef.current[i] = el}
+                    src={s.img}
+                    alt={s.imgAlt}
+                    className="svc-img"
+                    onError={e => { e.target.style.background = '#141414'; e.target.style.opacity = '.4' }}
+                  />
+                ))}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function PricingSection() {
+  const [currentTab, setCurrentTab] = useState(0)
+  const tab = PRICING_TABS[currentTab]
+
+  /* Transforme les rows en features par plan :
+     pour chaque plan (colonne), on collecte uniquement
+     les lignes qui ont une valeur non-false */
+  const featuresPerPlan = tab.plans.map((_, ci) =>
+    tab.rows
+      .filter(row => row.cells[ci] !== false)
+      .map(row => ({
+        label: row.label,
+        val: row.cells[ci],
+      }))
+  )
+
+  const renderFeatureVal = (val) => {
+    if (val === true) return null          // juste le label suffit
+    if (typeof val === 'string') return <span className="prc-feat-val">{val}</span>
+    return null
+  }
+
+  return (
+    <section id="pricing-section">
+      <SectionHeading num="03" title="Clientèle" sub="Tarifs & offres" style={{ marginBottom: '1.5rem' }} />
+      <NeonFlickerText className="about-text" style={{ maxWidth: '640px', marginBottom: '2.5rem' }}>
+        Des <strong>offres claires</strong>, adaptées à la taille de votre projet — du
+        site vitrine à la plateforme web complexe.
+      </NeonFlickerText>
+
+      {/* ── Tabs catégorie ── */}
+      <div className="ptabs">
+        {PRICING_TABS.map((t, i) => (
+          <button key={t.key} className={`ptab${i === currentTab ? ' on' : ''}`} onClick={() => setCurrentTab(i)}>{t.label}</button>
+        ))}
+      </div>
+
+      {/* ── Cartes ── */}
+      <div className={`prc-grid${tab.plans.length === 1 ? ' prc-grid--single' : ''}`} key={currentTab}>
+        {tab.plans.map((plan, ci) => (
+          <div key={ci} className={`prc-card${plan.isPopular ? ' prc-card--pop' : ''}`}>
+
+            {/* Badge Popular */}
+            {plan.isPopular && (
+              <span className="prc-pop-badge">
+                <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                Populaire
+              </span>
+            )}
+
+            {/* Header */}
+            <div className="prc-header">
+              <p className="prc-plan-name">{plan.title}</p>
+              <p className="prc-price">{plan.price}</p>
+              <div className="prc-delivery">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 3" /></svg>
+                Délai : {plan.delivery}
+              </div>
+              {plan.desc && <p className="prc-plan-desc">{plan.desc}</p>}
+            </div>
+
+            {/* Séparateur */}
+            <div className="prc-sep" />
+
+            {/* Features list — défilement infini si liste longue */}
+            <div className="prc-features-scroll-wrap">
+              <ul className="prc-features prc-features--scroll">
+                {/* Track 1 — original */}
+                {featuresPerPlan[ci].map((feat, fi) => (
+                  <li key={`a-${fi}`} className="prc-feat">
+                    <span className="prc-feat-check">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </span>
+                    <span className="prc-feat-label">
+                      {feat.label}
+                      {renderFeatureVal(feat.val)}
+                    </span>
+                  </li>
+                ))}
+                {/* Track 2 — copie pour boucle transparente */}
+                {featuresPerPlan[ci].map((feat, fi) => (
+                  <li key={`b-${fi}`} className="prc-feat" aria-hidden="true">
+                    <span className="prc-feat-check">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </span>
+                    <span className="prc-feat-label">
+                      {feat.label}
+                      {renderFeatureVal(feat.val)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              {/* Fondu haut et bas */}
+              <div className="prc-scroll-fade prc-scroll-fade--top" />
+              <div className="prc-scroll-fade prc-scroll-fade--bot" />
+            </div>
+
+            {/* CTA */}
+            <a
+              href="#contact"
+              className={`prc-cta${plan.isPopular ? ' prc-cta--pop' : ''}`}
+              onClick={e => {
+                e.preventDefault()
+                const el = document.getElementById('contact')
+                if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY, behavior: 'smooth' })
+              }}
+            >
+              <HoverFadeText>{tab.key === 'saas' ? 'Demander un devis gratuit' : 'Démarrer le projet'}</HoverFadeText>
+              <span className="btn-arr" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg></span>
+            </a>
+
+          </div>
+        ))}
+      </div>
+
+      <p className="pricing-note">
+        Chaque projet étant unique, les tarifs peuvent varier selon les fonctionnalités demandées.
+      </p>
+    </section>
+  )
+}
+
+/* ════════════════════════════════════════════
+ TESTIMONIALS
+ ════════════════════════════════════════════ */
+function TestiCard({ t }) {
+  const cardRef = useRef(null)
+  const handleMouseMove = (e) => {
+    const el = cardRef.current
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    const xc = rect.width / 2
+    const yc = rect.height / 2
+    const tiltX = (yc - y) / 12
+    const tiltY = (x - xc) / 12
+    gsap.to(el, {
+      transform: `perspective(600px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.04, 1.04, 1.04)`,
+      borderColor: 'rgba(255,85,0,.6)',
+      boxShadow: '0 30px 60px rgba(255,85,0,0.12), 0 20px 40px rgba(0,0,0,.5)',
+      duration: 0.35,
+      ease: 'power2.out',
+      overwrite: 'auto'
+    })
+  }
+  const handleMouseLeave = () => {
+    const el = cardRef.current
+    if (!el) return
+    gsap.to(el, {
+      transform: 'perspective(600px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)',
+      duration: 0.5,
+      ease: 'power2.out',
+      clearProps: 'boxShadow,borderColor',
+      overwrite: 'auto'
+    })
+  }
+  return (
+    <div
+      ref={cardRef}
+      className="testi-card"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}
+    >
+      <div className="testi-project-tag" style={{ transform: 'translateZ(20px)' }}>{t.proj}</div>
+      <div style={{ transform: 'translateZ(15px)' }}>
+        <div className="testi-stars">
+          {Array(5).fill(null).map((_, j) => (
+            <svg key={j} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="12" height="12">
+              <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="#FF5500" />
+            </svg>
+          ))}
+        </div>
+        <div className="testi-quote">
+          <div><span className="testi-quote-mark">"</span>{t.text}</div>
+        </div>
+      </div>
+      <div className="testi-footer" style={{ transform: 'translateZ(25px)' }}>
+        <div className="testi-avatar">{t.avatar}</div>
+        <div>
+          <div className="testi-name">{t.name}</div>
+          <div className="testi-role">{t.role}</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ════════════════════════════════════════════
+ BLOG — 6 posts LinkedIn, carrousel auto-défilant
+ (CardSwap, même mécanique que TESTIMONIALS) +
+ renvoi vers le profil complet.
+ ════════════════════════════════════════════ */
+function WritingSection() {
+  return (
+    <section id="writing-section" style={{ padding: '10vh 0 4vh', overflow: 'hidden' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          gap: '2.5rem',
+          flexWrap: 'wrap',
+          padding: '0 4vw',
+        }}
+      >
+        <div style={{ maxWidth: 360, flexShrink: 0 }}>
+          <SectionHeading num="02" title="BLOG" sub="Ce que je partage sur LinkedIn" style={{ marginBottom: '1.2rem' }} />
+
+          <h3 style={{ fontSize: '.88rem', color: 'var(--muted)', lineHeight: 1.7 }}>
+            Clique dessus pour lire le post complet sur LinkedIn.
+          </h3>
+
+          <a
+            href={CONTACT.linkedin}
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              display: 'inline-flex',
+              marginTop: '1.5rem',
+              fontSize: '.85rem',
+              fontWeight: 600,
+              color: 'var(--text)',
+              textDecoration: 'none',
+              borderBottom: '1px solid var(--text)',
+              paddingBottom: '2px',
+            }}
+          >
+            Voir tous mes posts sur LinkedIn →
+          </a>
+        </div>
+
+        <div
+          style={{
+            position: 'relative',
+            width: 440,
+            height: 420,
+            flexShrink: 0,
+            marginLeft: 'clamp(0rem, 1vw, .5rem)'
+          }}
+        >
+          <CardSwap
+            width={440}
+            height={420}
+            cardDistance={48}
+            verticalDistance={54}
+            delay={7000}
+            pauseOnHover={true}
+            skewAmount={4}
+            easing="elastic.out(1, 0.8)"
+          >
+            {WRITING_POSTS.map((post) => (
+              <Card key={post.id} customClass="writing-card">
+                <a
+                  href={post.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    height: '100%',
+                    padding: '1.5rem',
+                    boxSizing: 'border-box',
+                    textDecoration: 'none',
+                    color: 'inherit',
+                  }}
+                >
+                  <div>
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        fontFamily: "'Space Mono',monospace",
+                        fontSize: '.58rem',
+                        letterSpacing: '.1em',
+                        textTransform: 'uppercase',
+                        color: 'var(--accent)',
+                        border: '1px solid rgba(255,85,0,.3)',
+                        borderRadius: '999px',
+                        padding: '3px 10px',
+                        marginBottom: '1rem',
+                      }}
+                    >
+                      {post.tag}
+                    </span>
+                    <h3
+                      style={{
+                        fontFamily: 'var(--fd)',
+                        fontSize: '1.05rem',
+                        lineHeight: 1.4,
+                        color: 'var(--text)',
+                        marginBottom: '.7rem',
+                      }}
+                    >
+                      {post.hook}
+                    </h3>
+                    <p
+                      style={{
+                        fontFamily: 'var(--fb)',
+                        fontSize: '.82rem',
+                        lineHeight: 1.6,
+                        color: 'var(--muted)',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 4,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {post.excerpt}
+                    </p>
+                  </div>
+                  <span
+                    style={{
+                      fontFamily: 'var(--fb)',
+                      fontSize: '.76rem',
+                      fontWeight: 700,
+                      color: 'var(--accent)',
+                      marginTop: '1rem',
+                    }}
+                  >
+                    Lire sur LinkedIn ↗
+                  </span>
+                </a>
+              </Card>
+            ))}
+          </CardSwap>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function TestimonialsSection() {
+  return (
+    <section
+      id="testimonials-section"
+      style={{
+        padding: '10vh 0',
+        overflow: 'hidden'
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          gap: '2.5rem',
+          flexWrap: 'wrap',
+          padding: '0 4vw'
+        }}
+      >
+        <div style={{ maxWidth: 340, flexShrink: 0 }}>
+          <SectionHeading num="03" title="Avis" sub={`${TESTIMONIALS.length} avis clients`} style={{ marginBottom: '1.2rem' }} />
+
+          <h3 style={{ fontSize: '.88rem', color: 'var(--muted)', lineHeight: 1.7 }}>
+            Chaque carte défile automatiquement pour révéler une nouvelle histoire client.
+          </h3>
+
+          <div style={{ marginTop: '1.5rem', display: 'flex', gap: '.5rem', flexWrap: 'wrap' }}>
+            {TESTIMONIALS.map((t) => (
+              <span
+                key={t.name}
+                style={{
+                  fontFamily: "'Space Mono',monospace",
+                  fontSize: '.58rem',
+                  color: 'var(--muted)',
+                  border: '1px solid rgba(255,85,0,.18)',
+                  borderRadius: '999px',
+                  padding: '3px 10px'
+                }}
+              >
+                {t.name}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div
+          style={{
+            position: 'relative',
+            width: 460,
+            height: 520,
+            flexShrink: 0,
+            marginLeft: 'clamp(0rem, 1vw, .5rem)'
+          }}
+        >
+          <CardSwap
+            width={460}
+            height={520}
+            cardDistance={52}
+            verticalDistance={58}
+            delay={3500}
+            pauseOnHover={true}
+            skewAmount={4}
+            easing="elastic.out(1, 0.8)"
+          >
+            {TESTIMONIALS.map((t) => (
+              <Card key={t.name} customClass="testi-card">
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    height: '100%',
+                    padding: '1.4rem',
+                    boxSizing: 'border-box'
+                  }}
+                >
+                  <div>
+                    <div
+                      style={{
+                        alignSelf: 'flex-start',
+                        fontFamily: 'var(--fd)',
+                        fontSize: '.58rem',
+                        letterSpacing: '.2em',
+                        textTransform: 'uppercase',
+                        background: 'var(--accent)',
+                        border: '2px solid var(--text)',
+                        padding: '4px 12px',
+                        borderRadius: '999px',
+                        color: 'var(--bg)',
+                        fontWeight: 800,
+                        marginBottom: '1rem',
+                        display: 'inline-block'
+                      }}
+                    >
+                      {t.proj}
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '3px', marginBottom: '.8rem' }}>
+                      {Array.from({ length: 5 }).map((_, j) => (
+                        <svg key={j} viewBox="0 0 24 24" width="14" height="14">
+                          <polygon
+                            points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"
+                            fill="var(--accent)"
+                          />
+                        </svg>
+                      ))}
+                    </div>
+
+                    <h3 style={{ fontFamily: 'var(--fd)', fontSize: '.92rem', lineHeight: 1.7, color: 'var(--text)' }}>
+                      <span
+                        style={{
+                          fontSize: '2.2rem',
+                          lineHeight: '.5',
+                          color: 'rgba(255,85,0,.3)',
+                          fontWeight: 800,
+                          display: 'block',
+                          marginBottom: '.4rem'
+                        }}
+                      >
+                        “
+                      </span>
+                      {t.text}
+                    </h3>
+                  </div>
+
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '.9rem',
+                      paddingTop: '1rem',
+                      borderTop: '1px solid rgba(255,85,0,.15)',
+                      marginTop: '1rem'
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: '50%',
+                        background: 'linear-gradient(135deg,var(--accent),#cc3300)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontFamily: 'var(--fd)',
+                        fontWeight: 800,
+                        fontSize: '.9rem',
+                        color: '#0A0A0A',
+                        flexShrink: 0
+                      }}
+                    >
+                      {t.avatar}
+                    </div>
+
+                    <div>
+                      <div style={{ fontFamily: 'var(--fd)', fontWeight: 700, fontSize: '.85rem', color: 'var(--text)' }}>
+                        {t.name}
+                      </div>
+                      <div style={{ fontSize: '.62rem', color: 'var(--muted)', marginTop: '2px' }}>
+                        {t.role}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </CardSwap>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ════════════════════════════════════════════
+ FAQ — Accordéon questions fréquentes
+ ════════════════════════════════════════════ */
+function FAQItem({ item, index, isOpen, onToggle }) {
+  return (
+    <div className={`faq-item${isOpen ? ' open' : ''}`}>
+      <button className="faq-q" onClick={onToggle} aria-expanded={isOpen}>
+        <span className="faq-q-text">
+          <span className="faq-q-num">{String(index + 1).padStart(2, '0')}</span>
+          {item.q}
+        </span>
+        <span className="faq-icon">
+          <AnimIcon type="plus" size={13} color="currentColor" />
+        </span>
+      </button>
+      <div className="faq-a-wrap">
+        <div className="faq-a-inner">
+          <p className="faq-a">{item.a}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function FAQSection() {
+  const [openIndex, setOpenIndex] = useState(null)
+
+  return (
+    <section id="faq-section">
+      <SectionHeading num="04" title="FAQ" sub="Questions fréquentes" style={{ marginBottom: '3rem' }} />
+
+      <div className="faq-list">
+        {FAQ_ITEMS.map((item, i) => (
+          <FAQItem
+            key={i}
+            item={item}
+            index={i}
+            isOpen={openIndex === i}
+            onToggle={() => setOpenIndex(openIndex === i ? null : i)}
+          />
+        ))}
+      </div>
+    </section>
+  )
+}
+
+/* ════════════════════════════════════════════
+ INTERACTIVE GITHUB CARD — Temps réel via GitHub API
+ ════════════════════════════════════════════ */
+function GitHubInteractiveCard() {
+  const GH_USER = 'wthomasss06-stack'
+
+  const [activeTab, setActiveTab] = useState('grid')
+  const [tooltip, setTooltip] = useState({ show: false, text: '', x: 0, y: 0 })
+  const [terminalLines, setTerminalLines] = useState([])
+  const [isPushing, setIsPushing] = useState(false)
+  const [logs, setLogs] = useState([
+    { id: 1, time: 'Il y a 10 min', repo: 'shop-ci', msg: 'fix: validation du panier et mobile money API', commits: 2 },
+    { id: 2, time: 'Il y a 2 heures', repo: 'akatech', msg: 'feat: ajout des animations GSAP de survol', commits: 1 },
+    { id: 3, time: 'Hier', repo: 'terrasafe', msg: 'security: validation CSRF sur le formulaire', commits: 3 },
+    { id: 4, time: 'Il y a 3 jours', repo: 'chap-chapMAP', msg: 'refactor: optimisation des couches Leaflet', commits: 1 },
+  ])
+
+  const [ghLoading, setGhLoading] = useState(true)
+  const [ghError, setGhError] = useState(false)
+  const [ghUser, setGhUser] = useState(null)
+  const [ghRepos, setGhRepos] = useState([])
+  const [contributions, setContributions] = useState([])
+  const [ghStats, setGhStats] = useState({
+    totalContribs: null, longestStreak: null, thisMonth: null, topLang: 'React / Python',
+  })
+
+  /* ── Fallback grid réaliste ── */
+  const buildFallbackGrid = useCallback(() => {
+    const data = []
+    const today = new Date()
+    const startDate = new Date(); startDate.setDate(today.getDate() - 364)
+    const dow = startDate.getDay()
+    startDate.setDate(startDate.getDate() - dow)
+    for (let i = 0; i < 371; i++) {
+      const currentDate = new Date(startDate); currentDate.setDate(startDate.getDate() + i)
+      const isWeekend = [0, 6].includes(currentDate.getDay())
+      let count = 0; const rand = Math.random()
+      if (isWeekend) { if (rand > 0.85) count = Math.floor(Math.random() * 3) + 1 }
+      else {
+        if (rand > 0.45) {
+          if (rand > 0.92) count = Math.floor(Math.random() * 8) + 5
+          else if (rand > 0.72) count = Math.floor(Math.random() * 4) + 2
+          else count = 1
+        }
+      }
+      let level = 0
+      if (count > 0) { if (count <= 2) level = 1; else if (count <= 4) level = 2; else if (count <= 7) level = 3; else level = 4 }
+      data.push({ date: currentDate, count, level })
+    }
+    return data
+  }, [])
+
+  /* ── Fetch indépendant par requête (plus de Promise.all tout-ou-rien) ── */
+  useEffect(() => {
+    const headers = { Accept: 'application/vnd.github.v3+json' }
+    let cancelled = false
+
+    const buildGrid = (apiContribs) => {
+      const today = new Date()
+      const startDate = new Date(); startDate.setDate(today.getDate() - 364)
+      const dow = startDate.getDay()
+      const alignedStart = new Date(startDate); alignedStart.setDate(startDate.getDate() - dow)
+      const cMap = {}
+      apiContribs.forEach(d => { cMap[d.date] = d })
+      const grid = []
+      for (let i = 0; i < 371; i++) {
+        const d = new Date(alignedStart); d.setDate(alignedStart.getDate() + i)
+        if (d > today) { grid.push({ date: d, count: 0, level: 0 }); continue }
+        const key = d.toISOString().split('T')[0]
+        const c = cMap[key] || { count: 0, level: 0 }
+        grid.push({ date: d, count: c.count, level: c.level })
+      }
+      return grid
+    }
+
+    /* Timeout helper : rejette après N ms */
+    const fetchWithTimeout = (url, opts = {}, ms = 8000) => {
+      const ctrl = new AbortController()
+      const tid = setTimeout(() => ctrl.abort(), ms)
+      return fetch(url, { ...opts, signal: ctrl.signal })
+        .finally(() => clearTimeout(tid))
+    }
+
+    /* Lancer les 3 requêtes en parallèle mais INDÉPENDAMMENT */
+    const run = async () => {
+      /* 1. User info */
+      fetchWithTimeout(`https://api.github.com/users/${GH_USER}`, { headers })
+        .then(r => r.ok ? r.json() : null)
+        .then(user => { if (!cancelled && user && !user.message) setGhUser(user) })
+        .catch(() => { })
+
+      /* 2. Repos */
+      fetchWithTimeout(`https://api.github.com/users/${GH_USER}/repos?per_page=100&sort=stars`, { headers })
+        .then(r => r.ok ? r.json() : [])
+        .then(repos => {
+          if (cancelled || !Array.isArray(repos)) return
+          const sorted = repos.filter(r => !r.fork)
+            .sort((a, b) => (b.stargazers_count || 0) - (a.stargazers_count || 0))
+            .slice(0, 4)
+          setGhRepos(sorted)
+        })
+        .catch(() => { })
+
+      /* 3. Contributions — tenter l'API tierce avec retry sur l'API officielle */
+      let contribOk = false
+      try {
+        const r = await fetchWithTimeout(
+          `https://github-contributions-api.jogruber.de/v4/${GH_USER}?y=last`, {}, 10000
+        )
+        if (r.ok) {
+          const data = await r.json()
+          if (!cancelled && data?.contributions?.length) {
+            const grid = buildGrid(data.contributions)
+            setContributions(grid)
+            const all = data.contributions
+            const total = all.reduce((s, d) => s + d.count, 0)
+            let maxStreak = 0, streak = 0
+            all.forEach(d => { if (d.count > 0) { streak++; maxStreak = Math.max(maxStreak, streak) } else streak = 0 })
+            const now = new Date()
+            const thisMonth = all
+              .filter(d => { const dt = new Date(d.date); return dt.getMonth() === now.getMonth() && dt.getFullYear() === now.getFullYear() })
+              .reduce((s, d) => s + d.count, 0)
+            setGhStats({ totalContribs: total, longestStreak: maxStreak, thisMonth, topLang: 'React / Python' })
+            contribOk = true
+          }
+        }
+      } catch (_) { }
+
+      /* Fallback si la contrib API a échoué */
+      if (!contribOk && !cancelled) {
+        setContributions(buildFallbackGrid())
+        /* Les stats numériques restent null → affichage "—" élégant */
+      }
+
+      if (!cancelled) setGhLoading(false)
+    }
+
+    run()
+    return () => { cancelled = true }
+  }, [buildFallbackGrid])
+
+  /* ── Tooltip ── */
+  const handleSquareHover = (e, day) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const parentRect = e.currentTarget.offsetParent?.getBoundingClientRect() || rect
+    const opts = { day: 'numeric', month: 'short', year: 'numeric' }
+    const dateStr = day.date?.toLocaleDateString('fr-FR', opts) || '—'
+    const text = `${day.count} contribution${day.count > 1 ? 's' : ''} · ${dateStr}`
+    setTooltip({ show: true, text, x: rect.left - parentRect.left + rect.width / 2, y: rect.top - parentRect.top - 36 })
+  }
+  const handleSquareLeave = () => setTooltip(p => ({ ...p, show: false }))
+
+  /* ── Simulation git push ── */
+  const runPushSimulation = () => {
+    if (isPushing) return
+    setIsPushing(true); setTerminalLines([])
+    const lines = [
+      'wthomasss06-stack@desktop:~$ git add .',
+      'wthomasss06-stack@desktop:~$ git commit -m "feat: design interactive stats grid"',
+      'wthomasss06-stack@desktop:~$ git push origin main',
+      'Enumerating objects: 7, done.',
+      'Counting objects: 100% (7/7), done.',
+      'Compressing objects: 100% (4/4), done.',
+      'Writing objects: 100% (4/4), 485 bytes | 485.00 KiB/s, done.',
+      `To github.com:${GH_USER}/elvis-portfolio.git`,
+      ' 7c28fb3..9a28cd1 main -> main',
+      'wthomasss06-stack@desktop:~$ _',
+    ]
+    let cur = 0
+    const next = () => {
+      if (cur < lines.length) {
+        setTerminalLines(p => [...p, lines[cur++]])
+        setTimeout(next, cur <= 3 ? 600 : 250)
+      } else {
+        setIsPushing(false)
+        setLogs(p => [{ id: Date.now(), time: "À l'instant", repo: 'elvis-portfolio', msg: 'feat: design interactive stats grid', commits: 1 }, ...p])
+      }
+    }
+    setTimeout(next, 200)
+  }
+
+  const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc']
+
+  /* helper stat display */
+  const statVal = (v, suffix = '') => {
+    if (ghLoading) return <span className="gh-stat-skeleton" />
+    if (v === null || v === undefined) return <span style={{ color: 'var(--muted)', fontSize: '.85em' }}>—</span>
+    return typeof v === 'number' ? v.toLocaleString('fr') + suffix : v
+  }
+
+  return (
+    <div className="github-card-large">
+      {/* ── HEADER ── */}
+      <div className="github-card-large-header">
+        <div className="github-card-large-logo">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--accent)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+          </svg>
+          <div>
+            <h3 className="github-card-large-title">Activité GitHub</h3>
+            <h3 className="github-card-large-user">
+              <a href={`https://github.com/${GH_USER}`} target="_blank" rel="noreferrer">@{GH_USER}</a>
+              {ghUser && <span style={{ color: 'var(--muted)', marginLeft: '8px', fontSize: '.62rem' }}>· {ghUser.public_repos} repos · {ghUser.followers} followers</span>}
+            </h3>
+          </div>
+          <span className="github-live-badge">
+            <span className={`github-pulse${ghLoading ? ' loading' : ''}`} />
+            {ghLoading ? 'Chargement…' : ghStats.totalContribs !== null ? 'Live' : 'Fallback'}
+          </span>
+        </div>
+
+        <div className="github-card-large-tabs">
+          {[['grid', 'Contributions'], ['repos', 'Projets & Dépôts'], ['feed', 'Flux de Commit']].map(([key, lbl]) => (
+            <button key={key} className={`github-tab-btn${activeTab === key ? ' active' : ''}`} onClick={() => setActiveTab(key)}>{lbl}</button>
+          ))}
+        </div>
+      </div>
+
+      <div className="github-card-large-body">
+
+        {/* ── ONGLET GRILLE ── */}
+        {activeTab === 'grid' && (
+          <div className="github-tab-content-grid">
+            <div className="github-stats-row">
+              <div className="github-stat-item">
+                <span className="github-stat-num">{statVal(ghStats.totalContribs)}</span>
+                <span className="github-stat-lbl">Contributions 365j</span>
+              </div>
+              <div className="github-stat-item">
+                <span className="github-stat-num">{statVal(ghStats.longestStreak, ' j.')}</span>
+                <span className="github-stat-lbl">Série max</span>
+              </div>
+              <div className="github-stat-item">
+                <span className="github-stat-num" style={{ color: 'var(--accent)' }}>{ghStats.topLang}</span>
+                <span className="github-stat-lbl">Technologies favorites</span>
+              </div>
+              <div className="github-stat-item">
+                <span className="github-stat-num">{statVal(ghStats.thisMonth, ' commits')}</span>
+                <span className="github-stat-lbl">Mois en cours</span>
+              </div>
+            </div>
+
+            <div className="github-grid-scroll-wrapper">
+              <div className="github-months-row">
+                {months.map((m, idx) => (
+                  <span key={idx} className="github-month-lbl">{m}</span>
+                ))}
+              </div>
+              <div className="github-grid-container">
+                <div className="github-grid-days">
+                  <span>Dim</span><span></span><span>Mar</span><span></span><span>Jeu</span><span></span><span>Sam</span>
+                </div>
+                {contributions.length > 0 ? (
+                  <div className="github-grid">
+                    {contributions.map((day, idx) => (
+                      <div
+                        key={idx}
+                        className={`github-square level-${day.level}`}
+                        onMouseEnter={(e) => handleSquareHover(e, day)}
+                        onMouseLeave={handleSquareLeave}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="github-grid-skeleton">
+                    {Array.from({ length: 371 }).map((_, i) => (
+                      <div key={i} className="github-square-skeleton" />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {ghStats.totalContribs === null && !ghLoading && (
+              <div className="gh-api-notice">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+                API GitHub temporairement indisponible · grille générée localement
+              </div>
+            )}
+
+            <div className="github-grid-footer">
+              <span>Survolez les carrés pour voir le détail · données GitHub en temps réel</span>
+              <div className="github-legend">
+                <span>Moins</span>
+                {[0, 1, 2, 3, 4].map(l => <div key={l} className={`github-square level-${l}`} />)}
+                <span>Plus</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── ONGLET REPOS ── */}
+        {activeTab === 'repos' && (
+          <div className="github-tab-content-repos">
+            {ghLoading ? (
+              <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--muted)', fontFamily: "'Space Mono',monospace", fontSize: '.7rem' }}>
+                Chargement des dépôts GitHub…
+              </div>
+            ) : (ghRepos.length > 0 ? ghRepos : [
+              { name: 'ShopCI', description: 'Marketplace E-commerce locale avec intégration mobile money.', stargazers_count: 14, forks_count: 4, language: 'JavaScript' },
+              { name: 'TerraSafe', description: "Plateforme foncière de prévention des risques d'arnaque.", stargazers_count: 8, forks_count: 2, language: 'Python' },
+              { name: 'AKATech Studio', description: 'Site officiel de mon agence digitale. Responsive + animations.', stargazers_count: 21, forks_count: 5, language: 'TypeScript' },
+              { name: 'chap-chapMAP', description: "Cartographie interactive pour l'itinéraire et la livraison.", stargazers_count: 5, forks_count: 1, language: 'JavaScript' },
+            ]).map((repo, i) => {
+              const langColor = { JavaScript: '#f1e05a', Python: '#3572A5', TypeScript: '#2b7489', HTML: '#e34c26', CSS: '#563d7c' }
+              const pct = { JavaScript: '100% JS', Python: '55% Py / 45% HTML', TypeScript: '90% TS / 10% CSS', HTML: '100% HTML' }
+              const color = langColor[repo.language] || '#FF5500'
+              return (
+                <div key={i} className="github-repo-card">
+                  <div className="github-repo-header">
+                    <span className="github-repo-name">
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" style={{ display: 'inline', marginRight: '6px', verticalAlign: 'text-top' }}><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" /></svg>
+                      {repo.html_url
+                        ? <a href={repo.html_url} target="_blank" rel="noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>{repo.name}</a>
+                        : repo.name}
+                    </span>
+                    <div className="github-repo-stats">
+                      <span>★ {repo.stargazers_count || 0}</span>
+                      <span>⌥ {repo.forks_count || 0}</span>
+                    </div>
+                  </div>
+                  <h3 className="github-repo-desc">{repo.description}</h3>
+                  <div className="github-repo-lang-bar">
+                    <div className="github-repo-lang-progress" style={{ width: '70%', background: color }} />
+                  </div>
+                  <div className="github-repo-footer">
+                    <span>{repo.language || 'Web'}</span>
+                    <span>{pct[repo.language] || '—'}</span>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {/* ── ONGLET FLUX COMMIT ── */}
+        {activeTab === 'feed' && (
+          <div className="github-tab-content-feed">
+            <div className="github-feed-left">
+              <div className="github-logs-list">
+                {logs.map((log) => (
+                  <div key={log.id} className="github-log-item">
+                    <div className="github-log-meta">
+                      <span className="github-log-repo">{GH_USER}/{log.repo}</span>
+                      <span className="github-log-time">{log.time}</span>
+                    </div>
+                    <h3 className="github-log-msg">{log.msg}</h3>
+                    <span className="github-log-commits-count">{log.commits} commit{log.commits > 1 ? 's' : ''} pushed</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="github-feed-right">
+              <div className="github-terminal">
+                <div className="github-terminal-header">
+                  <div className="github-terminal-dots">
+                    <span className="dot-red" /><span className="dot-yellow" /><span className="dot-green" />
+                  </div>
+                  <span className="github-terminal-title">bash - {GH_USER}@github:~</span>
+                </div>
+                <div className="github-terminal-body">
+                  <div className="github-terminal-welcome">Prêt pour la simulation de commit en direct.</div>
+                  {terminalLines.map((line, idx) => (<div key={idx} className="github-terminal-line">{line}</div>))}
+                  {isPushing && <div className="github-terminal-cursor" />}
+                </div>
+              </div>
+              <button className="github-push-btn" onClick={runPushSimulation} disabled={isPushing}>
+                {isPushing ? 'Pushing to GitHub...' : 'Simuler un Git Push en direct'}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {tooltip.show && (
+        <div className="github-tooltip" style={{ left: tooltip.x, top: tooltip.y }}>
+          {tooltip.text}
+          <div className="github-tooltip-arrow" />
+        </div>
+      )}
+    </div>
+  )
+}
+
+/* ════════════════════════════════════════════
+ CONTACT
+ ════════════════════════════════════════════ */
+function ContactSection({ onToast }) {
+  const [sending, setSending] = useState(false)
+  const [sent, setSent] = useState(false)
+  const [btnTxt, setBtnTxt] = useState('Envoyer le message')
+
+  const handleSubmit = async e => {
+    e.preventDefault(); setSending(true); setBtnTxt('Envoi en cours…')
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: e.target.name.value,
+          email: e.target.email.value,
+          projectType: e.target.projectType.value,
+          message: e.target.message.value,
+          company: e.target.company.value, // honeypot anti-spam — doit rester vide
+        }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        const firstFieldError = data?.fieldErrors && Object.values(data.fieldErrors)[0]
+        throw new Error(firstFieldError || data?.error || 'Erreur serveur')
+      }
+      setSent(true); onToast()
+    } catch (err) {
+      setBtnTxt(err?.message ? `${err.message}` : 'Erreur — WhatsApp : +225 01 42 50 77 50')
+      setTimeout(() => { setBtnTxt('Envoyer le message'); setSending(false) }, 4000)
+    }
+  }
+
+  const nodeLinks = [
+    { id: 'cojn-github', href: 'https://github.com/wthomasss06-stack', label: 'GitHub' },
+    { id: 'cojn-linkedin', href: 'https://www.linkedin.com/in/m-bollo-aka', label: 'LinkedIn' },
+    { id: 'cojn-facebook', href: 'https://web.facebook.com/profile.php?id=61577494705852', label: 'Facebook' },
+    { id: 'cojn-whatsapp', href: 'https://wa.me/2250142507750', label: 'WhatsApp' },
+    { id: 'cojn-akatech', href: 'https://akatech.vercel.app/', label: 'AKATech Studio' },
+    { id: 'cojn-gmail', href: 'mailto:wthomasss06@gmail.com', label: 'Gmail' },
+    { id: 'cojn-uvci', href: 'https://uvci.edu.ci/', label: 'UVCI' },
+    { id: 'cojn-cv', href: '/assets/CV_MBOLLO_AKA_ELVIS.pdf', label: 'Mon CV' },
+  ]
+
+  return (
+    <section id="contact">
+      <SectionHeading num="05" title="Contact" sub="Travaillons ensemble" style={{ marginBottom: '1.5rem' }} />
+      <NeonFlickerText className="about-text" style={{ maxWidth: '640px', marginBottom: '2.5rem' }}>
+        Une idée, un projet, une question ? Je suis <strong>disponible</strong> pour en
+        discuter et la transformer en quelque chose de concret.
+      </NeonFlickerText>
+
+      <div className="contact-grid">
+        {/* ── Colonne gauche : liste compacte "Où me joindre" ── */}
+        <div className="contact-info contact-links-col">
+          <div className="contact-status-badge" style={{ marginBottom: '1.6rem' }}><span className="cdot" /><span>Disponible maintenant</span></div>
+          <span style={{ fontFamily: "'Space Mono',monospace", fontSize: '.58rem', color: 'rgba(255,85,0,.55)', letterSpacing: '.2em', textTransform: 'uppercase', display: 'block', marginBottom: '1rem' }}>// Où me joindre</span>
+          <ul className="clk-list">
+            {nodeLinks.map(n => (
+              <li key={n.id} className="clk-item">
+                <a
+                  href={n.href}
+                  target={n.href.startsWith('mailto') || n.href.startsWith('/') || n.href.startsWith('tel') ? '_self' : '_blank'}
+                  rel="noreferrer"
+                  className="clk-link"
+                >
+                  <span className="clk-label"><HoverFadeText>{n.label}</HoverFadeText></span>
+                  <span className="clk-arrow">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="7" y1="17" x2="17" y2="7" />
+                      <polyline points="7 7 17 7 17 17" />
+                    </svg>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h3 className="rp-slider-title" style={{ marginBottom: '.5rem' }}>Envoyez-moi un message</h3>
+          <h3 style={{ fontSize: '.85rem', color: 'var(--muted)', marginBottom: '1.5rem' }}>Remplissez le formulaire et je vous réponds rapidement.</h3>
+          <div className="cf-card">
+            {sent ? (
+              <div style={{ textAlign: 'center', padding: '3rem 2rem' }}>
+                <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(255,85,0,.12)', border: '1.5px solid var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.2rem' }}>
+                  <AnimIcon type="check" size={28} color="#FF5500" />
+                </div>
+                <h3 style={{ fontFamily: "'Clash Display','Syne',sans-serif", fontWeight: 700, marginBottom: '.5rem' }}>Message envoyé !</h3>
+                <h3 style={{ fontSize: '.85rem', color: 'var(--muted)' }}>Je vous réponds sous 24h. <AnimIcon type="rocket" size={14} /></h3>
+              </div>
+            ) : (
+              <form id="contact-form" onSubmit={handleSubmit}>
+                {/* Honeypot anti-spam : invisible pour un humain, souvent rempli par les bots */}
+                <input
+                  type="text"
+                  name="company"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  style={{ position: 'absolute', width: '1px', height: '1px', opacity: 0, pointerEvents: 'none', left: '-9999px' }}
+                />
+                <div className="form-row">
+                  <div className="form-field"><label>Nom complet *</label><input type="text" name="name" placeholder="Jean Kouassi" required /></div>
+                  <div className="form-field"><label>Email *</label><input type="email" name="email" placeholder="jean@exemple.com" required /></div>
+                </div>
+                <div className="form-field">
+                  <label>Type de projet *</label>
+                  <select name="projectType" required>
+                    <option value="">Sélectionnez votre besoin…</option>
+                    <option value="site-vitrine">Site Vitrine</option>
+                    <option value="e-commerce">E-commerce</option>
+                    <option value="application-web">Application Web / SaaS</option>
+                    <option value="api">API / Backend</option>
+                    <option value="dashboard">Dashboard / Data</option>
+                    <option value="maintenance">Maintenance / Support</option>
+                    <option value="recrutement">Candidature spontanée</option>
+                    <option value="autre">Autre</option>
+                  </select>
+                </div>
+                <div className="form-field">
+                  <label>Message *</label>
+                  <textarea name="message" rows="6" placeholder="Décrivez votre projet ou opportunité…" required />
+                </div>
+                <button type="submit" id="cf-submit" className="btn-fill" style={{ width: '100%', justifyContent: 'center', padding: '16px', fontSize: '.82rem', gap: '.6rem' }} disabled={sending}>
+                  <HoverFadeText tag="span">{btnTxt}</HoverFadeText>
+                  <span className="btn-arr" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg></span>
+                </button>
+                <div className="form-note">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }}><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg>
+                  Vos données sont sécurisées et ne seront jamais partagées.
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      </div>
+
+
+
+    </section>
+  )
+}
+
+/* ════════════════════════════════════════════
+ FOOTER — simplifié v7 : QR centré + AKATECH MASSIF
+ ════════════════════════════════════════════ */
+
+/* BeamsInteractive — fond statique orange, sans réactivité curseur */
+function BeamsInteractive() {
+  return (
+    <Iridescence
+      color={[1, 0.22, 0.04]}
+      speed={0.28}
+      amplitude={0.06}
+      mouseReact={false}
+    />
+  )
+}
+
+
+function Footer() {
+  const scrollToSection = usePageTransition()
+  const footerRef = useRef(null)
+  const tiltRef   = useRef(null)
+  const floatRef  = useRef(null)
+
+  /* ── Pin scroll-driven (inchangé) ── */
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      ScrollTrigger.matchMedia({
+        '(min-width: 769px)': function () {
+          const contactEl = document.getElementById('contact')
+          const footerH = footerRef.current.getBoundingClientRect().height
+          if (contactEl) gsap.set(contactEl, { marginBottom: -footerH })
+          ScrollTrigger.create({
+            trigger: footerRef.current,
+            start: 'bottom bottom',
+            end: 'max',
+            pin: true,
+            pinSpacing: true,
+          })
+        },
+      })
+    })
+    return () => ctx.revert()
+  }, [])
+
+  /* ── Float continu ── */
+  useEffect(() => {
+    if (!floatRef.current) return
+    const tween = gsap.to(floatRef.current, {
+      y: -10,
+      duration: 3.5,
+      repeat: -1,
+      yoyo: true,
+      ease: 'sine.inOut',
+    })
+    return () => tween.kill()
+  }, [])
+
+  /* ── Tilt 3D ── */
+  useEffect(() => {
+    const card = tiltRef.current
+    if (!card) return
+    const onMove = e => {
+      const rect = card.getBoundingClientRect()
+      const x = (e.clientX - rect.left) / rect.width  - 0.5
+      const y = (e.clientY - rect.top)  / rect.height - 0.5
+      gsap.to(card, { rotateY: x * 10, rotateX: -y * 10, duration: 0.6, ease: 'power2.out' })
+    }
+    const onLeave = () => gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.8, ease: 'power2.out' })
+    card.addEventListener('pointermove', onMove)
+    card.addEventListener('pointerleave', onLeave)
+    return () => { card.removeEventListener('pointermove', onMove); card.removeEventListener('pointerleave', onLeave) }
+  }, [])
+
+  /* ── Scatter helpers ── */
+  const rand = (min, max) => Math.round(Math.random() * (max - min) + min)
+
+  const handleEnter = e => {
+    const hovered = e.currentTarget
+    const all = footerRef.current.querySelectorAll('.fts-item')
+    gsap.to(tiltRef.current, { rotateX: 0, rotateY: 0, duration: 0.4 })
+    all.forEach(item => {
+      if (item !== hovered) {
+        gsap.to(item, { opacity: 0.18, filter: 'blur(7px)', scale: 0.96, duration: 0.4, ease: 'power2.out' })
+      } else {
+        gsap.to(item, { opacity: 1, filter: 'blur(0px)', scale: 1, duration: 0.3 })
+        item.querySelectorAll('.fts-char').forEach(ch => {
+          gsap.to(ch, {
+            xPercent: rand(-28, 28),
+            yPercent: rand(-55, 22),
+            rotate:   rand(-18, 18),
+            duration: 0.5,
+            ease: 'back.out(1.7)',
+          })
+        })
+      }
+    })
+  }
+
+  const handleLeave = e => {
+    const all = footerRef.current.querySelectorAll('.fts-item')
+    all.forEach(item => {
+      gsap.to(item, { opacity: 1, filter: 'blur(0px)', scale: 1, duration: 0.4, ease: 'power2.out' })
+      gsap.to(item.querySelectorAll('.fts-char'), { xPercent: 0, yPercent: 0, rotate: 0, duration: 0.4, ease: 'power2.out', stagger: 0.01 })
+    })
+  }
+
+  /* ── ScatterWord — split text en chars ── */
+  const ScatterWord = ({ children, className = '', tag: Tag = 'div', href, target }) => {
+    const text = String(children)
+    const inner = (
+      <Tag
+        className={`fts-item cursor-pointer ${className}`}
+        onMouseEnter={handleEnter}
+        onMouseLeave={handleLeave}
+        {...(href ? { href, target } : {})}
+      >
+        {Array.from(text).map((ch, i) => (
+          <span key={i} className="fts-char" style={{ display: 'inline-block', whiteSpace: 'pre', willChange: 'transform' }}>
+            {ch}
+          </span>
+        ))}
+      </Tag>
+    )
+    return inner
+  }
+
+  return (
+    <footer id="main-footer" ref={footerRef}>
+      <div className="ft-bottom-band">
+        <span className="ft-aka-watermark" aria-hidden="true">AKATECH</span>
+
+        <div className="ft-bb-inner" style={{ perspective: '1000px' }}>
+          <div ref={floatRef}>
+            <div ref={tiltRef} className="fts-card">
+
+              {/* ── Grille typographique — 2 vraies colonnes ── */}
+              <div className="fts-grid">
+
+                {/* Ligne 1 — Nom — silkscreen */}
+                <div className="fts-row fts-row--name">
+                  <ScatterWord className="fts-word fts-word--bright fts-word--silk">M'Bollo</ScatterWord>
+                  <ScatterWord className="fts-word fts-word--bright fts-word--silk">Aka</ScatterWord>
+                </div>
+
+                {/* Ligne 2 — rôle muted */}
+                <div className="fts-row">
+                  <ScatterWord className="fts-word fts-word--muted">dev</ScatterWord>
+                  <ScatterWord className="fts-word fts-word--muted">web</ScatterWord>
+                </div>
+
+                {/* Ligne 3 — titre + logo centré + titre */}
+                <div className="fts-row fts-row--logo">
+                  <ScatterWord className="fts-word fts-word--muted">CEO</ScatterWord>
+                  <div
+                    className="fts-item fts-logo-wrap cursor-pointer"
+                    onMouseEnter={handleEnter}
+                    onMouseLeave={handleLeave}
+                  >
+                    <img
+                      src={cld("/assets/images/logo-akatech.webp")}
+                      alt="AKATech Studio logo"
+                      className="fts-logo"
+                      loading="lazy"
+                      onError={e => { e.target.style.display = 'none' }}
+                    />
+                  </div>
+                  <ScatterWord className="fts-word fts-word--muted">Founder</ScatterWord>
+                </div>
+
+                {/* Ligne 4 — email */}
+                <div className="fts-row fts-row--small">
+                  <ScatterWord
+                    tag="a"
+                    href="mailto:wthomasss06@gmail.com"
+                    className="fts-word fts-word--link"
+                  >
+                    wthomasss06@gmail.com
+                  </ScatterWord>
+                  <ScatterWord
+                    tag="a"
+                    href="https://akatech.vercel.app/"
+                    target="_blank"
+                    className="fts-word fts-word--link"
+                  >
+                    akatech.vercel.app
+                  </ScatterWord>
+                </div>
+
+              </div>{/* /fts-grid */}
+
+              {/* ── Bas de carte : nav + copyright ── */}
+              <div className="fts-footer-bar">
+                <nav className="ft-bb-nav">
+                  {NAV_LINKS.map((l, i) => (
+                    <a key={i} href={`#${l.id}`} onClick={e => { e.preventDefault(); scrollToSection(l.id) }}>
+                      <HoverFadeText>{l.label}</HoverFadeText>
+                    </a>
+                  ))}
+                </nav>
+                <span className="ft-bb-copyright">© 2026 · AKATech Studio.</span>
+              </div>
+
+            </div>{/* /fts-card */}
+          </div>
+        </div>
+      </div>
+    </footer>
+  )
+}
+
+
+
+/* ════════════════════════════════════════════
+ SCROLL TOP ROCKET — retour en haut sans audio
+ ════════════════════════════════════════════ */
+function ScrollTopBtn() {
+  const [visible, setVisible] = useState(false)
+  const [launching, setLaunching] = useState(false)
+
+  useEffect(() => {
+    const footer = document.getElementById('main-footer')
+    if (!footer) return
+    const obs = new IntersectionObserver(
+      entries => entries.forEach(e => setVisible(e.isIntersecting)),
+      { root: null, threshold: 0.05 }
+    )
+    obs.observe(footer)
+    return () => obs.disconnect()
+  }, [])
+
+  const spawnParticles = btn => {
+    for (let i = 0; i < 6; i++) {
+      const particle = document.createElement('div')
+      particle.className = 'st-particle'
+      particle.style.setProperty('--xo', `${(Math.random() - 0.5) * 35}px`)
+      particle.style.animationDelay = `${i * 0.06}s`
+      btn.appendChild(particle)
+      setTimeout(() => particle.remove(), 700)
+    }
+  }
+
+  const go = e => {
+    spawnParticles(e.currentTarget)
+    setLaunching(true)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.setTimeout(() => setLaunching(false), 650)
+  }
+
+  return (
+    <button
+      id="scroll-top-btn"
+      className={`${visible ? 'st-vis' : ''}${launching ? ' st-launch' : ''}`}
+      title="Retour en haut"
+      aria-label="Retour en haut"
+      onClick={go}
+    >
+      <span className="st-rocket" aria-hidden="true">↑</span>
+      <span className="st-label">Haut</span>
+    </button>
+  )
+}
+/* ════════════════════════════════════════════
+ TOAST
+ ════════════════════════════════════════════ */
+function Toast({ show }) {
+  return <div id="toast" className={show ? 'show' : ''}>Message envoyé ✓</div>
+}
+
+/* ════════════════════════════════════════════
+ CURSOR + SCROLL BAR
+ ════════════════════════════════════════════ */
+function CursorAndScrollBar() {
+  useEffect(() => {
+    const dot = document.getElementById('cursor-dot'), fill = document.getElementById('scroll-fill')
+    // BUG DE PERF corrigé : dot.style.left/top déclenchait un recalcul
+    // de layout à CHAQUE pixel de déplacement de la souris, sur toute
+    // la page, en continu — un des schémas les plus connus pour
+    // ralentir une page (surtout visible sur du matériel moins
+    // puissant, cf. le retour LinkedIn). transform passe par le
+    // compositeur GPU et ne déclenche pas de layout.
+    const onMouse = e => { if (dot) dot.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)` }
+    const onScroll = () => { const max = document.body.scrollHeight - window.innerHeight; if (fill) fill.style.transform = `scaleY(${window.scrollY / max})` }
+    const expand = () => { if (dot) { dot.style.width = '16px'; dot.style.height = '16px' } }
+    const shrink = () => { if (dot) { dot.style.width = '8px'; dot.style.height = '8px' } }
+    document.querySelectorAll('a,button,[role=button]').forEach(el => { el.addEventListener('mouseenter', expand); el.addEventListener('mouseleave', shrink) })
+    window.addEventListener('mousemove', onMouse)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => { window.removeEventListener('mousemove', onMouse); window.removeEventListener('scroll', onScroll) }
+  }, [])
+  return null
+}
+
+/* ════════════════════════════════════════════
+ APP PRINCIPALE
+ ════════════════════════════════════════════ */
+export default function App() {
+  const [theme, setTheme] = useState(() => {
+    try {
+      const saved = localStorage.getItem('aka-html-theme')
+      if (saved === 'light' || saved === 'dark') return saved
+    } catch { }
+    return 'dark'
+  })
+  const [toastVisible, setToastVisible] = useState(false)
+  const transitionRef = useRef(null)
+
+  /* nav-loading masque la navbar pendant le loader */
+  useEffect(() => {
+    document.body.classList.add('nav-loading')
+    return () => { document.body.classList.remove('nav-loading') }
+  }, [])
+
+  useEffect(() => {
+    document.body.classList.toggle('light-mode', theme === 'light')
+  }, [theme])
+
+  const handleLoaderDone = useCallback(() => {
+    const revealContent = () => {
+      document.body.classList.remove('nav-loading')
+      /* ── Entrée du header (logo / horloge / toggle / hamburger) ── */
+      const headerZones = document.querySelectorAll('.nb-topbar > div')
+      if (headerZones.length) {
+        gsap.fromTo(
+          headerZones,
+          { y: -20, opacity: 0 },
+          {
+            y: 0, opacity: 1,
+            duration: 0.5,
+            ease: 'power3.out',
+            stagger: 0.06,
+            delay: 0.12,
+            clearProps: 'transform',
+          }
+        )
+      }
+    }
+
+    /* Le loader est maintenant un écran néo-brutaliste léger. Une fois
+       retiré du DOM, PageTransitionOverlay prend le relais pour la
+       révélation finale ; aucun trou organique ne vit dans le loader. */
+    if (transitionRef.current?.trigger) transitionRef.current.trigger(revealContent)
+    else revealContent()
+  }, [])
+
+  const toggleTheme = () => {
+    const next = theme === 'light' ? 'dark' : 'light'
+    setTheme(next)
+    try {
+      localStorage.setItem('aka-html-theme', next)
+    } catch { }
+  }
+
+  /* Overlay "Explorer" (ProjectsExplorer) — bouton dans la navbar,
+     à côté du toggle thème. Dissolve géré en CSS (.pe-overlay). */
+  const transitionToSection = useCallback((sectionId) => {
+    const swap = () => hardJumpToSection(sectionId)
+    if (transitionRef.current?.trigger) transitionRef.current.trigger(swap)
+    else swap()
+  }, [])
+  const [showExplorer, setShowExplorer] = useState(false)
+
+  const showToast = () => { setToastVisible(true); setTimeout(() => setToastVisible(false), 3000) }
+
+  /* GSAP global hooks */
+  useScrollAnimations()
+  useMagneticButtons()
+
+
+  return (
+    <PageTransitionContext.Provider value={transitionToSection}>
+      <div className="modern-app-root">
+        <Loader onDone={handleLoaderDone} />
+        <PageTransitionOverlay ref={transitionRef} />
+        <div id="cursor-dot" />
+      <div id="scroll-bar"><div id="scroll-fill" /></div>
+      <CursorAndScrollBar />
+      <Toast show={toastVisible} />
+      <Navbar theme={theme} onToggleTheme={toggleTheme} isExplorerOpen={showExplorer} onToggleExplorer={() => setShowExplorer(v => !v)} />
+      <ProjectsExplorer isOpen={showExplorer} onClose={() => setShowExplorer(false)} />
+      <main>
+        <div className="stk-hero-pin">
+          <div className="stk-hero-sticky">
+            <Hero />
+          </div>
+        </div>
+        <RecentProjects />
+        <HeroZoomSection />
+        <About />
+        <Timeline />
+        <section id="github-section" className="sec">
+          <div className="github-card-large-wrapper">
+            <GitHubInteractiveCard />
+          </div>
+        </section>
+        <WritingSection />
+        <HorizontalParallax />
+        <SkillsSection />
+        <ProcessSection />
+        <ServicesSection />
+        <PricingSection />
+        <TestimonialsSection />
+        <FAQSection />
+        <DissolveTransition
+          id="cta-dissolve"
+          frontSrc={cld("/assets/images/about-1.webp")}
+          backSrc={cld("/assets/images/hero-bg.webp")}
+          heightVh={320}
+          revealVh={100}
+          cta={{
+            eyebrow: 'Une idée ? Un projet ?',
+            title: 'Parlons de votre prochain site',
+            subtitle: 'Disponible pour un projet freelance ou une opportunité de collaboration.',
+            buttonLabel: 'Me contacter',
+            href: '#contact',
+          }}
+        />
+        <div className="full-beams-zone force-dark">
+          <div className="full-beams-zone__bg" aria-hidden="true">
+            <BeamsInteractive />
+          </div>
+          <ContactSection onToast={showToast} />
+          <Footer />
+        </div>
+        </main>
+        <ScrollTopBtn />
+      </div>
+    </PageTransitionContext.Provider>
+  )
+}

@@ -1,0 +1,1569 @@
+/* ═══════════════════════════════════════════════════════════════
+   AKATECH V2 — Design System
+   ───────────────────────────────────────────────────────────────
+   Scopé sous .akatech-root (les 3 autres modes du switcher
+   partagent le même DOM sans reload, donc rien ici ne doit pouvoir
+   fuiter en dehors de .akatech-root).
+
+   Police unique : Bitcount Prop Single, propre à ce mode (les 3
+   autres gardent leurs polices habituelles) — importée ici plutôt
+   que dans src/fonts.css pour ne pas l'embarquer partout.
+   ═══════════════════════════════════════════════════════════════ */
+@import '@fontsource/bitcount-prop-single/400.css';
+@import '@fontsource/bitcount-prop-single/500.css';
+@import '@fontsource/bitcount-prop-single/600.css';
+@import '@fontsource/bitcount-prop-single/700.css';
+@import '@fontsource/bitcount-prop-single/800.css';
+
+.akatech-root {
+  --bg:          #0A0A0A;
+  --surface:     #131313;
+  --elevated:    #1C1C1C;
+  --elevated-2:  #262626;
+  --text:        #F2EDE8;
+  --text-dim:    #C7C2BC;
+  --muted:       #8C8C8C;
+  --accent:      #FF5500;
+  --accent-dim:  rgba(255, 85, 0, 0.12);
+  --border:      rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --radius:      12px;
+  --radius-sm:   6px;
+  --space:       4vw;
+  --maxw:        1280px;
+  --fd:          'Bitcount Prop Single', sans-serif;
+  --fm:          'Bitcount Prop Single', monospace;
+
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--fd);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+.akatech-root .akatech-header {
+  background: rgba(10, 10, 10, 0.5);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.akatech-root,
+.akatech-root * {
+  box-sizing: border-box;
+}
+.akatech-root * {
+  margin: 0;
+  padding: 0;
+}
+
+.akatech-root ::selection {
+  background: var(--accent);
+  color: #fff;
+}
+.akatech-root ::-webkit-scrollbar { width: 6px; }
+.akatech-root ::-webkit-scrollbar-track { background: var(--bg); }
+.akatech-root ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+/* ─── Curseur personnalisé (effet Gemini) ──────────────────────
+   Désactivé sur tactile/trackpad sans souris fine : un curseur
+   custom n'a pas de sens sans pointeur précis, et le laisser actif
+   sur mobile crée un point fantôme inutile. */
+.akatech-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 26px;
+  height: 26px;
+  background: var(--text);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 300;
+  mix-blend-mode: difference;
+  transform: translate(-50%, -50%) scale(1);
+  transition: transform 0.15s ease-out;
+  will-change: transform;
+}
+.akatech-cursor.is-hovering {
+  transform: translate(-50%, -50%) scale(2.2);
+}
+@media not all and (hover: hover) and (pointer: fine) {
+  .akatech-cursor { display: none; }
+}
+
+/* ─── Calque de transition "papier brûlé" (WebGL) ──────────────
+   Piloté par PageTransitionOverlay.jsx via canvas.style.opacity —
+   pas de transition CSS dessus : la révélation vient du shader
+   lui-même (progress 0→1), donc un fondu CSS en plus ferait doubler
+   l'effet. z-index au-dessus du header (200) et du curseur (300). */
+.akatech-transition-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 400;
+  opacity: 0;
+  pointer-events: none;
+  display: block;
+}
+
+/* ─── Utilitaires ─────────────────────────────────────────────── */
+.akatech-root .container {
+  width: 100%;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding-inline: clamp(2rem, 5vw, 4rem);
+}
+.akatech-root .container.section {
+  width: min(100%, 1240px);
+  padding-inline: clamp(1.5rem, 5vw, 3rem);
+  margin-inline: auto;
+  text-align: center;
+}
+.akatech-root .container.section > * {
+  margin-left: auto;
+  margin-right: auto;
+}
+.akatech-root .section {
+  padding: clamp(5rem, 12vh, 8rem) 0;
+  position: relative;
+}
+.akatech-page-shell__content {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 1240px);
+  max-width: 1240px;
+  margin: 0 auto;
+  padding-inline: clamp(1.5rem, 5vw, 3rem);
+  text-align: center;
+}
+.akatech-page-shell__content > * {
+  margin-left: auto;
+  margin-right: auto;
+}
+.akatech-root .accent { color: var(--accent); }
+.akatech-root .muted { color: var(--muted); }
+.akatech-root .mono { font-family: var(--fm); }
+
+/* ─── En-tête fixe — nav linéaire, tous les liens visibles en
+   permanence (remplace le tiroir empilé caché/déployé au scroll) ── */
+.akatech-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  padding: 1.1rem var(--space);
+}
+.akatech-logo-badge {
+  width: 58px;
+  height: 58px;
+  background: transparent;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #fff;
+  font-family: var(--fd);
+  font-weight: 800;
+  font-size: 0.9rem;
+  letter-spacing: -0.02em;
+  box-shadow: none;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  flex-shrink: 0;
+}
+.akatech-logo-badge:hover { transform: scale(1.05) rotate(-2deg); }
+.akatech-logo-badge img {
+  display: block;
+  width: 88%;
+  height: 88%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.akatech-linear-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 1.7rem;
+  flex: 1;
+}
+.akatech-linear-nav button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  font-family: var(--fm);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.4rem 0;
+  transition: color 0.25s ease;
+  white-space: nowrap;
+}
+.akatech-linear-nav button:hover,
+.akatech-linear-nav button.is-active {
+  color: var(--accent);
+}
+
+.akatech-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.akatech-btn-contact {
+  background: var(--text);
+  color: var(--bg);
+  font-family: var(--fd);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.8rem 1.5rem;
+  border-radius: 40px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+.akatech-btn-contact:hover {
+  transform: translateY(-2px);
+  background: var(--accent);
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .akatech-header { padding: 1rem 1.1rem; }
+  /* Plus de tiroir caché : la nav passe simplement à la ligne
+     (2e rangée pleine largeur) plutôt que de se replier derrière un
+     bouton — aucun état JS à gérer. */
+  .akatech-linear-nav {
+    order: 3;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 0.4rem 1.1rem;
+  }
+  .akatech-btn-contact { padding: 0.7rem 1.1rem; font-size: 0.65rem; }
+  .akatech-logo-badge { width: 48px; height: 48px; }
+  .akatech-toggle-shoot { width: 38px; height: 38px; }
+}
+
+/* ─── Shell visuel commun des pages ─────────────────────────────
+   BUG corrigé : glow--two utilisait bottom:4rem et le grid inset:0
+   sur .akatech-page-shell — un conteneur qui n'a pas de hauteur
+   propre, il s'étire pour contenir tout le contenu de la page
+   (plusieurs écrans sur Story/Méthode/Projets). Le mask-image du
+   grid fondait donc sur un pourcentage d'une hauteur variable et
+   énorme : sur une page longue, le dégradé finissait son fondu
+   très loin dans le scroll, ce qui dessinait une vraie ligne de
+   coupure visible à cet endroit-là (le "coupé en deux"). Fix :
+   toute la déco est bornée à une zone fixe de 100vh en haut de la
+   page — plus jamais dépendante de la hauteur du contenu. */
+.akatech-page-shell {
+  position: relative;
+  isolation: isolate;
+  padding: clamp(1.5rem, 3vw, 2.5rem) 0 0;
+}
+.akatech-page-shell__content {
+  position: relative;
+  z-index: 2;
+}
+.akatech-page-shell__glow {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(120px);
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 0;
+}
+.akatech-page-shell__glow--one {
+  width: 22rem;
+  height: 22rem;
+  top: -3rem;
+  right: -6rem;
+  background: var(--accent);
+}
+.akatech-page-shell__glow--two {
+  width: 16rem;
+  height: 16rem;
+  top: 32rem;
+  left: -5rem;
+  background: #8b5cf6;
+}
+.akatech-page-shell__grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(180deg, rgba(0,0,0,0.9), transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,0.9), transparent 100%);
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 1;
+}
+/* Calque jumeau du grid ci-dessus : même motif, mais masqué par un
+   projecteur radial qui suit le curseur (--mx/--my écrites par
+   useGridSpotlight.js) plutôt que par le fondu vertical. Superposé
+   au lieu de combiner les deux mask-image (mask-composite a un
+   support/comportement inégal selon les navigateurs) — deux calques
+   simples valent mieux qu'une composition fragile. */
+.akatech-page-shell__grid-spot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(520px circle at calc(var(--mx, 50) * 1%) calc(var(--my, 50) * 1%), rgba(0,0,0,0.9), transparent 68%);
+  -webkit-mask-image: radial-gradient(520px circle at calc(var(--mx, 50) * 1%) calc(var(--my, 50) * 1%), rgba(0,0,0,0.9), transparent 68%);
+  opacity: 0.9;
+  pointer-events: none;
+  z-index: 1;
+}
+@media (hover: none), (pointer: coarse) {
+  .akatech-page-shell__grid-spot { display: none; }
+}
+
+/* ─── En-tête de section (titre + /0X, refonte minimaliste) ─────── */
+.akatech-sh {
+  width: min(100%, 960px);
+  margin: 0 auto 3rem;
+  padding-inline: clamp(1.25rem, 4vw, 3rem);
+}
+.akatech-sh-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: clamp(1rem, 4vw, 3rem);
+}
+.akatech-sh-title {
+  flex: 1 1 auto;
+  max-width: 12ch;
+  margin: 0;
+  font-size: clamp(3rem, 8vw, 6.4rem);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+.akatech-sh-num {
+  flex: 0 0 auto;
+  padding-top: 0.55rem;
+  text-align: right;
+  font-size: clamp(0.9rem, 1.7vw, 1.2rem);
+  color: var(--accent);
+  letter-spacing: 0.02em;
+}
+.akatech-sh-sub {
+  max-width: 48ch;
+  margin-top: 1.4rem;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--muted);
+  text-align: center;
+}
+@media (max-width: 768px) {
+  .akatech-sh {
+    width: 100%;
+    padding-inline: 1.25rem;
+  }
+  .akatech-sh-row { gap: 0.75rem; }
+  .akatech-sh-title {
+    max-width: 10ch;
+    font-size: clamp(2.7rem, 14vw, 4.4rem);
+  }
+  .akatech-sh-sub { text-align: center; }
+  .akatech-sh-num { padding-top: 0.2rem; }
+}
+
+/* ─── Paragraphe éditorial (intro de page) — plus grand que le
+   sous-titre de l'en-tête, décalé à droite, repris de la référence
+   (les paragraphes numérotés y dominent visuellement le titre). ──── */
+.akatech-editorial-p {
+  margin-left: auto;
+  margin-right: auto;
+  width: min(100%, 820px);
+  max-width: 70ch;
+  font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+  line-height: 1.65;
+  color: var(--text-dim);
+  text-align: center;
+}
+@media (max-width: 768px) {
+  .akatech-editorial-p { margin-left: auto; margin-right: auto; max-width: none; text-align: center; }
+}
+
+/* ─── Typo ────────────────────────────────────────────────────── */
+.akatech-root h1,
+.akatech-root h2,
+.akatech-root h3,
+.akatech-root h4 {
+  font-family: var(--fd);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.akatech-root p {
+  color: var(--text-dim);
+  max-width: 55ch;
+}
+.akatech-root a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* ─── Hero (page Home) ──────────────────────────────────────────
+   Typo géante + éléments flottants abstraits en parallax souris —
+   même comportement que le fichier de référence, formes propres à
+   AKATECH plutôt que les visuels stock du gabarit d'origine. */
+.akatech-hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 7rem var(--space) 4rem;
+  overflow: hidden;
+}
+/* Grille de fond du hero, révélée par un projecteur qui suit la
+   souris (--mx/--my écrites depuis Home.jsx, même mécanisme que
+   .akatech-page-shell__grid-spot sur les autres pages). */
+.akatech-hero-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 42px 42px;
+  opacity: 0.35;
+  mask-image: radial-gradient(560px circle at calc(var(--mx, 50) * 1%) calc(var(--my, 50) * 1%), rgba(0,0,0,0.95), rgba(0,0,0,0.15) 65%, transparent 100%);
+  -webkit-mask-image: radial-gradient(560px circle at calc(var(--mx, 50) * 1%) calc(var(--my, 50) * 1%), rgba(0,0,0,0.95), rgba(0,0,0,0.15) 65%, transparent 100%);
+}
+@media (hover: none), (pointer: coarse) {
+  .akatech-hero-grid { opacity: 0.18; mask-image: none; -webkit-mask-image: none; }
+}
+.akatech-hero-title {
+  position: relative;
+  z-index: 2;
+  font-size: clamp(3rem, 10vw, 8.5rem);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  will-change: transform, opacity;
+}
+.akatech-hero-shape {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.9;
+  will-change: transform, opacity;
+}
+.akatech-hero-shape--ring {
+  top: 14%; right: 9%;
+  width: clamp(70px, 11vw, 140px);
+  height: clamp(70px, 11vw, 140px);
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  opacity: 0.5;
+}
+.akatech-hero-shape--square {
+  bottom: 20%; left: 6%;
+  width: clamp(34px, 5vw, 60px);
+  height: clamp(34px, 5vw, 60px);
+  border: 2px solid var(--border);
+  transform: rotate(18deg);
+}
+.akatech-hero-shape--dot {
+  top: 22%; left: 12%;
+  width: 10px; height: 10px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+@media (max-width: 768px) {
+  .akatech-hero-shape { display: none; }
+}
+
+/* ─── Boutons / liens — Orange AKATech, plat et compact ────────── */
+.akatech-root .akatech-luxury-action {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  min-height: 2.4rem;
+  padding: 0.5rem 0.8rem 0.5rem 0.95rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(255, 85, 0, 0.18);
+  font-family: var(--fd);
+  font-weight: 700;
+  font-size: 0.68rem;
+  letter-spacing: 0.025em;
+  line-height: 1.1;
+  text-decoration: none;
+  text-transform: uppercase;
+  cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+  transition: filter 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+.akatech-root .akatech-luxury-action::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(105deg, transparent 25%, rgba(255,255,255,0.16) 50%, transparent 75%);
+  transform: translateX(-120%);
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.akatech-root .akatech-luxury-action:hover,
+.akatech-root .akatech-luxury-action:focus-visible {
+  filter: brightness(1.08);
+  box-shadow: 0 8px 20px rgba(255, 85, 0, 0.28);
+  transform: translateY(-2px);
+}
+.akatech-root .akatech-luxury-action:hover::before,
+.akatech-root .akatech-luxury-action:focus-visible::before {
+  transform: translateX(120%);
+}
+.akatech-root .akatech-luxury-action:active { transform: translateY(0) scale(0.98); }
+.akatech-root .akatech-action-text-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+  line-height: 1.1;
+  perspective: 500px;
+}
+.akatech-root .akatech-action-text {
+  display: inline-block;
+  white-space: nowrap;
+  will-change: transform;
+}
+.akatech-root .akatech-action-arrow-wrap {
+  width: 0;
+  height: 1.65rem;
+  margin-left: 0;
+  overflow: hidden;
+  opacity: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.akatech-root .akatech-action-arrow {
+  width: 1.65rem;
+  height: 1.65rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--accent);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.28);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.25s ease;
+}
+.akatech-root .akatech-action-arrow svg { width: 1rem; height: 1rem; overflow: visible; }
+@keyframes akatech-arrow-nudge {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(3px); }
+}
+.akatech-root .akatech-luxury-action:hover .akatech-arrow-icon-line,
+.akatech-root .akatech-luxury-action:hover .akatech-arrow-icon-chevron,
+.akatech-root .akatech-luxury-action:focus-visible .akatech-arrow-icon-line,
+.akatech-root .akatech-luxury-action:focus-visible .akatech-arrow-icon-chevron {
+  animation: akatech-arrow-nudge 0.9s ease-in-out infinite;
+}
+.akatech-root .akatech-luxury-action:hover .akatech-action-arrow,
+.akatech-root .akatech-luxury-action:focus-visible .akatech-action-arrow { transform: rotate(0deg); }
+.akatech-root .akatech-luxury-action.btn,
+.akatech-root .akatech-luxury-action.btn-fill,
+.akatech-root .akatech-luxury-action.btn-ghost {
+  color: #fff;
+  border-color: var(--accent);
+  background: var(--accent);
+}
+.akatech-root .akatech-cyclic-text {
+  display: inline-block;
+  line-height: 1.1;
+  will-change: transform, opacity;
+  perspective: 500px;
+}
+
+/* Liens éditoriaux et sociaux : même cycle de texte, traitement plus léger. */
+.akatech-root .akatech-cyclic-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  overflow: hidden;
+  color: var(--text);
+  text-decoration: none;
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+.akatech-root .akatech-cyclic-link::after {
+  content: '';
+  width: 0.45rem;
+  height: 0.45rem;
+  display: inline-block;
+  flex: 0 0 auto;
+  border-top: 1px solid var(--accent);
+  border-right: 1px solid var(--accent);
+  transform: rotate(45deg);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.akatech-root .akatech-cyclic-link:hover,
+.akatech-root .akatech-cyclic-link:focus-visible { color: var(--accent); transform: translateX(2px); }
+.akatech-root .akatech-cyclic-link:hover::after,
+.akatech-root .akatech-cyclic-link:focus-visible::after { transform: translateX(3px) rotate(45deg); }
+
+/* Variantes compactes du même traitement pour la navigation et les onglets. */
+.akatech-root .akatech-logo-badge {
+  width: 58px;
+  min-width: 58px;
+  height: 58px;
+  min-height: 58px;
+  padding: 0;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  letter-spacing: -0.02em;
+  box-shadow: 0 6px 16px rgba(255, 85, 0, 0.18);
+}
+.akatech-root .akatech-logo-badge .akatech-action-arrow-wrap,
+.akatech-root .akatech-nav-action .akatech-action-arrow-wrap,
+.akatech-root .akatech-service-tab .akatech-action-arrow-wrap { display: none; }
+.akatech-root .akatech-nav-action {
+  min-height: 2rem;
+  padding: 0.42rem 0.72rem;
+  border-color: rgba(255, 85, 0, 0.42);
+  border-radius: 999px;
+  font-size: 0.64rem;
+  letter-spacing: 0.04em;
+  box-shadow: none;
+}
+.akatech-root .akatech-nav-action:not(.is-active) {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--border);
+  color: var(--muted);
+}
+.akatech-root .akatech-nav-action:hover,
+.akatech-root .akatech-nav-action:focus-visible,
+.akatech-root .akatech-nav-action.is-active {
+  color: #fff;
+  background: var(--accent);
+}
+.akatech-root .akatech-btn-contact {
+  min-height: 2.2rem;
+  padding: 0.5rem 0.8rem 0.5rem 0.95rem;
+  font-size: 0.62rem;
+}
+.akatech-root .akatech-luxury-icon-button {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(255, 85, 0, 0.18);
+}
+.akatech-root .akatech-luxury-icon-button:hover,
+.akatech-root .akatech-luxury-icon-button[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: #ff6a24;
+  color: #fff;
+}
+.akatech-root .akatech-service-tab {
+  min-height: 2.5rem;
+  padding: 0.6rem 1rem;
+  font-size: 0.67rem;
+  box-shadow: none;
+}
+.akatech-root .akatech-service-tab:not(.is-active) {
+  background: var(--surface);
+  color: var(--muted);
+  border-color: var(--border);
+}
+.akatech-root .akatech-service-tab:hover,
+.akatech-root .akatech-service-tab:focus-visible,
+.akatech-root .akatech-service-tab.is-active { color: #fff; }
+
+/* Contrôles utilitaires conservés lisibles, avec l’accent orange Akatech. */
+.akatech-root .akatech-detail-close button,
+.akatech-root .akatech-detail-case-toggle,
+.akatech-root .akatech-continue {
+  transition: color 0.25s ease, border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+}
+.akatech-root .akatech-detail-close button:hover,
+.akatech-root .akatech-detail-case-toggle:hover,
+.akatech-root .akatech-continue:hover { color: var(--accent); }
+.akatech-root .akatech-detail-case-toggle {
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.65rem 0.9rem;
+  background: rgba(255, 85, 0, 0.08);
+}
+.akatech-root .akatech-detail-case-toggle:hover,
+.akatech-root .akatech-detail-case-toggle:focus-visible {
+  color: #fff;
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .akatech-root .akatech-luxury-action,
+  .akatech-root .akatech-action-arrow,
+  .akatech-root .akatech-cyclic-link { transition: none; }
+  .akatech-root .akatech-luxury-action::before { display: none; }
+}
+
+/* ─── Grille responsive ───────────────────────────────────────── */
+.akatech-root .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+.akatech-root .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.akatech-root .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+
+@media (max-width: 1024px) {
+  .akatech-root .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .akatech-root { --space: 1.25rem; }
+  .akatech-root .grid-2,
+  .akatech-root .grid-3,
+  .akatech-root .grid-4 { grid-template-columns: 1fr; }
+}
+
+/* ─── Pages : une à la fois, transition à l'entrée ──────────────
+   Remplace l'ancien scroll continu + IntersectionObserver : chaque
+   page est montée seule, on repart en haut au changement (géré en
+   JS dans AKATECH.jsx). Le fade-up ci-dessous ne joue que sur le
+   tout premier affichage (.akatech-page--enter, posé uniquement par
+   AKATECH.jsx avant le premier montage) : les navigations suivantes
+   passent par le calque "papier brûlé" (.akatech-transition-canvas)
+   à la place, pour ne pas cumuler deux animations d'entrée. */
+.akatech-page--enter {
+  animation: akatechPageIn 0.5s ease both;
+}
+@keyframes akatechPageIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .akatech-page--enter { animation: none; }
+}
+
+/* ─── Animations d'entrée génériques ────────────────────────────── */
+@keyframes akatechFadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.akatech-root .anim-fade-up {
+  animation: akatechFadeUp 0.8s ease both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .akatech-root .anim-fade-up { animation: none; }
+}
+
+/* ─── Fin de page : CTA + Footer + "Continuer à me lire" ────────
+   Présent sur les 7 pages, juste avant le composant Footer. */
+.akatech-page-cta {
+  padding: 5rem var(--space) 1rem;
+  text-align: center;
+  border-top: 1px solid var(--border);
+  margin-top: 3rem;
+}
+.akatech-page-cta h3 {
+  font-size: clamp(1.6rem, 4vw, 2.5rem);
+  margin-bottom: 0.75rem;
+}
+.akatech-page-cta p {
+  margin: 0 auto 1.75rem;
+  text-align: center;
+}
+.akatech-page-cta .akatech-luxury-action { margin: 0 auto; }
+
+.akatech-continue {
+  width: 100%;
+  padding: 2.25rem var(--space) 2.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--border);
+  cursor: pointer;
+  color: var(--text);
+}
+.akatech-continue-label {
+  font-family: var(--fm);
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.akatech-continue-next {
+  font-family: var(--fd);
+  font-weight: 700;
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  transition: gap 0.25s ease, color 0.25s ease;
+}
+.akatech-continue:hover .akatech-continue-next { gap: 1rem; color: var(--accent); }
+.akatech-continue-arrow { transition: transform 0.25s ease; flex-shrink: 0; }
+.akatech-continue:hover .akatech-continue-arrow { transform: translateY(4px); }
+
+/* ─── Watermark du footer (particules canvas) ───────────────────
+   Remplace l'ancien <h2>AKATECH</h2> plat à 5% d'opacité. Hauteur
+   fixe nécessaire au canvas (contrairement au texte, qui se
+   dimensionnait via font-size) ; FluidWatermark.jsx échantillonne le
+   texte à cette taille de conteneur. */
+.akatech-watermark {
+  position: relative;
+  width: 100%;
+  height: clamp(120px, 24vw, 300px);
+  margin: 0 auto;
+  overflow: hidden;
+}
+.akatech-watermark-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.akatech-watermark-static {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(3.5rem, 12vw, 9.5rem);
+  font-weight: 800;
+  opacity: 0.4;
+  color: var(--text-dim);
+  text-shadow: 0 0 40px var(--accent-dim);
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+}
+
+/* ─── Galerie projets — double bande de défilement infini ───────
+   DOM remplacé sur demande (le canvas 2D déplaçable posait trop de
+   problèmes) par le motif de image2_bande.html : deux rangées en
+   boucle infinie, sens opposés, pilotées à la molette (direction
+   persistante + impulsion qui s'amortit — voir Projects.jsx). */
+.akatech-band-section {
+  position: relative;
+  padding: 8rem var(--space) 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  overflow: hidden;
+}
+.akatech-band-heading span {
+  display: block;
+  font-family: var(--fm);
+  font-size: 0.7rem;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+  margin-bottom: 0.4rem;
+}
+.akatech-band-heading h2 {
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 800;
+}
+.akatech-band-hint {
+  margin-top: 0.6rem;
+  font-family: var(--fm);
+  font-size: 0.7rem;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+  max-width: none;
+}
+
+.akatech-band-row {
+  width: 100%;
+  overflow: hidden;
+}
+.akatech-band-track {
+  display: flex;
+  gap: 1.25rem;
+  width: max-content;
+  will-change: transform;
+}
+.akatech-band-card {
+  position: relative;
+  width: 340px;
+  height: 240px;
+  flex-shrink: 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--elevated);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+.akatech-band-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  filter: grayscale(35%) brightness(0.85);
+  transition: filter 0.4s ease, transform 6s ease;
+}
+.akatech-band-card:hover img {
+  filter: grayscale(0%) brightness(1);
+  transform: scale(1.05);
+}
+
+.akatech-gallery-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  text-align: center;
+  padding: 1rem;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.65));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.akatech-band-card:hover .akatech-gallery-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+.akatech-gallery-name {
+  color: #fff;
+  font-weight: 700;
+  font-size: clamp(0.95rem, 1.6vw, 1.3rem);
+  letter-spacing: -0.01em;
+}
+.akatech-gallery-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.akatech-gallery-actions .akatech-luxury-action {
+  min-height: 2.4rem;
+  padding: 0.55rem 0.75rem 0.55rem 0.95rem;
+  font-size: 0.62rem;
+}
+.akatech-gallery-actions .akatech-action-arrow {
+  width: 1.55rem;
+  height: 1.55rem;
+}
+
+@media (max-width: 768px) {
+  .akatech-band-section { padding-top: 6.5rem; }
+  .akatech-band-card { width: 230px; height: 165px; }
+}
+
+/* ─── Panneau détail projet — glisse depuis la droite ────────────
+   Adapté de ProjectDetailModal.jsx (mode App.jsx) : même contenu
+   (image, meta, tags tech, description, cas d'étude problème/
+   solution/résultat), habillage et animation propres à AKATECH. */
+.akatech-detail-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.akatech-detail-backdrop.is-open { opacity: 1; }
+
+.akatech-detail-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 401;
+  width: clamp(360px, 50vw, 760px);
+  background: var(--bg);
+  border-left: 1px solid var(--border-strong);
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.akatech-detail-panel.is-open { transform: translateX(0); }
+
+.akatech-detail-close {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem;
+  background: linear-gradient(180deg, var(--bg) 60%, transparent);
+}
+.akatech-detail-close button {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.akatech-detail-close button:hover { border-color: var(--accent); color: var(--accent); }
+
+.akatech-detail-img {
+  width: 100%;
+  aspect-ratio: 16/10;
+  object-fit: cover;
+  margin-top: -3.5rem;
+}
+.akatech-detail-body { padding: 0 1.75rem 2.5rem; }
+.akatech-detail-cat {
+  font-size: 0.65rem;
+  color: var(--accent);
+  letter-spacing: 0.12em;
+}
+.akatech-detail-title { font-size: clamp(1.4rem, 4vw, 1.9rem); margin: 0.5rem 0 0.2rem; }
+.akatech-detail-sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.25rem; }
+.akatech-detail-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.5rem; }
+.akatech-detail-tags span {
+  font-family: var(--fm);
+  font-size: 0.62rem;
+  padding: 3px 9px;
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  color: var(--text-dim);
+}
+.akatech-detail-desc { color: var(--text-dim); line-height: 1.7; margin-bottom: 1.5rem; }
+.akatech-detail-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 2rem; }
+
+.akatech-detail-case {
+  border-top: 1px solid var(--border);
+  padding-top: 1.25rem;
+}
+.akatech-detail-case-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text);
+  font-family: var(--fd);
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.25rem 0;
+}
+.akatech-detail-case-toggle svg { transition: transform 0.3s ease; }
+.akatech-detail-case-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+.akatech-detail-case-block {
+  margin-top: 1.1rem;
+  padding: 0.9rem 1rem;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.75rem;
+}
+.akatech-detail-case-block span {
+  font-family: var(--fm);
+  font-size: 0.6rem;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+}
+.akatech-detail-case-block p { color: var(--text-dim); font-size: 0.88rem; margin-top: 0.35rem; }
+
+/* ─── Mode Tir (effet "boom" + texte qui tombe) ─────────────────
+   Adapté de BALLE_TIRE.html — éléments créés/détruits dynamiquement
+   par ShootMode.jsx, positionnés en fixed directement sur document.
+   body plutôt que sous .akatech-root : ils doivent survoler tout,
+   header compris, le temps de leur courte durée de vie. */
+.akatech-shoot-bullet {
+  position: fixed;
+  top: 0; left: 0;
+  width: 10px; height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: var(--accent, #FF5500);
+  box-shadow: 0 0 16px 4px rgba(255, 85, 0, 0.7);
+  pointer-events: none;
+  z-index: 500;
+}
+.akatech-shoot-splatter {
+  position: fixed;
+  top: 0; left: 0;
+  width: 90px; height: 90px;
+  margin: -45px 0 0 -45px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 499;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,85,0,.9), transparent 45%),
+    radial-gradient(circle at 65% 55%, rgba(255,85,0,.7), transparent 40%),
+    radial-gradient(circle at 45% 70%, rgba(255,85,0,.6), transparent 35%);
+}
+.akatech-shoot-spark {
+  position: fixed;
+  top: 0; left: 0;
+  width: 5px; height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  border-radius: 50%;
+  background: var(--accent, #FF5500);
+  pointer-events: none;
+  z-index: 500;
+}
+.akatech-shoot-falling {
+  position: fixed;
+  pointer-events: none;
+  z-index: 498;
+  white-space: nowrap;
+}
+.akatech-shoot-word {
+  display: inline-block;
+}
+.akatech-root.akatech-shoot-active .akatech-shoot-word {
+  cursor: crosshair;
+}
+.akatech-shoot-shatter-piece {
+  position: fixed;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 498;
+  white-space: pre;
+}
+.akatech-shoot-bomb {
+  position: fixed;
+  top: 0; left: 0;
+  width: 140px; height: 140px;
+  margin: -70px 0 0 -70px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 499;
+  background:
+    radial-gradient(circle, rgba(255,170,80,.9), rgba(255,85,0,.6) 45%, transparent 70%);
+}
+.akatech-shoot-spark--big {
+  width: 8px; height: 8px;
+  margin: -4px 0 0 -4px;
+}
+
+.akatech-root.akatech-shoot-active { cursor: none; }
+.akatech-root.akatech-shoot-active .akatech-cursor {
+  width: 34px;
+  height: 34px;
+  background: transparent;
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.4);
+}
+.akatech-root.akatech-shoot-active .akatech-cursor::before,
+.akatech-root.akatech-shoot-active .akatech-cursor::after {
+  content: '';
+  position: absolute;
+  background: var(--accent);
+}
+.akatech-root.akatech-shoot-active .akatech-cursor::before {
+  left: 50%; top: -8px; bottom: -8px; width: 1px; transform: translateX(-50%);
+}
+.akatech-root.akatech-shoot-active .akatech-cursor::after {
+  top: 50%; left: -8px; right: -8px; height: 1px; transform: translateY(-50%);
+}
+
+.akatech-toggle-shoot {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.25s ease, color 0.25s ease, background 0.25s ease;
+  flex-shrink: 0;
+}
+.akatech-toggle-shoot svg { width: 18px; height: 18px; }
+.akatech-toggle-shoot[aria-pressed="true"] {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+
+/* ─── Focus clavier visible ────────────────────────────────────
+   Contact.jsx met outline:none en inline style sur les champs —
+   sans ceci, un visiteur au clavier perd toute trace du focus.
+   !important nécessaire : un style inline ne peut pas être
+   surchargé par une règle externe sans lui, même ciblée sur :focus. */
+.akatech-root input:focus,
+.akatech-root select:focus,
+.akatech-root textarea:focus,
+.akatech-root button:focus-visible {
+  border-color: var(--accent) !important;
+  outline: 2px solid var(--accent-dim) !important;
+  outline-offset: 1px;
+}
+
+
+/* ─── AKATech design pass : hiérarchie, rythme et conversion ────── */
+.akatech-root .akatech-page {
+  width: min(100%, 1440px);
+  margin-inline: auto;
+}
+.akatech-root .akatech-page > section,
+.akatech-root .akatech-page > .section {
+  position: relative;
+  isolation: isolate;
+}
+.akatech-root .akatech-page > section + section,
+.akatech-root .akatech-page > .section + .section {
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+.akatech-root .akatech-page .container.section {
+  padding-block: clamp(5rem, 10vw, 9rem);
+}
+.akatech-root .akatech-sh {
+  width: min(100%, 980px);
+  margin-inline: auto;
+  text-align: center;
+}
+.akatech-root .akatech-sh-row {
+  justify-content: center;
+  align-items: flex-start;
+}
+.akatech-root .akatech-sh-num {
+  order: -1;
+  text-align: center;
+  padding-top: 0.7rem;
+}
+.akatech-root .akatech-sh-title {
+  width: min(100%, 12ch);
+  text-align: center;
+  text-wrap: balance;
+}
+.akatech-root .akatech-sh-sub {
+  width: min(100%, 58ch);
+  margin-inline: auto;
+}
+.akatech-root .grid-2,
+.akatech-root .grid-3,
+.akatech-root .grid-4 {
+  align-items: stretch;
+  width: min(100%, 1120px);
+  margin-inline: auto;
+  gap: clamp(1rem, 2.4vw, 2rem);
+}
+.akatech-root .grid-2 > *,
+.akatech-root .grid-3 > *,
+.akatech-root .grid-4 > * {
+  min-width: 0;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 1.25rem;
+  background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.015));
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+  transition: border-color 0.3s ease, transform 0.3s ease, background 0.3s ease;
+}
+.akatech-root .grid-2 > *:hover,
+.akatech-root .grid-3 > *:hover,
+.akatech-root .grid-4 > *:hover {
+  border-color: rgba(255,85,0,0.65);
+  background: linear-gradient(145deg, rgba(255,85,0,0.12), rgba(255,255,255,0.025));
+  transform: translateY(-4px);
+}
+.akatech-root .grid-2 > * > h3,
+.akatech-root .grid-3 > * > h3,
+.akatech-root .grid-4 > * > h3 {
+  font-size: clamp(1.15rem, 2vw, 1.45rem) !important;
+  line-height: 1.15;
+  margin-bottom: 0.75rem !important;
+}
+.akatech-root .grid-2 > * p,
+.akatech-root .grid-3 > * p,
+.akatech-root .grid-4 > * p {
+  max-width: 42ch;
+  margin-inline: auto;
+  line-height: 1.65;
+}
+.akatech-root .akatech-page-cta {
+  width: min(100% - 2rem, 980px);
+  margin-inline: auto;
+  padding-block: clamp(4rem, 8vw, 7rem) 2rem;
+}
+.akatech-root .akatech-page-cta h3 {
+  max-width: 15ch;
+  margin-inline: auto;
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 0.98;
+  text-wrap: balance;
+}
+.akatech-root .akatech-band-section {
+  width: min(100%, 1440px);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 4rem);
+}
+.akatech-root .akatech-band-heading {
+  width: min(100%, 900px);
+  margin-inline: auto;
+  text-align: center;
+}
+.akatech-root .akatech-band-heading h2 {
+  font-size: clamp(2.2rem, 6vw, 5rem);
+  line-height: 0.95;
+  text-wrap: balance;
+}
+@media (max-width: 768px) {
+  .akatech-root .akatech-page .container.section { padding-block: 4.25rem; }
+  .akatech-root .akatech-sh-row { flex-direction: column; align-items: center; }
+  .akatech-root .akatech-sh-num { order: 0; padding-top: 0; }
+  .akatech-root .grid-2 > *,
+  .akatech-root .grid-3 > *,
+  .akatech-root .grid-4 > * { padding: 1.15rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .akatech-root .grid-2 > *,
+  .akatech-root .grid-3 > *,
+  .akatech-root .grid-4 > * { transition: none; }
+}
+
+/* AEO : contenu lisible lorsqu’un agent ou un lecteur sans JS arrive sur le site. */
+.seo-fallback {
+  width: min(100% - 2rem, 960px);
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+.seo-fallback h2 { margin-top: 2rem; }
+.seo-fallback li { margin-block: 0.45rem; }
+.seo-fallback p { max-width: 72ch; line-height: 1.65; }
+
+
+/* ─── AKATechLoader : boot sequence CLI ────────────────────────── */
+.akatech-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #070707;
+  color: #f5f2ed;
+  font-family: var(--fm);
+}
+.akatech-loader__scanline {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.22;
+  background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(255,85,0,0.05) 4px);
+}
+.akatech-loader__terminal {
+  position: relative;
+  width: min(92vw, 650px);
+  padding: clamp(1.25rem, 4vw, 2.25rem);
+  border: 1px solid rgba(255,85,0,0.38);
+  border-radius: 1rem;
+  background: rgba(13,13,13,0.92);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 24px 90px rgba(0,0,0,0.55), 0 0 46px rgba(255,85,0,0.12);
+}
+.akatech-loader__bar,
+.akatech-loader__footer,
+.akatech-loader__progress-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.akatech-loader__bar { padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.09); color: var(--muted); font-size: 0.65rem; letter-spacing: 0.08em; }
+.akatech-loader__dot { width: 0.45rem; height: 0.45rem; border-radius: 50%; background: var(--accent); box-shadow: 1rem 0 0 rgba(255,255,255,0.25), 2rem 0 0 rgba(255,255,255,0.12); margin-right: 1.75rem; }
+.akatech-loader__path { margin-left: auto; }
+.akatech-loader__brand { margin-top: clamp(2rem, 5vw, 3rem); font-family: var(--fd); font-size: clamp(3rem, 10vw, 6.5rem); line-height: 0.8; letter-spacing: -0.08em; color: var(--text); }
+.akatech-loader__brand span { color: var(--accent); }
+.akatech-loader__prompt { margin-top: 2rem; color: var(--muted); font-size: clamp(0.72rem, 1.7vw, 0.9rem); }
+.akatech-loader__prompt span { color: var(--accent); }
+.akatech-loader__lines { min-height: 7rem; padding-block: 1rem 1.4rem; color: var(--text-dim); font-size: clamp(0.68rem, 1.5vw, 0.82rem); }
+.akatech-loader__line { display: flex; align-items: center; gap: 0.65rem; min-height: 1.55rem; }
+.akatech-loader__ok { color: var(--accent); }
+.akatech-loader__cursor { width: 0.48rem; height: 1rem; margin-left: 0.1rem; background: var(--accent); animation: akatech-loader-blink 0.8s steps(2) infinite; }
+.akatech-loader__progress-head { color: var(--muted); font-size: 0.64rem; letter-spacing: 0.1em; }
+.akatech-loader__progress-head strong { color: var(--accent); font-weight: 500; }
+.akatech-loader__progress { height: 0.45rem; margin-top: 0.7rem; overflow: hidden; border: 1px solid rgba(255,85,0,0.3); background: rgba(255,255,255,0.06); }
+.akatech-loader__progress span { display: block; height: 100%; background: repeating-linear-gradient(135deg, #ff5500 0 0.45rem, #ff7a36 0.45rem 0.9rem); box-shadow: 0 0 18px rgba(255,85,0,0.7); transition: width 0.08s linear; }
+.akatech-loader__footer { margin-top: 1rem; color: rgba(255,255,255,0.35); font-size: 0.58rem; letter-spacing: 0.08em; }
+@keyframes akatech-loader-blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .akatech-loader__cursor { animation: none; }
+  .akatech-loader__progress span { transition: none; }
+}
+
+/* Timeline : lecture en trois zones, centrée et plus respirante. */
+.akatech-root .akatech-timeline {
+  width: min(100%, 1080px);
+  margin-inline: auto;
+  display: grid;
+  gap: 1rem;
+}
+.akatech-root .akatech-timeline-item {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.65fr) minmax(0, 1.7fr);
+  gap: clamp(1.5rem, 5vw, 5rem);
+  align-items: start;
+  padding: clamp(1.25rem, 2.5vw, 1.8rem) clamp(1rem, 3vw, 2rem);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 1rem;
+  background: linear-gradient(100deg, rgba(255,255,255,0.035), rgba(255,85,0,0.035));
+}
+.akatech-root .akatech-timeline-date { color: var(--muted); text-align: left; }
+.akatech-root .akatech-timeline-body { max-width: 58ch; text-align: left; }
+.akatech-root .akatech-timeline-body h4 { font-size: clamp(1.15rem, 2vw, 1.55rem) !important; line-height: 1.1; margin-bottom: 0.45rem !important; }
+.akatech-root .akatech-timeline-body ul { padding: 0; margin: 0; }
+@media (max-width: 700px) {
+  .akatech-root .akatech-timeline-item { grid-template-columns: 1fr; gap: 0.7rem; }
+  .akatech-root .akatech-timeline-date,
+  .akatech-root .akatech-timeline-body { text-align: center; margin-inline: auto; }
+}
+
+
+/* ─── Loader 09 : CLI Terminal — variante minimale ─────────────── */
+.akatech-loader--cli {
+  background: #0b1120;
+  color: #f8fafc;
+  font-family: var(--fm), monospace;
+}
+.akatech-loader--cli .akatech-loader__scanline,
+.akatech-loader--cli .akatech-loader__terminal { display: none; }
+.akatech-cli-card {
+  width: min(92vw, 720px);
+  padding: clamp(1.25rem, 4vw, 1.75rem);
+}
+.akatech-cli-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+  font-size: clamp(0.72rem, 1.7vw, 0.9rem);
+}
+.akatech-cli-badge {
+  padding: 0.28rem 0.7rem;
+  border-radius: 999px;
+  background: #1e293b;
+  color: #cbd5e1;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.akatech-cli-prompt { color: #34d399; }
+.akatech-cli-card h1 {
+  margin: 0;
+  color: #f8fafc;
+  font-family: var(--fb), system-ui, sans-serif;
+  font-size: clamp(1.2rem, 3vw, 1.55rem);
+  line-height: 1.2;
+}
+.akatech-cli-card > p {
+  margin: 0.45rem 0 0;
+  color: #94a3b8;
+  font-family: var(--fb), system-ui, sans-serif;
+  font-size: clamp(0.78rem, 2vw, 0.95rem);
+}
+.akatech-cli-console {
+  margin-top: clamp(2rem, 6vw, 3rem);
+  padding: 1rem clamp(1rem, 3vw, 1.5rem);
+  border-radius: 0.3rem;
+  background: #0d1729;
+  box-shadow: 0 12px 34px rgba(2, 6, 23, 0.28);
+  color: #34d399;
+  font-size: clamp(0.75rem, 2vw, 0.95rem);
+}
+.akatech-cli-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  letter-spacing: 0.03em;
+}
+.akatech-cli-status span { color: #5eead4; }
+.akatech-cli-bar {
+  margin-top: 0.5rem;
+  color: #34d399;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+@media (prefers-reduced-motion: reduce) {
+  .akatech-cli-bar { transition: none; }
+}
+
+
+/* Méthode : même grille éditoriale que Parcours. */
+.akatech-root .akatech-method-grid {
+  width: min(100%, 1080px);
+  margin: 0 auto clamp(4rem, 8vw, 6rem);
+  display: grid;
+  gap: 1rem;
+}
+.akatech-root .akatech-method-grid__item {
+  display: grid;
+  grid-template-columns: minmax(86px, 0.45fr) minmax(0, 1.55fr);
+  gap: clamp(1.5rem, 5vw, 5rem);
+  align-items: start;
+  padding: clamp(1.25rem, 2.5vw, 1.8rem) clamp(1rem, 3vw, 2rem);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 1rem;
+  background: linear-gradient(100deg, rgba(255,255,255,0.035), rgba(255,85,0,0.035));
+}
+.akatech-root .akatech-method-grid__num {
+  color: var(--accent);
+  opacity: 0.72;
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1;
+  text-align: left;
+}
+.akatech-root .akatech-method-grid__body {
+  max-width: 58ch;
+  text-align: left;
+}
+.akatech-root .akatech-method-grid__body h3 {
+  margin-bottom: 0.45rem;
+  font-size: clamp(1.15rem, 2vw, 1.55rem);
+  line-height: 1.1;
+}
+.akatech-root .akatech-method-grid__body p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+.akatech-root .akatech-skill-card {
+  padding: clamp(1.25rem, 2.5vw, 1.8rem);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 1rem;
+  background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.015));
+}
+.akatech-root .akatech-skill-card ul { padding: 0; margin: 0; }
+@media (max-width: 700px) {
+  .akatech-root .akatech-method-grid__item { grid-template-columns: 1fr; gap: 0.7rem; }
+  .akatech-root .akatech-method-grid__num,
+  .akatech-root .akatech-method-grid__body { text-align: center; margin-inline: auto; }
+}

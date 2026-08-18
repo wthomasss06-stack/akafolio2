@@ -1731,7 +1731,7 @@ function RecentProjects() {
               <ProjectVideoMedia project={p} />
             </div>
             <div className="pcard-hover-reveal">
-              <img src={p.responsive || p.img} alt={`${p.title} — aperçu WebP au survol`} loading="lazy" />
+              <img src={p.img} alt={`${p.title} — aperçu WebP au survol`} loading="lazy" />
             </div>
             <ProjectMarquee tech={p.tech} />
             <div className="pcard-bottom">
@@ -1767,7 +1767,7 @@ function RecentProjects() {
                 <ProjectVideoMedia project={p} />
               </div>
               <div className="pcard-hover-reveal">
-                <img src={p.responsive || p.img} alt={`${p.title} — aperçu WebP au survol`} loading="lazy" />
+                <img src={p.img} alt={`${p.title} — aperçu WebP au survol`} loading="lazy" />
               </div>
               <ProjectMarquee tech={p.tech} />
               <div className="pcard-bottom">
@@ -4171,11 +4171,10 @@ export default function App() {
       }
     }
 
-    /* Le loader est maintenant un écran néo-brutaliste léger. Une fois
-       retiré du DOM, PageTransitionOverlay prend le relais pour la
-       révélation finale ; aucun trou organique ne vit dans le loader. */
-    if (transitionRef.current?.trigger) transitionRef.current.trigger(revealContent)
-    else revealContent()
+    /* Le loader possède désormais sa propre combustion de papier et ne
+       dépend plus de PageTransitionOverlay. L’overlay reste disponible
+       uniquement pour les navigations internes de la page. */
+    revealContent()
   }, [])
 
   const toggleTheme = () => {

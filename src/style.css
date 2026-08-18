@@ -6368,8 +6368,62 @@ body.light-mode .writing-card    { background: #f7f5f2 !important; }
 .aka-loader-progress span {
   margin-left: .08em;
   color: rgba(255,85,0,.68);
-  font-family: var(--mono);
-  font-size: .32em;
+  font-family: var(--fs-retro);
+  font-size: .28em;
   font-style: normal;
   letter-spacing: 0;
+}
+.aka-loader-burn-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+.aka-loader-center { position: relative; z-index: 1; }
+.aka-loader-logo { width: clamp(145px, 18vw, 235px); max-height: 31vh; }
+.aka-loader-progress {
+  margin-top: clamp(1rem, 2.4vw, 1.5rem);
+  font-family: var(--fs-retro);
+  font-size: clamp(2.5rem, 6vw, 4.6rem);
+  font-style: normal;
+  letter-spacing: .02em;
+  line-height: .86;
+  text-shadow: 3px 3px 0 rgba(255,85,0,.18);
+}
+
+/* Loader autonome : combustion de papier orange, indépendante de l’overlay de navigation. */
+.aka-loader.is-burning {
+  mask-image: radial-gradient(circle at 50% 50%, transparent 0, #000 0);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent 0, #000 0);
+}
+.aka-loader-burn-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  transform: translate(-50%, -50%);
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 0 18px 5px rgba(255,85,0,.72), inset 0 0 14px rgba(255,85,0,.55);
+  mix-blend-mode: screen;
+}
+.aka-loader.is-burning .aka-loader-center {
+  transition: opacity .16s linear;
+}
+.aka-loader-logo {
+  width: clamp(150px, 20vw, 260px);
+  max-height: 34vh;
+}
+.aka-loader-name {
+  font-family: var(--fs-retro);
+  font-weight: 400;
+  letter-spacing: .12em;
+  text-indent: .12em;
 }

@@ -150,7 +150,7 @@ export const PROJECTS = [
     result: "Projet le plus avancé techniquement du portfolio — repo privé (client), en évolution continue."
   },
   {
-    id: 16, title: 'KokoEat', sub: 'Livraison Alimentaire', cat: 'en-cours', img: cld('/assets/images/projects/kokoeat-preview.webp'), responsive: cld('/assets/images/projects/kokoeat-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600', tech: ['React', 'Django REST', 'PostgreSQL', 'Vercel'], url: '#', desc: "Application de livraison de repas pensée pour le marché ivoirien. Commande en ligne, suivi en temps réel et paiement Mobile Money.", year: '2025',
+    id: 16, title: 'KokoEat', sub: 'Livraison Alimentaire', cat: 'en-cours', img: cld('/assets/images/projects/kokoeat-preview.webp'), responsive: cld('/assets/images/projects/kokoeat-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600', tech: ['React', 'Django REST', 'PostgreSQL', 'Vercel'], url: 'https://koko-eats.vercel.app', desc: "Application de livraison de repas pensée pour le marché ivoirien. Commande en ligne, suivi en temps réel et paiement Mobile Money.", year: '2025',
     problem: "Le marché ivoirien manque d'une app de livraison de repas pensée pour le paiement Mobile Money.",
     solution: "App de commande en ligne avec suivi temps réel et intégration Mobile Money prévue.",
     result: "Projet en cours de développement."

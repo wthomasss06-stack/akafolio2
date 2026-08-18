@@ -35,7 +35,7 @@ function ProjectsTunnel() {
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' })
     renderer.setSize(width, height)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1.2
     container.appendChild(renderer.domElement)
@@ -47,15 +47,60 @@ function ProjectsTunnel() {
     movingLight.position.set(0, 0, -200)
     scene.add(movingLight)
 
-    /* ── Textures : les captures des 19 projets (pas d'Unsplash) ── */
+    /* ── Médias WebM Cloudinary : une vidéo par projet, partagée par
+       les deux boucles du tunnel. Le WebP reste un fallback silencieux
+       si un WebM n’a pas encore été uploadé. ── */
     const textureLoader = new THREE.TextureLoader()
-    const projectTextures = PROJECTS.map(p => {
-      const tex = textureLoader.load(p.img)
-      tex.generateMipmaps = true
-      tex.minFilter = THREE.LinearMipmapLinearFilter
-      if ('colorSpace' in tex) tex.colorSpace = THREE.SRGBColorSpace
-      return tex
+    const projectMedia = PROJECTS.map(project => {
+      const videoUrl = project.img
+        .replace('/image/upload/', '/video/upload/')
+        .replace(/\.(webp|png|jpe?g)(\?.*)?$/i, '.webm$2')
+      const fallback = textureLoader.load(project.img)
+      fallback.generateMipmaps = false
+      fallback.minFilter = THREE.LinearFilter
+      fallback.magFilter = THREE.LinearFilter
+      if ('colorSpace' in fallback) fallback.colorSpace = THREE.SRGBColorSpace
+
+      const video = document.createElement('video')
+      video.muted = true
+      video.loop = true
+      video.playsInline = true
+      video.preload = 'metadata'
+      video.crossOrigin = 'anonymous'
+      video.src = videoUrl
+      const videoTexture = new THREE.VideoTexture(video)
+      videoTexture.generateMipmaps = false
+      videoTexture.minFilter = THREE.LinearFilter
+      videoTexture.magFilter = THREE.LinearFilter
+      if ('colorSpace' in videoTexture) videoTexture.colorSpace = THREE.SRGBColorSpace
+
+      const media = { project, video, videoTexture, fallback, materials: [], failed: false }
+      video.addEventListener('error', () => {
+        media.failed = true
+        media.materials.forEach(material => { material.uniforms.uTexture.value = fallback })
+      })
+      return media
     })
+
+    let tunnelVisible = true
+    let pageVisible = document.visibilityState === 'visible'
+    const syncVideoPlayback = () => {
+      projectMedia.forEach(media => {
+        if (media.failed) return
+        if (tunnelVisible && pageVisible) media.video.play().catch(() => {})
+        else media.video.pause()
+      })
+    }
+    const tunnelObserver = new IntersectionObserver(([entry]) => {
+      tunnelVisible = entry.isIntersecting && entry.intersectionRatio > 0.05
+      syncVideoPlayback()
+    }, { threshold: [0, 0.05, 0.2] })
+    tunnelObserver.observe(section)
+    const handleDocumentVisibility = () => {
+      pageVisible = document.visibilityState === 'visible'
+      syncVideoPlayback()
+    }
+    document.addEventListener('visibilitychange', handleDocumentVisibility)
 
     const vertexShader = `
       varying vec2 vUv;
@@ -90,7 +135,7 @@ function ProjectsTunnel() {
     // Plans agrandis (345x225, un cran au-dessus du méga-format précédent)
     const CARD_W = 345
     const CARD_H = 225
-    const geometry = new THREE.PlaneGeometry(CARD_W, CARD_H, 20, 20)
+    const geometry = new THREE.PlaneGeometry(CARD_W, CARD_H, 12, 8)
 
     const debrisGroup = new THREE.Group()
     const meshObjects = []
@@ -107,13 +152,13 @@ function ProjectsTunnel() {
         const globalIndex = loopIndex * ITEMS_PER_LOOP + i
         const projIndex = i % PROJECTS.length
         const proj = PROJECTS[projIndex]
-        const tex = projectTextures[projIndex]
+        const media = projectMedia[projIndex]
 
         const material = new THREE.ShaderMaterial({
           vertexShader,
           fragmentShader,
           uniforms: {
-            uTexture: { value: tex },
+            uTexture: { value: media.failed ? media.fallback : media.videoTexture },
             uTime: { value: 0 },
             uDistortion: { value: 0.4 },
             uColorGlow: { value: new THREE.Color(globalIndex % 2 === 0 ? TUNNEL_ACCENT_A : TUNNEL_ACCENT_B) },
@@ -121,6 +166,7 @@ function ProjectsTunnel() {
           side: THREE.DoubleSide,
         })
 
+        media.materials.push(material)
         const mesh = new THREE.Mesh(geometry, material)
         mesh.userData.project = proj
 
@@ -146,7 +192,7 @@ function ProjectsTunnel() {
     const TOTAL_LENGTH = LOOP_LENGTH * 2
 
     /* ── Nuage de particules "réaliste" : tailles/couleurs variées + twinkle shader ── */
-    const particleCount = 22000
+    const particleCount = 12000
     const particleGeo = new THREE.BufferGeometry()
     const starPositions = new Float32Array(particleCount * 3)
     const starSizes = new Float32Array(particleCount)
@@ -346,6 +392,7 @@ function ProjectsTunnel() {
     let rafId
     function animate() {
       rafId = requestAnimationFrame(animate)
+      if (!tunnelVisible || !pageVisible) return
       const t = clock.getElapsedTime()
       const dt = Math.min(t - lastT, 0.05)
       lastT = t
@@ -409,7 +456,7 @@ function ProjectsTunnel() {
       camera.aspect = width / height
       camera.updateProjectionMatrix()
       renderer.setSize(width, height)
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
     }
     window.addEventListener('resize', handleResize)
 
@@ -417,6 +464,8 @@ function ProjectsTunnel() {
       cancelAnimationFrame(rafId)
       window.removeEventListener('resize', handleResize)
       window.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('visibilitychange', handleDocumentVisibility)
+      tunnelObserver.disconnect()
       container.removeEventListener('click', handleClick)
       container.removeEventListener('pointermove', handlePointerMove)
       container.removeEventListener('pointerleave', handlePointerLeave)
@@ -425,7 +474,13 @@ function ProjectsTunnel() {
       container.removeEventListener('touchmove', handleTouchMove)
       geometry.dispose()
       meshObjects.forEach(mesh => mesh.material.dispose())
-      projectTextures.forEach(tex => tex.dispose())
+      projectMedia.forEach(media => {
+        media.video.pause()
+        media.video.removeAttribute('src')
+        media.video.load()
+        media.videoTexture.dispose()
+        media.fallback.dispose()
+      })
       particleGeo.dispose()
       starMaterial.dispose()
       shootingStars.forEach(s => {

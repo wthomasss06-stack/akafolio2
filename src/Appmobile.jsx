@@ -4174,15 +4174,11 @@ export default function App() {
      fini (loaded passe à true), coupée par le même mute/touche S que
      les sons de clic ci-dessus. useClickSound.js non modifié. */
   useImmersiveSound(muted, loaded);
-  /* NOTE — anciennement rendu conditionnel (!loaded ? Loader : page).
-     Le loader monte maintenant EN MÊME TEMPS que la page (overlay fixed
-     par-dessus, comme sur desktop) : c'est nécessaire pour le dissolve
-     WebGL de sortie du Loader, qui révèle la page en la laissant
-     transparaître à travers son alpha — il lui faut donc un vrai
-     contenu déjà monté en dessous, pas un écran vide. */
+  /* Le même Loader.jsx que sur desktop est monté par-dessus la page mobile.
+     Il révèle lui-même le contenu avec son papier brûlé WebGL autonome. */
   return (
     <>
-      <Loader onDone={() => setLoaded(true)} isMobile dark={dark} />
+      <Loader onDone={() => setLoaded(true)} />
       <div className={`app ${light ? 'app--light' : ''}`}>
         <CustomCursor />
         <SoundToggle muted={muted} onToggle={toggleMute} />

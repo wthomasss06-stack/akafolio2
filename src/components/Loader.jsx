@@ -5,8 +5,8 @@ import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import { cld } from '../lib/cloudinary'
 
-const HOME_DURATION = 4900
-const INNER_DURATION = 1100
+const HOME_DURATION = 2000
+const INNER_DURATION = 2000
 const BURN_DURATION = 1.65
 
 const PAPER = {

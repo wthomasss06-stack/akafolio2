@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { runGridTransition } from './GooeyTransition.jsx'
 import { cld } from '../lib/cloudinary'
 
-const COUNT_DURATION = 1450
+const COUNT_DURATION = 2000
 const GOOEY_DURATION = 1750
 
 /**

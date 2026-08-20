@@ -4423,3 +4423,19 @@
 @media (max-height: 500px) and (orientation: landscape) {
   .mob-aka-loader__center { transform: scale(.78); }
 }
+
+/* Header mobile transparent : le contenu du Hero reste visible derrière. */
+.nav,
+.app--light .nav,
+.nav--scrolled,
+.app--light .nav--scrolled {
+  background: transparent !important;
+  border-bottom-color: transparent !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+/* Photo du Hero mobile en couleur, placée au-dessus du nom par le JSX. */
+.hv4-photo-mob-inner .hv4-photo {
+  filter: grayscale(0) contrast(1) brightness(1);
+}

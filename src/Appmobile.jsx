@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ScrollDepthScene from './components/ScrollDepthScene';
 import ScrambleText from './components/ScrambleText';
 import { useSoundSystem } from './components/useClickSound.js';
-import { useGooeyTransition, runGridTransition } from './components/GooeyTransition.jsx';
+import { useGooeyTransition } from './components/GooeyTransition.jsx';
 import MobileLoader from './components/MobileLoader.jsx';
 import { gsap } from 'gsap';
 import SoundToggle from './components/SoundToggle.jsx';
@@ -1562,7 +1562,6 @@ const Hero = ({ dark }) => {
   const [wi, setWi] = useState(0); const [typed, setTyped] = useState(''); const [del, setDel] = useState(false); const [ch, setCh] = useState(0); const [now, setNow] = useState(new Date());
 
   const heroRef = useRef(null);
-  const [photoColorRef, heroPhotoColor] = usePhotoColor();
   const bgRef = useRef(null);   // aurora bg layer — zooms on scroll
   const sceneRef = useRef(null);   // grid wrapper — rotates on mouse
   const fadeRef = useRef(null);   // inner grid — fades+blurs on scroll
@@ -1654,7 +1653,8 @@ const Hero = ({ dark }) => {
   }, [ch, del, wi]);
 
   return (
-    <section id="home" ref={el => { heroRef.current = el; photoColorRef.current = el; }} className={`hero hv4 hv4-cinematic ${dark ? 'hero--dark' : ''}`}>
+    <section id="home" ref={heroRef} className={`hero hv4 hv4-cinematic ${dark ? 'hero--dark' : ''}`}>
+
 
       {/* ── film grain ── */}
       <div className="hv4-grain" aria-hidden />
@@ -1684,17 +1684,17 @@ const Hero = ({ dark }) => {
           <div className="hv4-left" ref={leftRef}>
 
 
-            <h1 className="hv4-name" aria-label="M'Bollo Aka">
-              <ScrambleText text="M'Bollo" tag="span" className="hv4-name-line" style={{ '--d': '0.12s' }} speed={30} step={0.6} threshold={0.15} once={true} />
-              <ScrambleText text="Aka" tag="span" className="hv4-name-line hv4-name-line--u" style={{ "--d": "0.26s" }} speed={28} step={0.5} threshold={0.15} once={true} />
-            </h1>
-
-            <div className="hv4-photo-mob hv4-rv" style={{ '--d': '0.3s' }}>
+            <div className="hv4-photo-mob hv4-rv" style={{ '--d': '0.12s' }}>
               <div className="hv4-photo-mob-inner">
-                <img src={cld("/assets/images/IMG_20250124_124101KK.webp")} alt="M'Bollo Aka" className={`hv4-photo photo-bw ${heroPhotoColor ? 'photo-bw--on' : ''}`} />
+                <img src={cld("/assets/images/IMG_20250124_124101KK.webp")} alt="M'Bollo Aka" className="hv4-photo" />
                 <div className="hv4-photo-mob-badge"><span className="hero-dot" /><span>disponible</span></div>
               </div>
             </div>
+
+            <h1 className="hv4-name" aria-label="M'Bollo Aka">
+              <ScrambleText text="M'Bollo" tag="span" className="hv4-name-line" style={{ '--d': '0.3s' }} speed={30} step={0.6} threshold={0.15} once={true} />
+              <ScrambleText text="Aka" tag="span" className="hv4-name-line hv4-name-line--u" style={{ "--d": "0.42s" }} speed={28} step={0.5} threshold={0.15} once={true} />
+            </h1>
 
             <p className="hv4-typed hv4-rv" style={{ '--d': '0.42s' }}>
               Développeur&nbsp;<span className="hero-word">{typed}</span><span className="cursor">|</span>
@@ -1734,7 +1734,7 @@ const Hero = ({ dark }) => {
           {/* ════ RIGHT ════ */}
           <div className="hv4-right hv4-rv" style={{ '--d': '0.32s' }} ref={rightRef}>
             <div className="hv4-photo-wrap hv4-photo-wrap--full">
-              <img src={cld("/assets/images/IMG_20250124_124101KK.webp")} alt="M'Bollo Aka" className={`hv4-photo hv4-photo--portrait photo-bw ${heroPhotoColor ? 'photo-bw--on' : ''}`} />
+              <img src={cld("/assets/images/IMG_20250124_124101KK.webp")} alt="M'Bollo Aka" className="hv4-photo hv4-photo--portrait" />
               <div className="hv4-photo-overlay">
                 <span><LI name="map-marker-alt" color={dark ? "#aaa" : "#666"} size={12} /> Abidjan, CI</span>
                 <span><LI name="code" color="#ff5500" size={12} /> Full-Stack Dev</span>

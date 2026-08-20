@@ -1384,8 +1384,13 @@ function Hero() {
            (centré verticalement à gauche via CSS) ── */}
         <div className="hv4-corner hv4-corner--left">
 
+          <p className="hv4-left-description hv4-rv" style={{ '--d': '.42s' }}>
+            Développeur web orienté produits, spécialisé Django &amp; React.<br />
+            Je construis des applications pensées pour des usages réels.
+          </p>
+
           {/* Rotating words — cycle-text scramble */}
-          <h3 className="hv4-typed hv4-rv" style={{ '--d': '.48s' }}>
+          <h3 className="hv4-typed hv4-rv" style={{ '--d': '.56s' }}>
             Développeur&nbsp;<span className="hero-word" style={{ color: '#ffffff', display: 'inline-block' }}>
               <span className="sh-cycle-wrap">
                 <span className="sh-cycle-inner" ref={rotating.innerRef}>

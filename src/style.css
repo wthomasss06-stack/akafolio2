@@ -6427,3 +6427,17 @@ body.light-mode .writing-card    { background: #f7f5f2 !important; }
   letter-spacing: .12em;
   text-indent: .12em;
 }
+
+/* Description business placée au-dessus du cycle texte dans le Hero desktop. */
+.hv4-left-description {
+  max-width: min(30vw, 390px);
+  margin: 0 0 clamp(.8rem, 1.5vw, 1.25rem);
+  color: rgba(255,255,255,.7);
+  font-family: var(--fb);
+  font-size: clamp(.66rem, .8vw, .84rem);
+  line-height: 1.7;
+  letter-spacing: .01em;
+}
+@media (max-width: 900px) {
+  .hv4-left-description { max-width: 100%; font-size: .78rem; }
+}

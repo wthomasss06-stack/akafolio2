@@ -6443,3 +6443,13 @@ body.light-mode .writing-card    { background: #f7f5f2 !important; }
 @media (max-width: 900px) {
   .hv4-left-description { max-width: 100%; font-size: clamp(18px, 5.2vw, 24px); }
 }
+
+/* Équilibre final du Hero : description aussi grasse que le cycle et photo
+   légèrement plus grande/décalée à droite sur desktop. */
+.hv4-left-description { font-weight: 700; }
+@media (min-width: 901px) {
+  .hv4-portrait-photo {
+    width: min(43vw, 78vh, 670px);
+    left: calc(50% + clamp(14px, 2.5vw, 44px));
+  }
+}

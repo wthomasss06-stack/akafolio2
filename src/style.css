@@ -6433,12 +6433,13 @@ body.light-mode .writing-card    { background: #f7f5f2 !important; }
   display: block;
   max-width: min(30vw, 390px);
   margin: 0 0 clamp(.8rem, 1.5vw, 1.25rem);
-  color: inherit;
-  font-family: inherit;
-  font-size: inherit;
-  line-height: 1.25;
-  letter-spacing: inherit;
+  color: rgba(242,237,232,0.55);
+  font-family: var(--fb);
+  font-size: clamp(18px, 2.4vw, 28px);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0;
 }
 @media (max-width: 900px) {
-  .hv4-left-description { max-width: 100%; }
+  .hv4-left-description { max-width: 100%; font-size: clamp(18px, 5.2vw, 24px); }
 }

@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { createContext, useContext, useState, useEffect, useRef, useCallback, useMemo, Children, isValidElement, cloneElement } from 'react'
 import './style.css'
@@ -1772,8 +1772,8 @@ function RecentProjects() {
                 <ProjectVideoMedia project={p} />
               </div>
               <div className="pcard-hover-reveal">
-                <img src={p.img} alt={`${p.title} — aperçu WebP au survol`} loading="lazy" />
-              </div>
+              <img src={p.img} alt={`${p.title} — aperçu WebP au survol`} loading="lazy" />
+            </div>
               <ProjectMarquee tech={p.tech} />
               <div className="pcard-bottom">
                 <span className="pcard-title">{p.title}</span>
@@ -2444,108 +2444,160 @@ const CrossIcon = () => (
  Gauche : images du process empilées (stack crossfade)
  Droite : textes étape (sticky switch scrub)
  ════════════════════════════════════════════ */
-/* ════════════════════════════════════════════
- HOVER IMAGE REVEAL — Process & Services
- Style : liste avec image qui suit le curseur
- ════════════════════════════════════════════ */
-function HoverRevealList({ items, eyebrowSuffix = '' }) {
-  const [hovered, setHovered] = useState(null)
-  const containerRef = useRef(null)
-  const wrapRef = useRef(null) /* boîte flottante : position + rotation + scale/opacity */
-  const imgRef = useRef(null) /* <img> interne : petit "punch" au changement d'item */
-  const xTo = useRef(null)
-  const yTo = useRef(null)
-
-  /* ── Suivi du curseur en continu via quickTo — jamais de setState
-     ici, donc jamais de re-render de la liste à chaque mousemove.
-     C'était la cause principale du manque de fluidité : l'ancienne
-     version faisait un setState (via rAF) sur CHAQUE mouvement, avec
-     en plus une transition CSS qui doublait l'easing. ── */
-  useEffect(() => {
-    const wrap = wrapRef.current
-    if (!wrap) return
-    gsap.set(wrap, { opacity: 0, scale: 0.8 })
-    xTo.current = gsap.quickTo(wrap, 'x', { duration: 0.5, ease: 'power3.out' })
-    yTo.current = gsap.quickTo(wrap, 'y', { duration: 0.5, ease: 'power3.out' })
-  }, [])
-
-  /* Petit "punch" (scale + fade) à chaque changement d'item survolé,
-     pour que l'image se sente vivante même quand on glisse d'une
-     ligne à l'autre sans jamais quitter la liste. */
-  useEffect(() => {
-    if (hovered === null || !imgRef.current) return
-    gsap.fromTo(imgRef.current, { opacity: 0, scale: 1.08, y: 22 }, { opacity: 1, scale: 1, y: 0, duration: 0.45, ease: 'power3.out' })
-  }, [hovered])
-
-  const onMouseMove = (e) => {
-    const rect = containerRef.current?.getBoundingClientRect()
-    if (!rect || !xTo.current) return
-    xTo.current(e.clientX - rect.left + 16)
-    yTo.current(e.clientY - rect.top - 34)
-  }
-
-  const onEnter = (i, e) => {
-    const rect = containerRef.current?.getBoundingClientRect()
-    if (rect && wrapRef.current && hovered === null) {
-      /* Premier survol : on cale la boîte directement sur le curseur
-         sans easing, pour éviter qu'elle n'arrive "en volant" depuis
-         le coin (0,0) — ensuite le quickTo prend le relais en continu. */
-      gsap.set(wrapRef.current, { x: e.clientX - rect.left + 16, y: e.clientY - rect.top - 34 })
-    }
-    gsap.to(wrapRef.current, {
-      opacity: 1, scale: 1,
-      rotation: (Math.random() - 0.5) * 8,
-      duration: 0.5, ease: 'power3.out',
-    })
-    setHovered(i)
-  }
-
-  /* Déclenché en quittant TOUTE la liste (pas ligne par ligne) : passer
-     d'une ligne à la suivante ne masque jamais la boîte, elle glisse
-     simplement vers la nouvelle position — plus de clignotement. */
-  const onLeaveList = () => {
-    gsap.to(wrapRef.current, { opacity: 0, scale: 0.8, duration: 0.35, ease: 'power2.inOut' })
-    setHovered(null)
-  }
-
+const CONTENT_BOARD_LAYOUT = [
+  { left: '0%', top: '8%', rot: -6 },
+  { left: '20%', top: '35%', rot: 5 },
+  { left: '39%', top: '5%', rot: -4 },
+  { left: '58%', top: '33%', rot: 7 },
+  { left: '76%', top: '10%', rot: -5 },
+]
+function ContentBoardCard({ item, index, layout, setCardRef, total }) {
+  const features = item.features?.length ? item.features : [item.tag || item.sub]
   return (
     <div
-      ref={containerRef}
-      className="hvr-list"
-      onMouseMove={onMouseMove}
-      onMouseLeave={onLeaveList}
+      ref={(el) => setCardRef(index, el)}
+      className="tl-card content-board-card"
+      style={{ left: layout.left, top: layout.top, zIndex: 10 + (total - index) }}
     >
-      {items.map((item, i) => (
-        <div key={i} className="hvr-row-wrap">
-          <div
-            className={`hvr-row${hovered === i ? ' hvr-row--active' : ''}`}
-            onMouseEnter={(e) => onEnter(i, e)}
-          >
-            <span className="hvr-title">{item.title}</span>
+      <svg className="tl-pin" viewBox="0 0 100 100" aria-hidden="true">
+        <ellipse cx="60" cy="85" rx="15" ry="5" fill="rgba(0,0,0,.35)" />
+        <polygon points="50,45 48,85 52,85" fill="#777" />
+        <path d="M30,45 L70,45 L60,25 L40,25 Z" fill="var(--accent)" />
+        <ellipse cx="50" cy="25" rx="15" ry="8" fill="#ff8a3d" />
+      </svg>
+      <div className="tl-sc-header">
+        <span className="tl-sc-idx">{item.n || `0${index + 1}`}</span>
+        <span className="tl-sc-date">{item.tag || item.sub}</span>
+      </div>
+      <div className="tl-sc-title">{item.title}</div>
+      <div className="tl-sc-company">
+        <span className="tl-sc-company-icon">◈</span>
+        {item.sub || 'AKATech Studio'}
+      </div>
+      <p className="content-board-desc">{item.desc}</p>
+      <ul className="tl-sc-items content-board-items">
+        {features.map((feature, j) => <li key={`${feature}-${j}`}>→ {feature}</li>)}
+      </ul>
+    </div>
+  )
+}
+function InteractiveContentBoard({ items, variant }) {
+  const boardRef = useRef(null)
+  const spotlightRef = useRef(null)
+  const cardsRef = useRef([])
+  const highestZRef = useRef(30)
+  const draggingRef = useRef(null)
+  const setCardRef = useCallback((i, el) => { cardsRef.current[i] = el }, [])
+  const layoutFor = (i) => CONTENT_BOARD_LAYOUT[i % CONTENT_BOARD_LAYOUT.length]
 
-            {item.tag && (
-              <span className="hvr-tag" style={{
-                opacity: hovered === i ? 1 : 0,
-                transform: hovered === i ? 'translateX(0)' : 'translateX(10px)',
-              }}>
-                {item.tag}
-              </span>
-            )}
-          </div>
-          {/* Séparateur */}
-          <div className="hvr-sep" style={{
-            background: hovered === i
-              ? 'linear-gradient(90deg,rgba(255,85,0,.6) 0%,rgba(255,85,0,.06) 100%)'
-              : 'rgba(255,255,255,0.06)',
-          }} />
-        </div>
-      ))}
+  useEffect(() => {
+    const board = boardRef.current
+    const spotlight = spotlightRef.current
+    const cards = cardsRef.current.filter(Boolean)
+    if (!board || !spotlight || !cards.length) return
+    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (!canHover || reduceMotion) return
 
-      {/* Image curseur 260×260 — position/rotation/scale/opacity 100% GSAP */}
-      <div ref={wrapRef} className="hvr-cursor-img">
-        {hovered !== null && items[hovered]?.img && (
-          <img ref={imgRef} src={items[hovered].img} alt={items[hovered].title} />
-        )}
+    gsap.set(spotlight, { xPercent: -50, yPercent: -50, x: -9999, y: -9999 })
+    const spotX = gsap.quickTo(spotlight, 'x', { duration: 0.35, ease: 'power3.out' })
+    const spotY = gsap.quickTo(spotlight, 'y', { duration: 0.35, ease: 'power3.out' })
+    const onBoardEnter = () => gsap.to(spotlight, { opacity: 1, duration: 0.25, overwrite: 'auto' })
+    const onBoardMove = (e) => {
+      const rect = board.getBoundingClientRect()
+      spotX(e.clientX - rect.left)
+      spotY(e.clientY - rect.top)
+    }
+    const onBoardLeave = () => gsap.to(spotlight, { opacity: 0, duration: 0.3, overwrite: 'auto' })
+    board.addEventListener('pointerenter', onBoardEnter)
+    board.addEventListener('pointermove', onBoardMove)
+    board.addEventListener('pointerleave', onBoardLeave)
+
+    const cleanups = cards.map((card, i) => {
+      gsap.set(card, { x: 0, y: 0, rotation: layoutFor(i).rot })
+      const rxTo = gsap.quickTo(card, 'rotationX', { duration: 0.5, ease: 'power2.out' })
+      const ryTo = gsap.quickTo(card, 'rotationY', { duration: 0.5, ease: 'power2.out' })
+      let xSet = null, ySet = null
+      let originX = 0, originY = 0, startX = 0, startY = 0
+      let boundsX = [0, 0], boundsY = [0, 0]
+      const bringToFront = () => { highestZRef.current += 1; card.style.zIndex = highestZRef.current }
+      const onEnter = () => { if (draggingRef.current === null) { bringToFront(); card.classList.add('tl-card--active') } }
+      const onMove = (e) => {
+        if (draggingRef.current !== null) return
+        const rect = card.getBoundingClientRect()
+        ryTo(gsap.utils.mapRange(0, rect.width, -14, 14, e.clientX - rect.left))
+        rxTo(gsap.utils.mapRange(0, rect.height, 14, -14, e.clientY - rect.top)
+        )
+      }
+      const onLeave = () => { if (draggingRef.current === null) { rxTo(0); ryTo(0); card.classList.remove('tl-card--active') } }
+      const onPointerMove = (e) => {
+        e.preventDefault()
+        xSet(gsap.utils.clamp(boundsX[0], boundsX[1], originX + (e.clientX - startX)))
+        ySet(gsap.utils.clamp(boundsY[0], boundsY[1], originY + (e.clientY - startY)))
+      }
+      const onPointerUp = () => {
+        draggingRef.current = null
+        card.classList.remove('tl-card--dragging')
+        gsap.to(card, { scale: 1, duration: 0.35, ease: 'back.out(2.6)' })
+        window.removeEventListener('pointermove', onPointerMove)
+        window.removeEventListener('pointerup', onPointerUp)
+      }
+      const onPointerDown = (e) => {
+        if (e.button > 0) return
+        draggingRef.current = i
+        bringToFront()
+        card.classList.add('tl-card--dragging')
+        rxTo(0); ryTo(0)
+        gsap.to(card, { scale: 1.03, duration: 0.2 })
+        xSet = gsap.quickSetter(card, 'x', 'px')
+        ySet = gsap.quickSetter(card, 'y', 'px')
+        originX = gsap.getProperty(card, 'x')
+        originY = gsap.getProperty(card, 'y')
+        startX = e.clientX
+        startY = e.clientY
+        const boardRect = board.getBoundingClientRect()
+        const cardRect = card.getBoundingClientRect()
+        const margin = 50
+        boundsX = [-(cardRect.left - boardRect.left) - margin, (boardRect.right - cardRect.right) + margin]
+        boundsY = [-(cardRect.top - boardRect.top) - margin, (boardRect.bottom - cardRect.bottom) + margin]
+        window.addEventListener('pointermove', onPointerMove)
+        window.addEventListener('pointerup', onPointerUp)
+      }
+      card.addEventListener('pointerenter', onEnter)
+      card.addEventListener('pointermove', onMove)
+      card.addEventListener('pointerleave', onLeave)
+      card.addEventListener('pointerdown', onPointerDown)
+      return () => {
+        card.removeEventListener('pointerenter', onEnter)
+        card.removeEventListener('pointermove', onMove)
+        card.removeEventListener('pointerleave', onLeave)
+        card.removeEventListener('pointerdown', onPointerDown)
+        window.removeEventListener('pointermove', onPointerMove)
+        window.removeEventListener('pointerup', onPointerUp)
+      }
+    })
+    const introTween = gsap.fromTo(cards, { opacity: 0, y: 46, scale: 0.92 }, {
+      opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'power3.out', stagger: 0.09,
+      scrollTrigger: { trigger: board, start: 'top 85%', toggleActions: 'play none none reverse' },
+    })
+    return () => {
+      board.removeEventListener('pointerenter', onBoardEnter)
+      board.removeEventListener('pointermove', onBoardMove)
+      board.removeEventListener('pointerleave', onBoardLeave)
+      cleanups.forEach(fn => fn())
+      introTween.scrollTrigger?.kill()
+      introTween.kill()
+    }
+  }, [items.length])
+
+  return (
+    <div className={`tl-board content-board content-board--${variant}`} ref={boardRef}>
+      <div className="tl-board-spotlight" ref={spotlightRef} aria-hidden="true" />
+      <div className="tl-board-bgtext" aria-hidden="true"><span>{variant}</span><span>AKATECH</span></div>
+      <div className="tl-board-cards">
+        {items.map((item, i) => (
+          <ContentBoardCard key={`${variant}-${item.n || i}`} item={item} index={i} total={items.length} layout={layoutFor(i)} setCardRef={setCardRef} />
+        ))}
       </div>
     </div>
   )
@@ -2554,15 +2606,19 @@ function HoverRevealList({ items, eyebrowSuffix = '' }) {
 function ProcessSection() {
   return (
     <section id="process-section" className="proc-section">
-      <div className="proc-header">
-        <SectionHeading num="03" title="Process" sub="De l'acompte à la livraison" subAs="h2" style={{ marginBottom: '.8rem' }} />
-        <NeonFlickerText className="about-text proc-header-text">
-          Un processus clair et transparent, du premier brief à la mise en ligne —
-          vous savez toujours où en est votre projet.
-        </NeonFlickerText>
-      </div>
-      <div className="proc-hvr-wrap">
-        <HoverRevealList items={PROCESS_STEPS} eyebrowSuffix="Process" />
+      <div className="content-section-layout content-section-layout--board">
+        <div className="content-section-copy">
+          <div className="proc-header">
+            <SectionHeading num="03" title="Process" sub="De l'acompte à la livraison" subAs="h2" style={{ marginBottom: '.8rem' }} />
+            <NeonFlickerText className="about-text proc-header-text">
+              Un processus clair et transparent, du premier brief à la mise en ligne —
+              vous savez toujours où en est votre projet.
+            </NeonFlickerText>
+          </div>
+        </div>
+        <div className="proc-hvr-wrap">
+          <InteractiveContentBoard items={PROCESS_CARD_COPY} variant="process" />
+        </div>
       </div>
     </section>
   )
@@ -2573,6 +2629,16 @@ function ProcessSection() {
  Gauche : textes service (sticky switch scrub)
  Droite : images empilées (stacked cards animées)
  ════════════════════════════════════════════ */
+const PROCESS_CARD_COPY = PROCESS_STEPS.map(({ img, imgAlt, ...step }) => step)
+
+const SERVICES_MOBILE_COPY = [
+  { n: '01', title: 'Conception de Site Web', sub: 'Votre présence en ligne professionnelle', desc: 'Création de sites web modernes, responsive et optimisés pour convertir vos visiteurs en clients.', features: ['Sites responsive & modernes', 'Optimisés pour la conversion', "Du portfolio à l'e-commerce"] },
+  { n: '02', title: 'Cartes Interactives & Dashboards', sub: 'Cartes Mapbox et visualisation de données', desc: 'Intégration de cartes interactives Mapbox / Leaflet et de dashboards de visualisation de données.', features: ['Cartes Mapbox / Leaflet', 'Dashboards de données', 'Interfaces lisibles & actionnables'] },
+  { n: '03', title: 'API & Backend Robustes', sub: 'Connectez et automatisez vos systèmes', desc: "Conception d'API RESTful sécurisées avec Django ou Flask, auth JWT et déploiement.", features: ['API RESTful Django / Flask', 'Auth JWT & gestion des rôles', 'Intégration Mobile Money'] },
+  { n: '04', title: 'Maintenance & Support', sub: 'Votre projet performant, sécurisé et à jour', desc: 'Suivi technique, corrections de bugs, mises à jour de sécurité et améliorations continues.', features: ['Suivi technique continu', 'Mises à jour de sécurité', 'Améliorations sur la durée'] },
+  { n: '05', title: 'Fiche Google My Business', sub: 'Soyez visible sur Google Maps et la recherche locale', desc: 'Création ou optimisation de votre fiche Google et suivi mensuel : avis, publications et statistiques.', features: ['Création ou optimisation de la fiche', 'Description optimisée SEO local', 'Suivi mensuel : avis & statistiques'] },
+]
+
 const SERVICES_DATA = [
   {
     num: '01',
@@ -2617,21 +2683,22 @@ const SERVICES_DATA = [
 ]
 
 function ServicesSection() {
-  /* Adapte SERVICES_DATA pour HoverRevealList */
-  const items = SERVICES_DATA.map(s => ({
-    n: s.num, title: s.title, img: s.img, tag: s.sub,
-  }))
+
   return (
     <section id="services-section" className="svc-section">
-      <div className="svc-header">
-        <SectionHeading num="03" title="Services" sub="Ce que je peux faire pour vous" subAs="h2" style={{ marginBottom: '.8rem' }} />
-        <NeonFlickerText className="about-text svc-header-text">
-          Cinq offres complémentaires, de la conception au support continu —
-          pour un projet qui reste performant dans la durée.
-        </NeonFlickerText>
-      </div>
-      <div className="svc-hvr-wrap">
-        <HoverRevealList items={items} />
+      <div className="content-section-layout content-section-layout--board">
+        <div className="content-section-copy">
+          <div className="svc-header">
+            <SectionHeading num="03" title="Services" sub="Ce que je peux faire pour vous" subAs="h2" style={{ marginBottom: '.8rem' }} />
+            <NeonFlickerText className="about-text svc-header-text">
+              Cinq offres complémentaires, de la conception au support continu —
+              pour un projet qui reste performant dans la durée.
+            </NeonFlickerText>
+          </div>
+        </div>
+        <div className="svc-hvr-wrap">
+          <InteractiveContentBoard items={SERVICES_MOBILE_COPY} variant="services" />
+        </div>
       </div>
     </section>
   )
@@ -2955,7 +3022,7 @@ function TestiCard({ t }) {
  ════════════════════════════════════════════ */
 function WritingSection() {
   return (
-    <section id="writing-section" style={{ padding: '10vh 0 4vh', overflow: 'hidden' }}>
+    <section id="writing-section" className="blog-cardswap-section" style={{ padding: '10vh 0 4vh', overflow: 'hidden' }}>
       <div
         style={{
           display: 'flex',
@@ -2966,7 +3033,8 @@ function WritingSection() {
           padding: '0 4vw',
         }}
       >
-        <div style={{ maxWidth: 360, flexShrink: 0 }}>
+        <div className="content-section-layout blog-cardswap-layout">
+        <div className="content-section-copy blog-cardswap-copy" style={{ maxWidth: 360, flexShrink: 0 }}>
           <SectionHeading num="02" title="BLOG" sub="Ce que je partage sur LinkedIn" style={{ marginBottom: '1.2rem' }} />
 
           <h3 style={{ fontSize: '.88rem', color: 'var(--muted)', lineHeight: 1.7 }}>
@@ -2992,7 +3060,7 @@ function WritingSection() {
           </a>
         </div>
 
-        <div
+        <div className="blog-cardswap-slot"
           style={{
             position: 'relative',
             width: 440,
@@ -3086,6 +3154,7 @@ function WritingSection() {
               </Card>
             ))}
           </CardSwap>
+        </div>
         </div>
       </div>
     </section>

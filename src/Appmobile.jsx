@@ -5,7 +5,7 @@ import ScrollDepthScene from './components/ScrollDepthScene';
 import ScrambleText from './components/ScrambleText';
 import { useSoundSystem } from './components/useClickSound.js';
 import { useGooeyTransition, runGridTransition } from './components/GooeyTransition.jsx';
-import Loader from './components/Loader.jsx';
+import MobileLoader from './components/MobileLoader.jsx';
 import { gsap } from 'gsap';
 import SoundToggle from './components/SoundToggle.jsx';
 import { useImmersiveSound } from './hooks/useImmersiveSound.js';
@@ -4174,11 +4174,11 @@ export default function App() {
      fini (loaded passe à true), coupée par le même mute/touche S que
      les sons de clic ci-dessus. useClickSound.js non modifié. */
   useImmersiveSound(muted, loaded);
-  /* Le même Loader.jsx que sur desktop est monté par-dessus la page mobile.
-     Il révèle lui-même le contenu avec son papier brûlé WebGL autonome. */
+  /* Loader dédié mobile : aucun papier brûlé. GooeyTransition.mobile
+     couvre puis révèle le Hero déjà monté sous cet écran. */
   return (
     <>
-      <Loader onDone={() => setLoaded(true)} />
+      <MobileLoader onDone={() => setLoaded(true)} />
       <div className={`app ${light ? 'app--light' : ''}`}>
         <CustomCursor />
         <SoundToggle muted={muted} onToggle={toggleMute} />

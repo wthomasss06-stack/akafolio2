@@ -4359,3 +4359,67 @@
 @media (prefers-reduced-motion: reduce) {
   .aka-loader-burn-canvas { display: none; }
 }
+
+/* ─── MobileLoader : loader dédié à Appmobile / GooeyTransition.mobile ── */
+.mob-aka-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 99998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  min-height: 100svh;
+  overflow: hidden;
+  padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+  box-sizing: border-box;
+  background: #0A0A0A;
+  color: #FF5500;
+  isolation: isolate;
+}
+.mob-aka-loader__center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: min(82vw, 250px);
+  text-align: center;
+}
+.mob-aka-loader__logo {
+  display: block;
+  width: clamp(110px, 31vw, 165px);
+  height: auto;
+  max-height: 24svh;
+  object-fit: contain;
+  filter: drop-shadow(0 0 18px rgba(255,85,0,.4));
+}
+.mob-aka-loader__name,
+.mob-aka-loader__progress {
+  font-family: var(--fd, 'Unbounded', sans-serif);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+.mob-aka-loader__name {
+  margin-top: clamp(.7rem, 2.5vw, 1rem);
+  color: #FF5500;
+  font-size: clamp(.72rem, 3.3vw, 1rem);
+  letter-spacing: .12em;
+  line-height: 1;
+}
+.mob-aka-loader__progress {
+  margin-top: clamp(.9rem, 3vw, 1.35rem);
+  color: #FF5500;
+  font-size: clamp(1.9rem, 10vw, 3rem);
+  letter-spacing: -.04em;
+  line-height: .86;
+  text-shadow: 2px 2px 0 rgba(255,85,0,.18);
+}
+.mob-aka-loader__progress span {
+  margin-left: .08em;
+  color: rgba(255,85,0,.72);
+  font-size: .28em;
+  letter-spacing: 0;
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .mob-aka-loader__center { transform: scale(.78); }
+}

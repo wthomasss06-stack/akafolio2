@@ -55,6 +55,7 @@ export const STRUCTURED_DATA = {
     description: SEO_CONFIG.default.description,
     isPartOf: { '@id': 'https://mbolloaka-dev.vercel.app/#website' },
     about: { '@id': 'https://mbolloaka-dev.vercel.app/#person' },
+    mainEntity: { '@id': 'https://mbolloaka-dev.vercel.app/#person' },
   },
   person: {
     '@context': 'https://schema.org',

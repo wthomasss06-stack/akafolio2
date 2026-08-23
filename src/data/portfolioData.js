@@ -7,7 +7,7 @@
 // Objectif : un changement de prix, de projet ou de contact se fait
 // UNE fois ici, pas 4 fois dans 4 fichiers différents.
 //
-// Généré le 2026-07-04 à partir du contenu le plus à jour trouvé
+// Mis à jour le 2026-08-23 à partir des sources projet et documentaires fournies
 // dans App.jsx (vérifié plus récent/complet que Win95Portfolio.jsx
 // sur PROJECTS, PRICING_TABS et FAQ_ITEMS — voir notes dans le chat).
 //
@@ -143,17 +143,17 @@ export const PROJECTS = [
     result: "Livré et en ligne — utilisé comme point d'entrée officiel de l'établissement."
   },
   {
-    id: 15, title: 'NEXURA', sub: 'Marketplace Nouvelle Génération', cat: 'en-ligne', img: cld('/assets/images/projects/nexura-preview.webp'), responsive: cld('/assets/images/projects/nexura-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600', tech: ['Next.js 14', 'Django REST', 'PostgreSQL', 'WebSockets', 'Redis & Celery'], url: 'https://nexura-one.vercel.app/', desc: "Marketplace nouvelle génération — évolution de TerraSafe. Location de résidences meublées, motos & véhicules, bureaux & salles de conférence, terrains & immobilier. Auth sécurisée, KYC intégré, temps réel.", year: '2025',
+    id: 15, title: 'NEXURA', sub: 'Marketplace Immobilière & Transactions Sécurisées', cat: 'en-ligne', img: cld('/assets/images/projects/nexura-preview.webp'), responsive: cld('/assets/images/projects/nexura-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600', tech: ['Next.js 14', 'Django REST', 'Python', 'PostgreSQL', 'WebSockets', 'Redis + Celery', 'Cloudinary', 'Mapbox', 'Vercel + Render'], url: 'https://nexura-one.vercel.app/', desc: "Plateforme ivoirienne multi-catégorie pour découvrir, publier, réserver et sécuriser des annonces de terrains, résidences, véhicules, motos et locaux commerciaux.", year: '2025',
     private: true,
-    problem: "TerraSafe avait besoin de passer à l'échelle : plus de catégories, plus de sécurité, du temps réel.",
-    solution: "Marketplace nouvelle génération Next.js 14 + Django REST + WebSockets, KYC intégré, architecture pensée pour réduire le risque légal.",
-    result: "Projet le plus avancé techniquement du portfolio — repo privé (client), en évolution continue."
+    problem: "Les annonces immobilières et de biens étaient dispersées, avec un risque élevé d'arnaques, des vendeurs difficiles à vérifier, des paiements peu transparents et aucun suivi fiable des réservations.",
+    solution: "Marketplace Next.js 14 + Django REST avec recherche par catégorie, prix et localisation, KYC progressif CNI + selfie, transactions et paiements Mobile Money préparés, calendrier de réservation, notifications WebSocket, dashboards par rôle et bon de visite PDF + QR.",
+    result: "Socle V2/V3 documenté et validé localement avec tests ciblés, build frontend, règles serveur et parcours acheteur/vendeur/admin ; produit privé en évolution continue."
   },
   {
-    id: 16, title: 'KokoEat', sub: 'Livraison Alimentaire', cat: 'en-cours', img: cld('/assets/images/projects/kokoeat-preview.webp'), responsive: cld('/assets/images/projects/kokoeat-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600', tech: ['React', 'Django REST', 'PostgreSQL', 'Vercel'], url: 'https://koko-eats.vercel.app', desc: "Application de livraison de repas pensée pour le marché ivoirien. Commande en ligne, suivi en temps réel et paiement Mobile Money.", year: '2025',
-    problem: "Le marché ivoirien manque d'une app de livraison de repas pensée pour le paiement Mobile Money.",
-    solution: "App de commande en ligne avec suivi temps réel et intégration Mobile Money prévue.",
-    result: "Projet en cours de développement."
+    id: 16, title: 'KokoEat', sub: 'Marketplace Locale de Restauration & Livraison', cat: 'en-ligne', img: cld('/assets/images/projects/kokoeat-preview.webp'), responsive: cld('/assets/images/projects/kokoeat-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600', tech: ['React', 'Vite', 'Django REST', 'Python', 'PostgreSQL', 'WebSockets', 'Redis + Celery', 'Cloudinary', 'Vercel + Render'], url: 'https://koko-eats.vercel.app', desc: "KokoEat aide à découvrir les restaurants locaux et leurs menus, dans les quartiers et les villes couverts, pour choisir entre se rendre sur place ou commander à distance.", year: '2025',
+    problem: "Dans beaucoup de quartiers et de villes, les restaurants locaux restent difficiles à découvrir. Les clients connaissent mal les adresses disponibles, tandis que des établissements intéressants restent invisibles au-delà de leur zone habituelle.",
+    solution: "KokoEat rassemble les restaurants et leurs menus sur une même plateforme pour donner une vue plus large de l'offre de restauration en Côte d'Ivoire. On peut repérer une adresse, consulter son menu, décider de s'y rendre ou commander lorsque le service est disponible.",
+    result: "Une expérience qui rapproche les clients des restaurants locaux et donne à ces établissements une vitrine au-delà de leur quartier. La couverture s'élargit progressivement, sans prétendre que toutes les villes et tous les restaurants sont déjà disponibles."
   },
   {
     id: 17, title: 'Jean Edy · Portfolio', sub: 'Portfolio React UI Avancé', cat: 'en-ligne', img: cld('/assets/images/projects/jean-edy-preview.webp'), responsive: cld('/assets/images/projects/jean-edy.webp'), imgFb: 'https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=600', tech: ['React 18', 'Vite', 'GSAP', 'Framer Motion', 'TailwindCSS'], url: 'https://jean-edy-dev.vercel.app/', desc: "Portfolio personnel de Jean Edy — Software Developer basé à Abidjan. et skeuomorphisme complet.", year: '2026',

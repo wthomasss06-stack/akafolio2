@@ -1583,7 +1583,9 @@ const projectMediaSlug = (title = '') => title
   .replace(/^-+|-+$/g, '')
 
 const projectVideoPath = (project) => {
-  if (project.hoverVideo) return cld(project.hoverVideo)
+  if (project.hoverVideo) {
+    return project.hoverVideo.startsWith('http') ? project.hoverVideo : cld(project.hoverVideo)
+  }
   const imageName = (project.img || '').split('/').pop()?.split('?')[0] || `${projectMediaSlug(project.title)}-preview.webp`
   const imageStem = imageName.replace(/\.(webp|png|jpe?g)$/i, '')
   return cld(`/assets/images/projects/${imageStem}.webm`)

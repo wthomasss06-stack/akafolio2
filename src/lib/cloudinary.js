@@ -29,7 +29,7 @@ const VIDEO_EXTENSIONS = new Set(['webm', 'mp4', 'mov'])
 
 /**
  * @param {string} localPath - chemin local tel qu'utilisé avant, ex: '/assets/images/foo/bar.webp'
- * @param {{ width?: number }} [options] - largeur optionnelle (sinon Cloudinary sert l'original, juste optimisé format/qualité)
+ * @param {{ width?: number, version?: string|number }} [options] - largeur optionnelle et version Cloudinary pour invalider proprement le cache après un nouvel upload
  * @returns {string} URL Cloudinary prête à mettre dans un src/poster/background-image
  */
 export function cld(localPath, options = {}) {
@@ -41,6 +41,7 @@ export function cld(localPath, options = {}) {
 
   const transforms = ['f_auto', 'q_auto']
   if (options.width) transforms.push(`w_${options.width}`)
+  const version = options.version == null ? '' : `v${String(options.version).replace(/^v/i, '')}/`
 
-  return `https://res.cloudinary.com/${CLOUD_NAME}/${resourceType}/upload/${transforms.join(',')}/${BASE_FOLDER}/${base}.${ext}`
+  return `https://res.cloudinary.com/${CLOUD_NAME}/${resourceType}/upload/${transforms.join(',')}/${version}${BASE_FOLDER}/${base}.${ext}`
 }

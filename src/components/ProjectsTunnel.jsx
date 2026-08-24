@@ -52,7 +52,7 @@ function ProjectsTunnel() {
        si un WebM n’a pas encore été uploadé. ── */
     const textureLoader = new THREE.TextureLoader()
     const projectMedia = PROJECTS.map(project => {
-      const videoUrl = project.img
+      const videoUrl = project.hoverVideo || project.img
         .replace('/image/upload/', '/video/upload/')
         .replace(/\.(webp|png|jpe?g)(\?.*)?$/i, '.webm$2')
       const fallback = textureLoader.load(project.img)

@@ -10,7 +10,7 @@ export const CLOUDINARY_VERSIONS = {
   "/assets/images/faviconB.png": 1785566879,
   "/assets/images/hero-bg.webp": 1785566880,
   "/assets/images/l.webp": 1785566881,
-  "/assets/images/logo-akatech.webp": 1785566882,
+  "/assets/images/logo-akatech.webp": 1787751963,
   "/assets/images/logo-akatecheee.webp": 1785566883,
   "/assets/images/logo.svg": 1785566883,
   "/assets/images/moi/93027469_127097918918167_9124333187680436224_n.webp": 1785566886,

@@ -48,12 +48,13 @@ const Win95App   = dynamic(() => import('./Win95Portfolio.jsx'), { ssr: false, l
 
 const MODE_KEY           = 'akafolio-mode-v2'
 const VALID_MODES        = ['akatech', 'app', 'appmobile', 'win95']
-const DESKTOP_ONLY_MODES = ['app']
+const DESKTOP_ONLY_MODES = []
 const MOBILE_ONLY_MODES  = ['appmobile']
-// Le mode moderne est prioritaire : App sur desktop, Appmobile sur
-// mobile. AKATech et Win95 restent accessibles dans le cycle secondaire.
+// App est maintenant optimisée mobile : disponible ET par défaut sur
+// desktop comme sur mobile. Appmobile reste accessible manuellement
+// dans le cycle mobile. AKATech et Win95 restent le cycle secondaire.
 const DESKTOP_CYCLE = ['app', 'akatech', 'win95']
-const MOBILE_CYCLE  = ['appmobile', 'akatech', 'win95']
+const MOBILE_CYCLE  = ['app', 'appmobile', 'akatech', 'win95']
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(
@@ -130,7 +131,7 @@ const switcherStyle = {
 
 const MODE_LABELS = {
   akatech:   { label: 'AKATech', short: 'AKATech', title: 'Passer au portfolio AKATech', accent: '#ff5500' },
-  app:       { label: 'Moderne', short: 'App desktop', title: 'Passer au mode AKATech', accent: '#f5f2ed' },
+  app:       { label: 'Moderne', short: 'App', title: 'Passer au mode AKATech', accent: '#f5f2ed' },
   appmobile: { label: 'Mobile', short: 'App mobile', title: 'Passer au mode AKATech', accent: '#55c7ff' },
   win95:     { label: 'Win95', short: 'Windows 95', title: 'Passer au mode AKATech', accent: '#f5f2ed' },
 }
@@ -207,12 +208,12 @@ export default function RootApp() {
   const [mode, setMode] = useState(() => {
     const saved = readSavedMode()
     if (saved) return saved
-    return isMobile ? 'appmobile' : 'app'
+    return 'app'
   })
 
   useEffect(() => {
     if (!VALID_MODES.includes(mode)) {
-      setMode(isMobile ? 'appmobile' : 'app')
+      setMode('app')
       return
     }
     if (isMobile  && DESKTOP_ONLY_MODES.includes(mode)) setMode('appmobile')

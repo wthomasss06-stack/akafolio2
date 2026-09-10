@@ -4007,15 +4007,15 @@ const FAQSection = ({ dark }) => {
 
 const Contact = ({ dark }) => {
   const [ref, vis] = useInView();
-  const [form, setForm] = useState({ name: '', email: '', projectType: '', message: '' });
+  const [form, setForm] = useState({ name: '', email: '', whatsapp: '', preferredContact: 'email', projectType: '', message: '' });
   const [sending, setSending] = useState(false); const [sent, setSent] = useState(false);
   const onChange = e => setForm(f => ({ ...f, [e.target.id]: e.target.value }));
   const onSubmit = async e => {
     e.preventDefault(); setSending(true);
     try {
-      const res = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: form.name, email: form.email, projectType: form.projectType, message: form.message }) });
+      const res = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: form.name, email: form.email, whatsapp: form.whatsapp, preferredContact: form.preferredContact, projectType: form.projectType, message: form.message }) });
       if (!res.ok) throw new Error('Erreur serveur');
-      setSent(true); setForm({ name: '', email: '', projectType: '', message: '' });
+      setSent(true); setForm({ name: '', email: '', whatsapp: '', preferredContact: 'email', projectType: '', message: '' });
     } catch { alert('❌ Erreur. Contactez-moi sur WhatsApp : +225 01 42 50 77 50'); }
     finally { setSending(false); }
   };
@@ -4047,8 +4047,19 @@ const Contact = ({ dark }) => {
             <form className={`cform ${dark ? 'cform--dark' : ''}`} onSubmit={onSubmit}>
               <div className="form-row">
                 <div className="ff"><label htmlFor="name">Nom complet *</label><input id="name" type="text" placeholder="Jean Kouassi" value={form.name} onChange={onChange} required /></div>
-                <div className="ff"><label htmlFor="email">Email *</label><input id="email" type="email" placeholder="jean@exemple.com" value={form.email} onChange={onChange} required /></div>
+                <div className="ff">
+                  <label htmlFor="preferredContact">Contact préféré *</label>
+                  <select id="preferredContact" value={form.preferredContact} onChange={onChange} required>
+                    <option value="email">Email</option>
+                    <option value="whatsapp">Numéro WhatsApp</option>
+                  </select>
+                </div>
               </div>
+              {form.preferredContact === 'whatsapp' ? (
+                <div className="ff"><label htmlFor="whatsapp">Numéro WhatsApp *</label><input id="whatsapp" type="tel" placeholder="+225 01 42 50 77 50" value={form.whatsapp} onChange={onChange} required /></div>
+              ) : (
+                <div className="ff"><label htmlFor="email">Email *</label><input id="email" type="email" placeholder="jean@exemple.com" value={form.email} onChange={onChange} required /></div>
+              )}
               <div className="ff">
                 <label htmlFor="projectType">Type de projet *</label>
                 <select id="projectType" value={form.projectType} onChange={onChange} required>

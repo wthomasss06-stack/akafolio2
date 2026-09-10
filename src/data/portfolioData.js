@@ -197,9 +197,9 @@ export const PRICING_TABS = [
   {
     key: 'portfolio', label: 'Portfolio',
     plans: [
-      { title: 'Starter', price: '100 000 FCFA', delivery: '3 à 5 jours' },
-      { title: 'Standard', price: '175 000 FCFA', delivery: '5 à 7 jours', isPopular: true },
-      { title: 'Premium', price: '275 000 FCFA', delivery: '7 à 10 jours' },
+      { title: 'Starter', price: '100 000 FCFA', delivery: '5 à 7 jours' },
+      { title: 'Standard', price: '175 000 FCFA', delivery: '7 à 10 jours', isPopular: true },
+      { title: 'Premium', price: '275 000 FCFA', delivery: '10 à 14 jours' },
     ],
     rows: [
       { label: 'Nombre de pages', cells: ['3 pages', '5 pages', 'Illimité'] },
@@ -222,9 +222,9 @@ export const PRICING_TABS = [
   {
     key: 'vitrine', label: 'Site Vitrine',
     plans: [
-      { title: 'Starter', price: '220 000 FCFA', delivery: '5 à 7 jours' },
-      { title: 'Pro', price: '350 000 FCFA', delivery: '7 à 10 jours', isPopular: true },
-      { title: 'Elite', price: '550 000 FCFA', delivery: '10 à 14 jours' },
+      { title: 'Starter', price: '220 000 FCFA', delivery: '7 à 10 jours' },
+      { title: 'Pro', price: '350 000 FCFA', delivery: '10 à 14 jours', isPopular: true },
+      { title: 'Elite', price: '550 000 FCFA', delivery: '14 à 21 jours' },
     ],
     rows: [
       { label: 'Nombre de pages', cells: ['5 pages', '10 pages', '15–20 pages'] },
@@ -248,9 +248,9 @@ export const PRICING_TABS = [
   {
     key: 'ecommerce', label: 'E-commerce',
     plans: [
-      { title: 'Starter', price: '450 000 FCFA', delivery: '14 jours' },
-      { title: 'Pro', price: '750 000 FCFA', delivery: '21 jours', isPopular: true },
-      { title: 'Elite', price: '1 200 000 FCFA', delivery: '30 jours' },
+      { title: 'Starter', price: '450 000 FCFA', delivery: '1 mois à 1 mois 2 semaines' },
+      { title: 'Pro', price: '750 000 FCFA', delivery: '1 mois à 1 mois 2 semaines', isPopular: true },
+      { title: 'Elite', price: '1 200 000 FCFA', delivery: '1 mois à 1 mois 2 semaines' },
     ],
     rows: [
       { label: 'Produits', cells: ["Jusqu'à 50", '200–500', 'Illimités'] },

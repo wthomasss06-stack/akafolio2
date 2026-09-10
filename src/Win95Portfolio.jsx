@@ -1815,12 +1815,13 @@ function ServicesContent() {
 
 /* ── Contact ── */
 function ContactContent({ onAlert }) {
-  const [form, setForm] = useState({ name: '', email: '', msg: '' });
+  const [form, setForm] = useState({ name: '', email: '', whatsapp: '', preferredContact: 'email', msg: '' });
   const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
   const send = () => {
-    if (!form.name || !form.email || !form.msg) { onAlert('Remplissez tous les champs.', 'Erreur'); return; }
+    const contactValue = form.preferredContact === 'whatsapp' ? form.whatsapp : form.email;
+    if (!form.name || !contactValue || !form.msg) { onAlert('Remplissez tous les champs.', 'Erreur'); return; }
     onAlert(`Message envoyé ! Je vous réponds rapidement, ${form.name}.`, 'Succès');
-    setForm({ name: '', email: '', msg: '' });
+    setForm({ name: '', email: '', whatsapp: '', preferredContact: 'email', msg: '' });
   };
   return (
     <div>
@@ -1842,14 +1843,24 @@ function ContactContent({ onAlert }) {
       </div>
       <div className="w95-field"><label className="w95-label"><Fa icon="user" style={{ marginRight: 5 }} />Nom complet :</label>
         <input className="w95-input" value={form.name} onChange={set('name')} placeholder="Votre nom" /></div>
-      <div className="w95-field"><label className="w95-label"><Fa icon="envelope" style={{ marginRight: 5 }} />Email :</label>
-        <input className="w95-input" type="email" value={form.email} onChange={set('email')} placeholder="votre@email.com" /></div>
+      <div className="w95-field"><label className="w95-label"><Fa icon="address-card" style={{ marginRight: 5 }} />Contact préféré :</label>
+        <select className="w95-input" value={form.preferredContact} onChange={set('preferredContact')}>
+          <option value="email">Email</option>
+          <option value="whatsapp">Numéro WhatsApp</option>
+        </select></div>
+      {form.preferredContact === 'whatsapp' ? (
+        <div className="w95-field"><label className="w95-label"><Fa icon="comment-dots" style={{ marginRight: 5 }} />Numéro WhatsApp :</label>
+          <input className="w95-input" type="tel" value={form.whatsapp} onChange={set('whatsapp')} placeholder="+225 01 42 50 77 50" /></div>
+      ) : (
+        <div className="w95-field"><label className="w95-label"><Fa icon="envelope" style={{ marginRight: 5 }} />Email :</label>
+          <input className="w95-input" type="email" value={form.email} onChange={set('email')} placeholder="votre@email.com" /></div>
+      )}
       <div className="w95-field"><label className="w95-label"><Fa icon="comment-alt" style={{ marginRight: 5 }} />Message :</label>
         <textarea className="w95-input" rows={4} value={form.msg} onChange={set('msg')}
           placeholder="Décrivez votre projet..." style={{ resize: 'vertical', fontFamily: 'var(--font-ui)' }} /></div>
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         <button className="w95-btn primary" onClick={send}><Fa icon="paper-plane" style={{ marginRight: 5 }} />Envoyer</button>
-        <button className="w95-btn" onClick={() => setForm({ name: '', email: '', msg: '' })}><Fa icon="eraser" style={{ marginRight: 5 }} />Effacer</button>
+        <button className="w95-btn" onClick={() => setForm({ name: '', email: '', whatsapp: '', preferredContact: 'email', msg: '' })}><Fa icon="eraser" style={{ marginRight: 5 }} />Effacer</button>
         <a href={`https://wa.me/${ME.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noreferrer">
           <button className="w95-btn green"><Fa icon="comment" style={{ marginRight: 5 }} />WhatsApp</button></a>
       </div>

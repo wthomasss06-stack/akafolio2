@@ -122,7 +122,7 @@
    
    /* ══════════ TOAST ══════════ */
    #toast {
-     position: fixed; bottom: 2rem; right: 2rem; z-index: 500;
+     position: fixed; bottom: calc(2rem + env(safe-area-inset-bottom)); right: calc(2rem + env(safe-area-inset-right)); z-index: 500;
      background: #1a0800; color: var(--text);
      padding: 1rem 1.6rem; border-radius: 20px;
      border: 2px solid rgba(255,85,0,0.25);
@@ -753,8 +753,8 @@
    @keyframes scrollLine { from { top: -50%; } to { top: 150%; } }
 
    @media(max-width:900px){
-     #hero { min-height: 100svh; height: auto; padding: 104px 0 56px; }
-     .hv4-scene-wrap { flex-direction: column; gap: 28px; padding: 0 6vw; }
+     #hero { min-height: 100svh; height: auto; padding: 104px 0 56px; overflow: visible; }
+     .hv4-scene-wrap { flex-direction: column; gap: 28px; padding: 0 6vw; height: auto; }
      .hv4-portrait { position: relative; height: auto; padding-top: 12px; transform: none; }
      .hv4-portrait-photo {
        position: relative; top: auto; left: auto; transform: none;
@@ -2685,12 +2685,16 @@
    body.light-mode .force-dark .coj-list-link { color: #0A0A0A; }
    body.light-mode .force-dark .contact-links-col .clk-link { color: #0A0A0A !important; }
    body.light-mode .force-dark .contact-links-col .clk-label { color: #0A0A0A !important; }
-   @media(max-width: 700px) {
+   @media(max-width: 900px) {
      /* sticky peut être instable sur certains mobiles/iOS Safari avec le scroll
-        global custom du site → on retombe sur un fond fixe plus court et discret */
+        global custom du site → on retombe sur un fond fixe plus discret.
+        height:100% (au lieu d'un 60vh fixe) couvre tout .full-beams-zone
+        (Contact + Footer), quelle que soit sa hauteur réelle sur mobile —
+        sinon le fond s'arrête à 60vh et laisse un vide de la couleur de
+        fond nue en dessous (#1a1208 / #f5ede0 en light-mode). */
      .full-beams-zone__bg {
        position: absolute;
-       height: 60vh;
+       height: 100%;
        margin-bottom: 0;
        opacity: .4;
      }
@@ -3653,7 +3657,7 @@
    
    /* ══════════ SCROLL TOP BUTTON ══════════ */
    #scroll-top-btn {
-     position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+     position: fixed; bottom: calc(32px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%);
      width: 52px; height: 52px;
      border: var(--border); background: var(--accent); color: var(--text);
      z-index: 900; display: flex; align-items: center; justify-content: center;
@@ -5884,9 +5888,9 @@ body.light-mode .writing-card    { background: #f7f5f2 !important; }
 
 @media (max-width: 900px) {
   .rp-section-head { padding: 0 5vw 4vh; }
-  .pcard-title { font-size: 5vw; }
-  .pcard-year { font-size: 4vw; }
-  .proj-marquee-item { font-size: 3.2vw; }
+  .pcard-title { font-size: max(1rem, 5vw); }
+  .pcard-year { font-size: max(.85rem, 4vw); }
+  .proj-marquee-item { font-size: max(.75rem, 3.2vw); }
 
   .rp-featured-grid { height: auto; padding: 0 5vw; }
   .rp-featured-grid .pcard {
@@ -6634,6 +6638,107 @@ body.light-mode .writing-card    { background: #f7f5f2 !important; }
     width: 88vw !important;
     height: 350px !important;
   }
+}
+
+/* ─── Blog mobile : carte-grille défilante (remplace CardSwap cassé) ─
+   Réutilise .content-board / .tl-board-cards / .tl-card (déjà responsives
+   pour Process/Services à 900px) : même look, même scroll-snap, même
+   auto-scroll. Seuls le conteneur et les éléments internes propres au
+   contenu Blog (tag/titre/CTA) sont nouveaux. ────────────────────── */
+.content-board--blog { height: auto !important; }
+.tl-card.blog-mobile-card {
+  text-decoration: none;
+  justify-content: flex-start;
+}
+.blog-mobile-tag {
+  display: inline-block;
+  font-family: 'Space Mono', monospace;
+  font-size: .58rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid rgba(255,85,0,.3);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+.blog-mobile-hook {
+  font-family: var(--fd);
+  font-size: 1rem;
+  line-height: 1.4;
+  color: var(--text);
+  margin: 0;
+}
+.blog-mobile-cta {
+  font-family: var(--fb);
+  font-size: .76rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* ─── Avis mobile : carte-grille défilante (même pattern que Blog) ──
+   Réutilise .content-board / .tl-board-cards / .tl-card : même look,
+   même scroll-snap, même auto-scroll que Parcours/Process/Services/
+   Blog. Seuls les éléments internes propres au contenu Avis (tag/
+   étoiles/citation/auteur) sont nouveaux. ─────────────────────────── */
+.content-board--testimonials { height: auto !important; }
+.tl-card.testi-mobile-card {
+  justify-content: flex-start;
+}
+.testi-mobile-tag {
+  align-self: flex-start;
+  font-family: var(--fd);
+  font-size: .56rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  background: var(--accent);
+  border: 2px solid var(--text);
+  padding: 3px 10px;
+  border-radius: 999px;
+  color: var(--bg);
+  font-weight: 800;
+  margin-bottom: .7rem;
+}
+.testi-mobile-stars {
+  display: flex;
+  gap: 3px;
+  margin-bottom: .6rem;
+}
+.testi-mobile-quote {
+  font-style: italic;
+}
+.testi-mobile-footer {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  padding-top: .8rem;
+  margin-top: .6rem;
+  border-top: 1px solid rgba(255,85,0,.15);
+  flex: 0 0 auto;
+}
+.testi-mobile-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg,var(--accent),#cc3300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--fd);
+  font-weight: 800;
+  font-size: .8rem;
+  color: #0A0A0A;
+  flex-shrink: 0;
+}
+.testi-mobile-name {
+  font-family: var(--fd);
+  font-weight: 700;
+  font-size: .8rem;
+  color: var(--text);
+}
+.testi-mobile-role {
+  font-size: .6rem;
+  color: var(--muted);
+  margin-top: 2px;
 }
 
 /* ─── UI/UX partagé Blog · Process · Services ───────────────────── */

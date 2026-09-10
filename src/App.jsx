@@ -1713,6 +1713,13 @@ function RecentProjects() {
     window.clearTimeout(nudgeTimerRef.current)
     nudgeTimerRef.current = window.setTimeout(resume, 2200)
   }
+  /* Swipe tactile : on coupe l'auto-scroll pendant le drag du doigt, puis
+     on relance après un court délai (même pattern que nudge) pour ne pas
+     lutter contre le scroll natif / l'inertie mobile. */
+  const onTouchRelease = () => {
+    window.clearTimeout(nudgeTimerRef.current)
+    nudgeTimerRef.current = window.setTimeout(resume, 2200)
+  }
 
   return (
     <section className="recent-projects-section" id="projets-section">
@@ -1763,7 +1770,7 @@ function RecentProjects() {
         </div>
       </div>
 
-      <div className="rp-track-wrap" ref={trackWrapRef}>
+      <div className="rp-track-wrap" ref={trackWrapRef} onTouchStart={pause} onTouchEnd={onTouchRelease} onTouchCancel={onTouchRelease}>
         <div className="rp-track">
           {loopedProjects.map((p, i) => (
             <div key={`${p.id}-${i}`} className="pcard" onClick={() => select(p)}>
@@ -2480,14 +2487,72 @@ function ContentBoardCard({ item, index, layout, setCardRef, total }) {
     </div>
   )
 }
+/* Même détection que RootApp.jsx (breakpoint 900px) pour rester
+   cohérent avec tout le reste du site. */
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth <= 900
+  )
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 900px)')
+    const check = (e) => setIsMobile(e.matches)
+    mq.addEventListener('change', check)
+    return () => mq.removeEventListener('change', check)
+  }, [])
+  return isMobile
+}
+
+/* Auto-scroll horizontal doux pour une rangée de cartes en mobile
+   (Process / Services / Blog) : pause pendant un swipe tactile,
+   reprise après un court délai (même pattern que "Mes réalisations"),
+   désactivé en desktop et si prefers-reduced-motion. */
+function useMobileAutoScroll(ref, { speed = 0.5 } = {}) {
+  useEffect(() => {
+    const wrap = ref.current
+    if (!wrap) return
+    const isMobileLayout = window.matchMedia('(max-width: 900px)').matches
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (!isMobileLayout || reduceMotion) return
+
+    let paused = false
+    let raf = null
+    let resumeTimer = null
+
+    const step = () => {
+      if (!paused) {
+        const max = wrap.scrollWidth - wrap.clientWidth
+        if (wrap.scrollLeft < max) wrap.scrollLeft += speed
+      }
+      raf = requestAnimationFrame(step)
+    }
+    raf = requestAnimationFrame(step)
+
+    const onTouchStart = () => { paused = true; window.clearTimeout(resumeTimer) }
+    const onTouchRelease = () => { resumeTimer = window.setTimeout(() => { paused = false }, 2200) }
+    wrap.addEventListener('touchstart', onTouchStart, { passive: true })
+    wrap.addEventListener('touchend', onTouchRelease, { passive: true })
+    wrap.addEventListener('touchcancel', onTouchRelease, { passive: true })
+
+    return () => {
+      cancelAnimationFrame(raf)
+      window.clearTimeout(resumeTimer)
+      wrap.removeEventListener('touchstart', onTouchStart)
+      wrap.removeEventListener('touchend', onTouchRelease)
+      wrap.removeEventListener('touchcancel', onTouchRelease)
+    }
+  }, [ref, speed])
+}
+
 function InteractiveContentBoard({ items, variant }) {
   const boardRef = useRef(null)
   const spotlightRef = useRef(null)
+  const cardsWrapRef = useRef(null)
   const cardsRef = useRef([])
   const highestZRef = useRef(30)
   const draggingRef = useRef(null)
   const setCardRef = useCallback((i, el) => { cardsRef.current[i] = el }, [])
   const layoutFor = (i) => CONTENT_BOARD_LAYOUT[i % CONTENT_BOARD_LAYOUT.length]
+  useMobileAutoScroll(cardsWrapRef)
 
   useEffect(() => {
     const board = boardRef.current
@@ -2593,7 +2658,7 @@ function InteractiveContentBoard({ items, variant }) {
     <div className={`tl-board content-board content-board--${variant}`} ref={boardRef}>
       <div className="tl-board-spotlight" ref={spotlightRef} aria-hidden="true" />
       <div className="tl-board-bgtext" aria-hidden="true"><span>{variant}</span><span>AKATECH</span></div>
-      <div className="tl-board-cards">
+      <div className="tl-board-cards" ref={cardsWrapRef}>
         {items.map((item, i) => (
           <ContentBoardCard key={`${variant}-${item.n || i}`} item={item} index={i} total={items.length} layout={layoutFor(i)} setCardRef={setCardRef} />
         ))}
@@ -3020,6 +3085,10 @@ function TestiCard({ t }) {
  renvoi vers le profil complet.
  ════════════════════════════════════════════ */
 function WritingSection() {
+  const isMobile = useIsMobile()
+  const blogMobileRef = useRef(null)
+  useMobileAutoScroll(blogMobileRef, { speed: 0.5 })
+
   return (
     <section id="writing-section" className="blog-cardswap-section" style={{ padding: '10vh 0 4vh', overflow: 'hidden' }}>
       <div
@@ -3059,6 +3128,30 @@ function WritingSection() {
           </a>
         </div>
 
+        {isMobile ? (
+          /* Mobile : CardSwap est en position absolue + tailles fixes en
+             px, ça ne reflow pas → remplacé par la même carte-grille
+             défilante (horizontal-scroll + auto-scroll) que Process et
+             Services. Desktop intact dans la branche ternaire ci-dessous. */
+          <div className="content-board content-board--blog blog-mobile-board">
+            <div className="tl-board-cards" ref={blogMobileRef}>
+              {WRITING_POSTS.map((post) => (
+                <a
+                  key={post.id}
+                  href={post.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="tl-card blog-mobile-card"
+                >
+                  <span className="blog-mobile-tag">{post.tag}</span>
+                  <h3 className="blog-mobile-hook">{post.hook}</h3>
+                  <p className="content-board-desc">{post.excerpt}</p>
+                  <span className="blog-mobile-cta">Lire sur LinkedIn ↗</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        ) : (
         <div className="blog-cardswap-slot"
           style={{
             position: 'relative',
@@ -3154,6 +3247,7 @@ function WritingSection() {
             ))}
           </CardSwap>
         </div>
+        )}
         </div>
       </div>
     </section>
@@ -3161,6 +3255,10 @@ function WritingSection() {
 }
 
 function TestimonialsSection() {
+  const isMobile = useIsMobile()
+  const testiMobileRef = useRef(null)
+  useMobileAutoScroll(testiMobileRef, { speed: 0.5 })
+
   return (
     <section
       id="testimonials-section"
@@ -3205,6 +3303,39 @@ function TestimonialsSection() {
           </div>
         </div>
 
+        {isMobile ? (
+          /* Mobile : CardSwap est en position absolue + tailles fixes en
+             px, ça ne reflow pas → remplacé par la même carte-grille
+             défilante (horizontal-scroll + auto-scroll) que Blog, Process
+             et Services, comme pour Parcours. Desktop intact ci-dessous. */
+          <div className="content-board content-board--testimonials testi-mobile-board">
+            <div className="tl-board-cards" ref={testiMobileRef}>
+              {TESTIMONIALS.map((t) => (
+                <div key={t.name} className="tl-card testi-mobile-card">
+                  <span className="testi-mobile-tag">{t.proj}</span>
+                  <div className="testi-mobile-stars">
+                    {Array.from({ length: 5 }).map((_, j) => (
+                      <svg key={j} viewBox="0 0 24 24" width="12" height="12">
+                        <polygon
+                          points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"
+                          fill="var(--accent)"
+                        />
+                      </svg>
+                    ))}
+                  </div>
+                  <p className="content-board-desc testi-mobile-quote">{t.text}</p>
+                  <div className="testi-mobile-footer">
+                    <div className="testi-mobile-avatar">{t.avatar}</div>
+                    <div>
+                      <div className="testi-mobile-name">{t.name}</div>
+                      <div className="testi-mobile-role">{t.role}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
         <div
           style={{
             position: 'relative',
@@ -3328,6 +3459,7 @@ function TestimonialsSection() {
             ))}
           </CardSwap>
         </div>
+        )}
       </div>
     </section>
   )
@@ -3770,6 +3902,7 @@ function ContactSection({ onToast }) {
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
   const [btnTxt, setBtnTxt] = useState('Envoyer le message')
+  const [preferredContact, setPreferredContact] = useState('email')
 
   const handleSubmit = async e => {
     e.preventDefault(); setSending(true); setBtnTxt('Envoi en cours…')
@@ -3779,7 +3912,9 @@ function ContactSection({ onToast }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: e.target.name.value,
-          email: e.target.email.value,
+          email: e.target.email?.value || '',
+          whatsapp: e.target.whatsapp?.value || '',
+          preferredContact,
           projectType: e.target.projectType.value,
           message: e.target.message.value,
           company: e.target.company.value, // honeypot anti-spam — doit rester vide
@@ -3867,8 +4002,24 @@ function ContactSection({ onToast }) {
                 />
                 <div className="form-row">
                   <div className="form-field"><label>Nom complet *</label><input type="text" name="name" placeholder="Jean Kouassi" required /></div>
-                  <div className="form-field"><label>Email *</label><input type="email" name="email" placeholder="jean@exemple.com" required /></div>
+                  <div className="form-field">
+                    <label>Contact préféré *</label>
+                    <select
+                      name="preferredContact"
+                      required
+                      value={preferredContact}
+                      onChange={e => setPreferredContact(e.target.value)}
+                    >
+                      <option value="email">Email</option>
+                      <option value="whatsapp">Numéro WhatsApp</option>
+                    </select>
+                  </div>
                 </div>
+                {preferredContact === 'whatsapp' ? (
+                  <div className="form-field"><label>Numéro WhatsApp *</label><input type="tel" name="whatsapp" placeholder="+225 01 42 50 77 50" required /></div>
+                ) : (
+                  <div className="form-field"><label>Email *</label><input type="email" name="email" placeholder="jean@exemple.com" required /></div>
+                )}
                 <div className="form-field">
                   <label>Type de projet *</label>
                   <select name="projectType" required>

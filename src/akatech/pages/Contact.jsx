@@ -14,6 +14,7 @@ export default function Contact({ onNext, onNavigate }) {
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
   const [btnTxt, setBtnTxt] = useState('Envoyer le message')
+  const [preferredContact, setPreferredContact] = useState('email')
   const linksRef = useRef(null)
   useScrollReveal(linksRef, 'a', { y: 16, stagger: 0.06, duration: 0.5 })
 
@@ -27,7 +28,9 @@ export default function Contact({ onNext, onNavigate }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: e.target.name.value,
-          email: e.target.email.value,
+          email: e.target.email?.value || '',
+          whatsapp: e.target.whatsapp?.value || '',
+          preferredContact,
           projectType: e.target.projectType.value,
           message: e.target.message.value,
           company: e.target.company.value, // honeypot anti-spam — doit rester vide
@@ -152,13 +155,13 @@ export default function Contact({ onNext, onNavigate }) {
 
               <div>
                 <label className="mono" style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block', marginBottom: '0.4rem' }}>
-                  EMAIL *
+                  CONTACT PRÉFÉRÉ *
                 </label>
-                <input
-                  type="email"
-                  name="email"
+                <select
+                  name="preferredContact"
                   required
-                  placeholder="jean@exemple.com"
+                  value={preferredContact}
+                  onChange={(e) => setPreferredContact(e.target.value)}
                   style={{
                     width: '100%',
                     padding: '0.75rem 1rem',
@@ -169,9 +172,61 @@ export default function Contact({ onNext, onNavigate }) {
                     fontFamily: 'var(--fd)',
                     fontSize: '0.9rem',
                     outline: 'none',
+                    cursor: 'pointer',
                   }}
-                />
+                >
+                  <option value="email">Email</option>
+                  <option value="whatsapp">Numéro WhatsApp</option>
+                </select>
               </div>
+
+              {preferredContact === 'whatsapp' ? (
+                <div>
+                  <label className="mono" style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block', marginBottom: '0.4rem' }}>
+                    NUMÉRO WHATSAPP *
+                  </label>
+                  <input
+                    type="tel"
+                    name="whatsapp"
+                    required
+                    placeholder="+225 01 42 50 77 50"
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem 1rem',
+                      background: 'var(--elevated)',
+                      border: '1px solid var(--border)',
+                      borderRadius: 'var(--radius-sm)',
+                      color: 'var(--text)',
+                      fontFamily: 'var(--fd)',
+                      fontSize: '0.9rem',
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+              ) : (
+                <div>
+                  <label className="mono" style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block', marginBottom: '0.4rem' }}>
+                    EMAIL *
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    placeholder="jean@exemple.com"
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem 1rem',
+                      background: 'var(--elevated)',
+                      border: '1px solid var(--border)',
+                      borderRadius: 'var(--radius-sm)',
+                      color: 'var(--text)',
+                      fontFamily: 'var(--fd)',
+                      fontSize: '0.9rem',
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+              )}
 
               <div>
                 <label className="mono" style={{ fontSize: '0.7rem', color: 'var(--muted)', display: 'block', marginBottom: '0.4rem' }}>

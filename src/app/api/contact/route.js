@@ -47,7 +47,9 @@ function pruneOldEntries() {
 }
 
 /* ── Helpers ── */
+const WHATSAPP_RE = /^\+?[0-9\s.-]{8,20}$/
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 
 function escapeHtml(str = '') {
   return String(str)
@@ -110,6 +112,8 @@ export async function POST(request) {
   /* ── Validation ── */
   const name = typeof body.name === 'string' ? body.name.trim() : ''
   const email = typeof body.email === 'string' ? body.email.trim() : ''
+  const whatsapp = typeof body.whatsapp === 'string' ? body.whatsapp.trim() : ''
+  const preferredContact = body.preferredContact === 'whatsapp' ? 'whatsapp' : 'email'
   const projectType = typeof body.projectType === 'string' ? body.projectType.trim() : ''
   const message = typeof body.message === 'string' ? body.message.trim() : ''
 
@@ -117,8 +121,15 @@ export async function POST(request) {
   if (!name) fieldErrors.name = 'Le nom est requis.'
   else if (name.length > 100) fieldErrors.name = 'Le nom est trop long (100 caractères max).'
 
-  if (!email) fieldErrors.email = "L'email est requis."
-  else if (!EMAIL_RE.test(email)) fieldErrors.email = 'Adresse email invalide.'
+  /* Un seul des deux moyens de contact est requis, selon le choix fait
+     dans le select "Email ou WhatsApp ?" du formulaire. */
+  if (preferredContact === 'whatsapp') {
+    if (!whatsapp) fieldErrors.whatsapp = 'Le numéro WhatsApp est requis.'
+    else if (!WHATSAPP_RE.test(whatsapp)) fieldErrors.whatsapp = 'Numéro WhatsApp invalide.'
+  } else {
+    if (!email) fieldErrors.email = "L'email est requis."
+    else if (!EMAIL_RE.test(email)) fieldErrors.email = 'Adresse email invalide.'
+  }
 
   if (!message) fieldErrors.message = 'Le message est requis.'
   else if (message.length < 10) fieldErrors.message = 'Le message est trop court (10 caractères min).'
@@ -145,8 +156,17 @@ export async function POST(request) {
      l'email reçu via les champs name/email/message/projectType. */
   const safeName = escapeHtml(name)
   const safeEmail = escapeHtml(email)
+  const safeWhatsapp = escapeHtml(whatsapp)
   const safeMessage = escapeHtml(message).replace(/\n/g, '<br/>')
   const projectLabel = escapeHtml(PROJECT_TYPE_LABELS[projectType] || projectType || '—')
+
+  /* Ligne "moyen de contact" dans l'email : lien cliquable mailto:
+     ou wa.me selon le choix fait dans le select du formulaire. */
+  const waDigits = whatsapp.replace(/[^\d]/g, '')
+  const contactLabel = preferredContact === 'whatsapp' ? 'WhatsApp' : 'Email'
+  const contactValueHtml = preferredContact === 'whatsapp'
+    ? `<a href="https://wa.me/${waDigits}" style="color:#FF5500;">${safeWhatsapp}</a>`
+    : `<a href="mailto:${safeEmail}" style="color:#FF5500;">${safeEmail}</a>`
 
   try {
     const resend = getResendClient()
@@ -156,7 +176,7 @@ export async function POST(request) {
          pour les tests, puis passe à noreply@tondomaine.com en prod.   */
       from: process.env.FROM_EMAIL ?? 'onboarding@resend.dev',
       to:   process.env.ADMIN_EMAIL ?? 'wthomasss06@gmail.com',
-      reply_to: email,
+      reply_to: preferredContact === 'email' ? email : undefined,
       subject: `🚀 NOUVEAU MESSAGE — ${safeName}`,
       html: `
         <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:32px;
@@ -171,9 +191,9 @@ export async function POST(request) {
               <td style="padding:8px 0;color:#f2ede8;">${safeName}</td>
             </tr>
             <tr>
-              <td style="padding:8px 0;font-weight:700;color:#aaa;">Email</td>
+              <td style="padding:8px 0;font-weight:700;color:#aaa;">${contactLabel}</td>
               <td style="padding:8px 0;color:#f2ede8;">
-                <a href="mailto:${safeEmail}" style="color:#FF5500;">${safeEmail}</a>
+                ${contactValueHtml}
               </td>
             </tr>
             <tr>

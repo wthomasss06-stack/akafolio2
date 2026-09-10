@@ -4332,6 +4332,7 @@ function Toast({ show }) {
 function CursorAndScrollBar() {
   useEffect(() => {
     const dot = document.getElementById('cursor-dot'), fill = document.getElementById('scroll-fill')
+    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches
     // BUG DE PERF corrigé : dot.style.left/top déclenchait un recalcul
     // de layout à CHAQUE pixel de déplacement de la souris, sur toute
     // la page, en continu — un des schémas les plus connus pour
@@ -4342,8 +4343,10 @@ function CursorAndScrollBar() {
     const onScroll = () => { const max = document.body.scrollHeight - window.innerHeight; if (fill) fill.style.transform = `scaleY(${window.scrollY / max})` }
     const expand = () => { if (dot) { dot.style.width = '16px'; dot.style.height = '16px' } }
     const shrink = () => { if (dot) { dot.style.width = '8px'; dot.style.height = '8px' } }
-    document.querySelectorAll('a,button,[role=button]').forEach(el => { el.addEventListener('mouseenter', expand); el.addEventListener('mouseleave', shrink) })
-    window.addEventListener('mousemove', onMouse)
+    if (canHover) {
+      document.querySelectorAll('a,button,[role=button]').forEach(el => { el.addEventListener('mouseenter', expand); el.addEventListener('mouseleave', shrink) })
+      window.addEventListener('mousemove', onMouse)
+    }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => { window.removeEventListener('mousemove', onMouse); window.removeEventListener('scroll', onScroll) }
   }, [])

@@ -104,6 +104,13 @@
      transition: width .15s, height .15s;
      box-shadow: 0 0 12px var(--accent);
    }
+   /* Sur tactile, mousemove ne se redéclenche pas pendant un scroll —
+      seul un éventuel mousemove de compatibilité au 1er tap le positionne,
+      puis il reste figé là pour toute la session (point orange perdu
+      n'importe où sur la page selon où l'utilisateur a d'abord touché). */
+   @media (hover: none), (pointer: coarse) {
+     #cursor-dot { display: none; }
+   }
    
    /* ══════════ SCROLL PROGRESS BAR ══════════ */
    #scroll-bar {
@@ -984,6 +991,14 @@
      opacity: .55;
      line-height: 1;
      margin: 0;
+   }
+   /* En dessous de 512px de large, clamp(3.2rem,10vw,8.4rem) restait
+      bloqué sur son plancher fixe de 3.2rem (51.2px) — donc identique
+      sur TOUS les téléphones, sans marge pour les titres plus longs
+      (À propos, Clientèle) qui risquent de déborder ou d'être coupés
+      par le white-space:nowrap de .sh-cycle-wrap juste en dessous. */
+   @media(max-width:480px){
+     .sh-title { font-size: clamp(2.4rem, 11vw, 8.4rem); }
    }
    /* ── SH cycle-text reveal — même mécanique que .sm-toggle-textWrap
       du StaggeredMenu (pile de lignes, yPercent, overflow:hidden) ── */

@@ -276,8 +276,15 @@ export default function DissolveTransition({
     }
 
     function resize() {
-      const w = window.innerWidth
-      const h = window.innerHeight
+      // getBoundingClientRect() du canvas lui-même plutôt que
+      // window.innerWidth/innerHeight : sur mobile, la barre d'adresse
+      // qui apparaît/disparaît au scroll fait varier innerHeight sans
+      // déclencher un évènement 'resize' fiable, et le canvas peut alors
+      // rendre à une résolution qui ne correspond plus à sa vraie taille
+      // affichée (image "cover" mal recalée / cadrée trop petite).
+      const rect = canvas.getBoundingClientRect()
+      const w = rect.width || window.innerWidth
+      const h = rect.height || window.innerHeight
       renderer.setSize(w, h, false)
       uniformsFront.uResolution.value.set(w, h)
       uniformsBack.uResolution.value.set(w, h)
@@ -325,6 +332,8 @@ export default function DissolveTransition({
 
     resize()
     window.addEventListener('resize', resize)
+    const ro = new ResizeObserver(resize)
+    ro.observe(canvas)
 
     const st = ScrollTrigger.create({
       trigger: pinEl,
@@ -343,6 +352,7 @@ export default function DissolveTransition({
     return () => {
       destroyed = true
       window.removeEventListener('resize', resize)
+      ro.disconnect()
       st.kill()
       geometry.dispose()
       materialFront.dispose()

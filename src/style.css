@@ -59,7 +59,7 @@
    
    /* ══════════ RESET ══════════ */
    *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
-   html { scroll-behavior: smooth; }
+   html { scroll-behavior: smooth; overflow-x: hidden; }
    ::-webkit-scrollbar { width: 4px; }
    ::-webkit-scrollbar-track { background: transparent; }
    ::-webkit-scrollbar-thumb { background: #FF5500; border-radius: 2px; }
@@ -1505,8 +1505,8 @@
      }
      .tl-card {
        position: static;
-       flex: 0 0 auto;
-       width: min(280px, 82vw);
+       flex: 0 0 100%;
+       width: 100%;
        opacity: 1 !important;
        transform: none !important;
        scroll-snap-align: start;
@@ -5953,7 +5953,10 @@ body.light-mode .writing-card    { background: #f7f5f2 !important; }
 @media (max-width: 900px) {
   .recent-projects-section,
   .blog-cardswap-section,
-  #testimonials-section {
+  #testimonials-section,
+  #process-section,
+  #services-section,
+  #timeline-section {
     max-width: 100%;
     overflow-x: hidden;
   }
@@ -5971,9 +5974,11 @@ body.light-mode .writing-card    { background: #f7f5f2 !important; }
     overscroll-behavior-x: contain;
   }
 
+  /* Slides plein écran (un à la fois, on glisse pour passer au suivant)
+     au lieu du peek partiel min(300px,82vw) — Blog/Process/Services/Avis. */
   .mobile-scroll-board .tl-card {
-    flex-basis: min(300px, 82vw);
-    width: min(300px, 82vw);
+    flex: 0 0 100%;
+    width: 100%;
   }
 }
 
@@ -7080,8 +7085,8 @@ body.light-mode .writing-card    { background: #f7f5f2 !important; }
   }
   .content-board .tl-card {
     position: static;
-    flex: 0 0 min(300px, 82vw);
-    width: min(300px, 82vw);
+    flex: 0 0 100%;
+    width: 100%;
     min-height: 270px;
     opacity: 1 !important;
     transform: none !important;

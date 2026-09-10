@@ -2502,46 +2502,9 @@ function useIsMobile() {
   return isMobile
 }
 
-/* Auto-scroll horizontal doux pour une rangée de cartes en mobile
-   (Process / Services / Blog) : pause pendant un swipe tactile,
-   reprise après un court délai (même pattern que "Mes réalisations"),
-   désactivé en desktop et si prefers-reduced-motion. */
-function useMobileAutoScroll(ref, { speed = 0.5 } = {}) {
-  useEffect(() => {
-    const wrap = ref.current
-    if (!wrap) return
-    const isMobileLayout = window.matchMedia('(max-width: 900px)').matches
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (!isMobileLayout || reduceMotion) return
-
-    let paused = false
-    let raf = null
-    let resumeTimer = null
-
-    const step = () => {
-      if (!paused) {
-        const max = wrap.scrollWidth - wrap.clientWidth
-        if (wrap.scrollLeft < max) wrap.scrollLeft += speed
-      }
-      raf = requestAnimationFrame(step)
-    }
-    raf = requestAnimationFrame(step)
-
-    const onTouchStart = () => { paused = true; window.clearTimeout(resumeTimer) }
-    const onTouchRelease = () => { resumeTimer = window.setTimeout(() => { paused = false }, 2200) }
-    wrap.addEventListener('touchstart', onTouchStart, { passive: true })
-    wrap.addEventListener('touchend', onTouchRelease, { passive: true })
-    wrap.addEventListener('touchcancel', onTouchRelease, { passive: true })
-
-    return () => {
-      cancelAnimationFrame(raf)
-      window.clearTimeout(resumeTimer)
-      wrap.removeEventListener('touchstart', onTouchStart)
-      wrap.removeEventListener('touchend', onTouchRelease)
-      wrap.removeEventListener('touchcancel', onTouchRelease)
-    }
-  }, [ref, speed])
-}
+/* Auto-scroll horizontal retiré : Blog/Process/Services/Avis sont
+   maintenant des slides plein écran, navigation au swipe uniquement
+   (un auto-drift continu fighting le geste de l'utilisateur). */
 
 function InteractiveContentBoard({ items, variant }) {
   const boardRef = useRef(null)
@@ -2552,7 +2515,6 @@ function InteractiveContentBoard({ items, variant }) {
   const draggingRef = useRef(null)
   const setCardRef = useCallback((i, el) => { cardsRef.current[i] = el }, [])
   const layoutFor = (i) => CONTENT_BOARD_LAYOUT[i % CONTENT_BOARD_LAYOUT.length]
-  useMobileAutoScroll(cardsWrapRef)
 
   useEffect(() => {
     const board = boardRef.current
@@ -3087,7 +3049,6 @@ function TestiCard({ t }) {
 function WritingSection() {
   const isMobile = useIsMobile()
   const blogMobileRef = useRef(null)
-  useMobileAutoScroll(blogMobileRef, { speed: 0.5 })
 
   return (
     <section id="writing-section" className="blog-cardswap-section" style={{ padding: '10vh 0 4vh', overflow: 'hidden' }}>
@@ -3257,7 +3218,6 @@ function WritingSection() {
 function TestimonialsSection() {
   const isMobile = useIsMobile()
   const testiMobileRef = useRef(null)
-  useMobileAutoScroll(testiMobileRef, { speed: 0.5 })
 
   return (
     <section

@@ -1511,6 +1511,7 @@
        transform: none !important;
        scroll-snap-align: start;
        cursor: default;
+       touch-action: pan-x;
      }
      .tl-pin { display: none; }
    }
@@ -2711,7 +2712,7 @@
        position: absolute;
        height: 100%;
        margin-bottom: 0;
-       opacity: .4;
+       opacity: .85;
      }
    }
    /* Compatibilité : end-zone-beams conservé mais sans fond propre */
@@ -6906,11 +6907,6 @@ body.light-mode .writing-card    { background: #f7f5f2 !important; }
   .content-section-layout .content-cardswap {
     height: 440px;
   }
-  .content-section-copy .proc-header-text,
-  .content-section-copy .svc-header-text {
-    font-size: .82rem;
-    line-height: 1.65;
-  }
 }
 
 /* ─── Cartes unifiées : Blog = référence visuelle ───────────────── */
@@ -7158,7 +7154,7 @@ body.light-mode .writing-card    { background: #f7f5f2 !important; }
 #process-section,
 #services-section {
   padding-top: clamp(12vh, 15vw, 18vh);
-  padding-bottom: clamp(14vh, 18vw, 22vh);
+  padding-bottom: clamp(7vh, 9vw, 11vh);
 }
 .content-section-layout--board {
   gap: clamp(3.5rem, 7vw, 7rem);
@@ -7175,7 +7171,7 @@ body.light-mode .writing-card    { background: #f7f5f2 !important; }
   #process-section,
   #services-section {
     padding-top: 12vh;
-    padding-bottom: 16vh;
+    padding-bottom: 8vh;
   }
   .content-section-layout--board {
     gap: 3rem;
@@ -7190,7 +7186,7 @@ body.light-mode .writing-card    { background: #f7f5f2 !important; }
   #process-section,
   #services-section {
     padding-top: 10vh;
-    padding-bottom: 14vh;
+    padding-bottom: 7vh;
   }
   .content-section-layout--board { gap: 2.4rem; }
 }

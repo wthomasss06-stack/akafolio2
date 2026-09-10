@@ -3133,7 +3133,7 @@ function WritingSection() {
              px, ça ne reflow pas → remplacé par la même carte-grille
              défilante (horizontal-scroll + auto-scroll) que Process et
              Services. Desktop intact dans la branche ternaire ci-dessous. */
-          <div className="content-board content-board--blog blog-mobile-board">
+          <div className="content-board content-board--blog blog-mobile-board mobile-scroll-board">
             <div className="tl-board-cards" ref={blogMobileRef}>
               {WRITING_POSTS.map((post) => (
                 <a
@@ -3308,7 +3308,7 @@ function TestimonialsSection() {
              px, ça ne reflow pas → remplacé par la même carte-grille
              défilante (horizontal-scroll + auto-scroll) que Blog, Process
              et Services, comme pour Parcours. Desktop intact ci-dessous. */
-          <div className="content-board content-board--testimonials testi-mobile-board">
+          <div className="content-board content-board--testimonials testi-mobile-board mobile-scroll-board">
             <div className="tl-board-cards" ref={testiMobileRef}>
               {TESTIMONIALS.map((t) => (
                 <div key={t.name} className="tl-card testi-mobile-card">
@@ -3902,7 +3902,7 @@ function ContactSection({ onToast }) {
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
   const [btnTxt, setBtnTxt] = useState('Envoyer le message')
-  const [preferredContact, setPreferredContact] = useState('email')
+  const [preferredContact, setPreferredContact] = useState('whatsapp')
 
   const handleSubmit = async e => {
     e.preventDefault(); setSending(true); setBtnTxt('Envoi en cours…')
@@ -4010,8 +4010,8 @@ function ContactSection({ onToast }) {
                       value={preferredContact}
                       onChange={e => setPreferredContact(e.target.value)}
                     >
-                      <option value="email">Email</option>
                       <option value="whatsapp">Numéro WhatsApp</option>
+                      <option value="email">Email</option>
                     </select>
                   </div>
                 </div>

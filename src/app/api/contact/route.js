@@ -113,7 +113,7 @@ export async function POST(request) {
   const name = typeof body.name === 'string' ? body.name.trim() : ''
   const email = typeof body.email === 'string' ? body.email.trim() : ''
   const whatsapp = typeof body.whatsapp === 'string' ? body.whatsapp.trim() : ''
-  const preferredContact = body.preferredContact === 'whatsapp' ? 'whatsapp' : 'email'
+  const preferredContact = body.preferredContact === 'email' ? 'email' : 'whatsapp'
   const projectType = typeof body.projectType === 'string' ? body.projectType.trim() : ''
   const message = typeof body.message === 'string' ? body.message.trim() : ''
 

@@ -14,7 +14,7 @@ export default function Contact({ onNext, onNavigate }) {
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
   const [btnTxt, setBtnTxt] = useState('Envoyer le message')
-  const [preferredContact, setPreferredContact] = useState('email')
+  const [preferredContact, setPreferredContact] = useState('whatsapp')
   const linksRef = useRef(null)
   useScrollReveal(linksRef, 'a', { y: 16, stagger: 0.06, duration: 0.5 })
 
@@ -175,8 +175,8 @@ export default function Contact({ onNext, onNavigate }) {
                     cursor: 'pointer',
                   }}
                 >
-                  <option value="email">Email</option>
                   <option value="whatsapp">Numéro WhatsApp</option>
+                  <option value="email">Email</option>
                 </select>
               </div>
 

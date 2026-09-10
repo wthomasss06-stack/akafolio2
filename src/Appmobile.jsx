@@ -4007,7 +4007,7 @@ const FAQSection = ({ dark }) => {
 
 const Contact = ({ dark }) => {
   const [ref, vis] = useInView();
-  const [form, setForm] = useState({ name: '', email: '', whatsapp: '', preferredContact: 'email', projectType: '', message: '' });
+  const [form, setForm] = useState({ name: '', email: '', whatsapp: '', preferredContact: 'whatsapp', projectType: '', message: '' });
   const [sending, setSending] = useState(false); const [sent, setSent] = useState(false);
   const onChange = e => setForm(f => ({ ...f, [e.target.id]: e.target.value }));
   const onSubmit = async e => {
@@ -4015,7 +4015,7 @@ const Contact = ({ dark }) => {
     try {
       const res = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: form.name, email: form.email, whatsapp: form.whatsapp, preferredContact: form.preferredContact, projectType: form.projectType, message: form.message }) });
       if (!res.ok) throw new Error('Erreur serveur');
-      setSent(true); setForm({ name: '', email: '', whatsapp: '', preferredContact: 'email', projectType: '', message: '' });
+      setSent(true); setForm({ name: '', email: '', whatsapp: '', preferredContact: 'whatsapp', projectType: '', message: '' });
     } catch { alert('❌ Erreur. Contactez-moi sur WhatsApp : +225 01 42 50 77 50'); }
     finally { setSending(false); }
   };
@@ -4050,8 +4050,8 @@ const Contact = ({ dark }) => {
                 <div className="ff">
                   <label htmlFor="preferredContact">Contact préféré *</label>
                   <select id="preferredContact" value={form.preferredContact} onChange={onChange} required>
-                    <option value="email">Email</option>
                     <option value="whatsapp">Numéro WhatsApp</option>
+                    <option value="email">Email</option>
                   </select>
                 </div>
               </div>

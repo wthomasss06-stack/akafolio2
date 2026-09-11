@@ -32,9 +32,8 @@
 // à app/appmobile, il n'a pas besoin d'un <link> togglé séparément :
 // AKATECH.jsx importe sa propre CSS scopée sous .akatech-root (voir
 // src/akatech/AKATECH.css), donc rien à ajouter ici côté feuilles de
-// style. C'est le mode PAR DÉFAUT pour un nouveau visiteur, et le
-// premier des deux cycles du switcher (desktop : app → akatech →
-// win95 ; mobile : appmobile → akatech → win95).
+// style. Il est disponible dans les deux cycles du switcher (desktop :
+// app → akatech → win95 ; mobile : appmobile → akatech → win95).
 // ════════════════════════════════════════════════════════════════
 
 import { useState, useEffect } from 'react'
@@ -205,7 +204,7 @@ export default function RootApp() {
   const [mode, setMode] = useState(() => {
     const saved = readSavedMode()
     if (saved) return saved
-    return 'app'
+    return isMobile ? 'appmobile' : 'app'
   })
 
   useEffect(() => {

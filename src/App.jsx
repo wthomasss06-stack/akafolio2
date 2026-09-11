@@ -608,6 +608,7 @@ const HPSLIDES = [
 function HorizontalParallax() {
   const sectionRef = useRef(null)
   const trackRef = useRef(null)
+  const hpxStickyRef = useRef(null)
 
   useEffect(() => {
     const section = sectionRef.current
@@ -655,10 +656,36 @@ function HorizontalParallax() {
     }
   }, [])
 
+  /* Pin mobile (fixed via GSAP, comme le footer et DissolveTransition) :
+     .hpx-sticky en position:sticky peut être instable sur mobile avec le
+     scroll custom du site, laissant la section quasi vide (mots jamais
+     affichés à leur vraie taille/position). update() ci-dessus continue
+     de fonctionner tel quel : il lit les positions DOM réelles, peu
+     importe que .hpx-sticky soit fixé par le CSS (desktop) ou par GSAP
+     (mobile). Desktop : sticky CSS inchangé, ce useEffect ne fait rien
+     au-dessus de 900px. */
+  useEffect(() => {
+    const section = sectionRef.current
+    const stickyEl = hpxStickyRef.current
+    if (!section || !stickyEl) return
+    const mm = ScrollTrigger.matchMedia({
+      '(max-width: 900px)': function () {
+        return ScrollTrigger.create({
+          trigger: section,
+          start: 'top top',
+          end: 'bottom bottom',
+          pin: stickyEl,
+          pinSpacing: false,
+        })
+      },
+    })
+    return () => mm.revert()
+  }, [])
+
   return (
     <section ref={sectionRef} id="hpx-section" className="hpx-section">
       {/* Zone sticky : l'écran reste figé, le carrousel glisse */}
-      <div className="hpx-sticky">
+      <div className="hpx-sticky" ref={hpxStickyRef}>
         <ul ref={trackRef} id="hpx-track" className="hpx-track">
           {HPSLIDES.map((s, i) => (
             <li key={i} className="hpx-slide" style={{ '--hpx-color': s.color, '--hpx-color-light': s.lightColor || s.color }}>
@@ -1373,7 +1400,7 @@ function Hero() {
               ref={photoRef}
               className="hv4-rv"
               style={{ '--d': '.26s' }}
-              src={cld("/assets/images/MBA.webp")}
+              src={cld("/assets/images/IMG_20250124_124101KK.webp")}
               alt="M'Bollo Aka"
               onError={e => { e.target.src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600' }}
             />

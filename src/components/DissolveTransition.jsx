@@ -210,6 +210,7 @@ export default function DissolveTransition({
   cta = null,
 }) {
   const pinRef = useRef(null)
+  const stickyRef = useRef(null)
   const canvasRef = useRef(null)
   const ctaRef = useRef(null)
 
@@ -363,10 +364,36 @@ export default function DissolveTransition({
     }
   }, [frontSrc, backSrc])
 
+  /* Pin mobile (fixed géré par GSAP, comme le footer) : .dsv-sticky
+     utilise position:sticky en CSS, qui peut être instable sur mobile
+     avec le scroll custom du site (même famille de souci déjà rencontrée
+     sur .full-beams-zone__bg). Sur mobile uniquement, on pin .dsv-sticky
+     nous-mêmes le temps que la dissolve se joue, avec le même calcul de
+     fin que le scrub ci-dessus — la transition doit être terminée avant
+     que le scroll ne reprenne. Desktop : sticky CSS inchangé, ce useEffect
+     ne fait rien au-dessus de 900px. */
+  useEffect(() => {
+    const pinEl = pinRef.current
+    const stickyEl = stickyRef.current
+    if (!pinEl || !stickyEl) return
+    const mm = ScrollTrigger.matchMedia({
+      '(max-width: 900px)': function () {
+        return ScrollTrigger.create({
+          trigger: pinEl,
+          start: 'top top',
+          end: () => `+=${pinEl.offsetHeight - window.innerHeight - (revealVh / 100) * window.innerHeight}`,
+          pin: stickyEl,
+          pinSpacing: false,
+        })
+      },
+    })
+    return () => mm.revert()
+  }, [revealVh])
+
   return (
     <section id={id} className={`dsv-section force-dark ${className}`}>
       <div ref={pinRef} className="dsv-pin" style={{ height: `${heightVh}vh` }}>
-        <div className="dsv-sticky">
+        <div className="dsv-sticky" ref={stickyRef}>
           <canvas ref={canvasRef} className="dsv-canvas" aria-hidden="true" />
 
           {cta && (

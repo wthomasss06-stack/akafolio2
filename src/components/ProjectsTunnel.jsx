@@ -50,17 +50,26 @@ function ProjectsTunnel() {
     /* ── Médias WebM Cloudinary : une vidéo par projet, partagée par
        les deux boucles du tunnel. Le WebP reste un fallback silencieux
        si un WebM n’a pas encore été uploadé. ── */
+    // Sur mobile, plusieurs vidéos HD qui jouent en simultané dans le
+    // tunnel sature vite la RAM/décodeur (cause probable des plantages
+    // signalés) — pas de vidéo là où il n'y a de toute façon pas de
+    // survol pour la déclencher : on reste sur le WebP déjà chargé.
+    const skipVideo = window.matchMedia('(max-width: 900px), (hover: none)').matches
     const textureLoader = new THREE.TextureLoader()
     const projectMedia = PROJECTS.map(project => {
-      const videoUrl = project.hoverVideo || project.img
-        .replace('/image/upload/', '/video/upload/')
-        .replace(/\.(webp|png|jpe?g)(\?.*)?$/i, '.webm$2')
       const fallback = textureLoader.load(project.img)
       fallback.generateMipmaps = false
       fallback.minFilter = THREE.LinearFilter
       fallback.magFilter = THREE.LinearFilter
       if ('colorSpace' in fallback) fallback.colorSpace = THREE.SRGBColorSpace
 
+      if (skipVideo) {
+        return { project, video: null, videoTexture: fallback, fallback, materials: [], failed: true }
+      }
+
+      const videoUrl = project.hoverVideo || project.img
+        .replace('/image/upload/', '/video/upload/')
+        .replace(/\.(webp|png|jpe?g)(\?.*)?$/i, '.webm$2')
       const video = document.createElement('video')
       video.muted = true
       video.loop = true
@@ -86,7 +95,7 @@ function ProjectsTunnel() {
     let pageVisible = document.visibilityState === 'visible'
     const syncVideoPlayback = () => {
       projectMedia.forEach(media => {
-        if (media.failed) return
+        if (media.failed || !media.video) return
         if (tunnelVisible && pageVisible) media.video.play().catch(() => {})
         else media.video.pause()
       })

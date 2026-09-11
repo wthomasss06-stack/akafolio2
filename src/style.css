@@ -2954,6 +2954,9 @@
      gap: 1rem;
      margin-bottom: 0.5rem;
    }
+   @media (max-width: 640px) {
+     .github-stats-row { grid-template-columns: repeat(2, 1fr); gap: .7rem; }
+   }
    
    .github-stat-item {
      display: flex;

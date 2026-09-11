@@ -3,6 +3,7 @@
 import { useRef, useEffect } from 'react'
 import * as THREE from 'three'
 import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { VERTEX_SHADER, FRONT_FRAGMENT_SHADER, BACK_FRAGMENT_SHADER } from './DissolveTransition.jsx'
 import { cld } from '../lib/cloudinary.js'
 
@@ -24,6 +25,7 @@ import { cld } from '../lib/cloudinary.js'
  ════════════════════════════════════════════ */
 function HeroZoomSection() {
   const pinRef = useRef(null)
+  const stickyRef = useRef(null)
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
 
@@ -169,10 +171,34 @@ function HeroZoomSection() {
     }
   }, [])
 
+  /* Pin mobile (fixed géré par GSAP) : .hzx-sticky utilise position:sticky
+     en CSS, même souci d'instabilité déjà corrigé sur DissolveTransition
+     et HorizontalParallax. Le timeline de scrub ci-dessus n'a pas besoin
+     de changer : il pilote le canvas/uniforms, pas la façon dont la
+     section reste à l'écran. Desktop : sticky CSS inchangé au-dessus de
+     900px, ce useEffect ne fait rien. */
+  useEffect(() => {
+    const pin = pinRef.current
+    const stickyEl = stickyRef.current
+    if (!pin || !stickyEl) return
+    const mm = ScrollTrigger.matchMedia({
+      '(max-width: 900px)': function () {
+        return ScrollTrigger.create({
+          trigger: pin,
+          start: 'top top',
+          end: 'bottom bottom',
+          pin: stickyEl,
+          pinSpacing: false,
+        })
+      },
+    })
+    return () => mm.revert()
+  }, [])
+
   return (
     <section id="hero-zoom-section" className="hzx-section">
       <div ref={pinRef} className="hzx-pin">
-        <div className="hzx-sticky">
+        <div className="hzx-sticky" ref={stickyRef}>
           <div ref={containerRef} className="hzx-container">
             <canvas
               ref={canvasRef}

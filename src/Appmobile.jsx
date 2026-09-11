@@ -704,7 +704,7 @@ function useStagger(thr = 0.08) { const [r, v] = useInView(thr); return [r, v]; 
    Remplace le swipe StackedCard pour Services & Process en version mobile.
    `renderHeader(item, isOpen)` remplit la ligne cliquable (chevron géré ici).
    `renderBody(item)` remplit le contenu déplié, animé en hauteur via ref. */
-function AccordionPanel({ item, isOpen, onToggle, renderHeader, renderBody, dark }) {
+function AccordionPanel({ item, index, isOpen, onToggle, renderHeader, renderBody, dark }) {
   const bodyRef = useRef(null);
   const [maxH, setMaxH] = useState(0);
 
@@ -727,7 +727,7 @@ function AccordionPanel({ item, isOpen, onToggle, renderHeader, renderBody, dark
   return (
     <div className={`acc-item${dark ? ' acc-item--dark' : ''}${isOpen ? ' acc-item--open' : ''}`}>
       <button className="acc-head" onClick={onToggle} aria-expanded={isOpen}>
-        {renderHeader(item, isOpen)}
+        {renderHeader(item, isOpen, index)}
         <span className={`acc-chev${isOpen ? ' acc-chev--open' : ''}`}>
           <LI name="chevron-right" size={14} color={isOpen ? 'var(--acc)' : 'var(--muted)'} />
         </span>
@@ -749,6 +749,7 @@ function Accordion({ items, defaultOpen = 0, renderHeader, renderBody, dark }) {
         <AccordionPanel
           key={item.n || i}
           item={item}
+          index={i}
           isOpen={open === i}
           onToggle={() => setOpen(open === i ? -1 : i)}
           renderHeader={renderHeader}
@@ -2381,7 +2382,8 @@ const Services = ({ dark }) => {
         </div>
       )}
 
-      <div className={`s-hd ${dark ? 's-hd--dark' : ''}`} style={{ marginTop: '60px' }}><span className="s-lbl">Tarifs</span><h2 className="s-ttl" style={{ fontSize: 'clamp(24px,3.5vw,44px)' }}>Mes offres.</h2></div>
+      <WindowChrome title="Tarifs" dark={dark} />
+      <div className={`s-hd ${dark ? 's-hd--dark' : ''}`} style={{ marginTop: '60px' }}><h2 className="s-ttl" style={{ fontSize: 'clamp(24px,3.5vw,44px)' }}>Mes offres.</h2></div>
       <PricingTabs dark={dark} />
     </section>
   );
@@ -3517,8 +3519,8 @@ const WritingSection = ({ dark }) => {
 
   return (
     <section id="writing" className={dark ? 'section--dark' : ''} style={{ padding: '0 5vw 4vh' }}>
+      <WindowChrome title="Blog" dark={dark} />
       <div className="s-hd">
-        <span className="s-lbl">// BLOG</span>
         <h2 className="s-ttl">Ce que je<br />partage.</h2>
       </div>
 
@@ -3591,11 +3593,10 @@ const Testimonials = ({ dark }) => {
 
   return (
     <section ref={ref} className={`testi-section ${dark ? 'section--dark' : ''}`}>
-      <WindowChrome title="Témoignages" dark={dark} />
-      <div className={`s-hd ${dark ? 's-hd--dark' : ''}`}>
-        <span className="s-lbl">// clients</span>
-        <h2 className="s-ttl">Ils m'ont<br />fait confiance.</h2>
-      </div>
+    <WindowChrome title="Témoignages" dark={dark} />
+    <div className={`s-hd ${dark ? 's-hd--dark' : ''}`}>
+      <h2 className="s-ttl">Ils m'ont<br />fait confiance.</h2>
+    </div>
       <div className={`testi-wrap ${vis ? 'testi-wrap--vis' : ''}`}>
         {/* Compteur */}
         <div className={`testi-counter ${dark ? 'testi-counter--dark' : ''}`}>
@@ -3972,35 +3973,30 @@ function GitHubInteractiveCard({ dark }) {
 }
 
 /* ═══════════════════════════════════════════════════════
-    FAQ — Questions fréquentes (accordéon)
+    FAQ — Questions fréquentes (accordéon partagé)
    ═══════════════════════════════════════════════════════ */
-const FAQItem = ({ item, index, isOpen, onToggle }) => (
-  <div className={`faq-item${isOpen ? ' open' : ''}`}>
-    <button className="faq-q" onClick={onToggle} aria-expanded={isOpen}>
-      <span className="faq-q-text">
-        <span className="faq-q-num">{String(index + 1).padStart(2, '0')}</span>
-        {item.q}
-      </span>
-      <span className="faq-icon"><SvgPlus size={13} /></span>
-    </button>
-    <div className="faq-a-wrap">
-      <div className="faq-a-inner"><p className="faq-a">{item.a}</p></div>
-    </div>
-  </div>
-);
-
 const FAQSection = ({ dark }) => {
-  const [ref, vis] = useInView();
-  const [openIndex, setOpenIndex] = useState(null);
   return (
-    <section id="faq" ref={ref} className={dark ? 'section--dark' : ''}>
+    <section id="faq" className={dark ? 'section--dark' : ''}>
       <WindowChrome title="FAQ" dark={dark} />
       <div className={`s-hd ${dark ? 's-hd--dark' : ''}`}><h2 className="s-ttl">Questions<br />fréquentes.</h2></div>
-      <div className={`faq-list ${vis ? 'anim' : ''}`}>
-        {FAQ_ITEMS.map((item, i) => (
-          <FAQItem key={i} item={item} index={i} isOpen={openIndex === i} onToggle={() => setOpenIndex(openIndex === i ? null : i)} />
-        ))}
-      </div>
+      <Accordion
+        items={FAQ_ITEMS}
+        dark={dark}
+        renderHeader={(item, isOpen, index) => (
+          <div className="acc-hd-col">
+            <div className="acc-hd-top">
+              <span className={`acc-n${isOpen ? ' acc-n--open' : ''}`}>{String(index + 1).padStart(2, '0')}</span>
+              <h3 className="acc-title">{item.q}</h3>
+            </div>
+          </div>
+        )}
+        renderBody={item => (
+          <div className="acc-body-inner">
+            <p className="proc-acc-desc">{item.a}</p>
+          </div>
+        )}
+      />
     </section>
   );
 };
@@ -4095,15 +4091,13 @@ const Contact = ({ dark }) => {
         <div style={{ position: 'relative', zIndex: 1 }}>
           {/* ── GitHub Interactive Card ── */}
           <div style={{ marginBottom: '40px' }}>
-            <div className={`s-hd ${dark ? 's-hd--dark' : ''}`} style={{ marginBottom: '24px' }}>
-              <span className="s-lbl">// Activité GitHub</span>
-            </div>
+            <WindowChrome title="Activité GitHub" dark={dark} />
             <GitHubInteractiveCard dark={dark} />
           </div>
 
           {/* ── Header + Animated Beam ── */}
+          <WindowChrome title="Où me joindre" dark={dark} />
           <div className={`s-hd ${dark ? 's-hd--dark' : ''}`} style={{ marginBottom: '32px' }}>
-            <span className="s-lbl">// Où me joindre</span>
             <h2 className="s-ttl">Restons<br />connectés.</h2>
           </div>
 

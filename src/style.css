@@ -6725,9 +6725,38 @@ body.light-mode .writing-card    { background: #f7f5f2 !important; }
    auto-scroll. Seuls le conteneur et les éléments internes propres au
    contenu Blog (tag/titre/CTA) sont nouveaux. ────────────────────── */
 .content-board--blog { height: auto !important; }
+/* ─── Pagination (dots) des rangées de slides mobiles ────────────── */
+.slide-dots {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  gap: .5rem;
+  margin: .9rem 0 0;
+}
+@media (max-width: 900px) {
+  .slide-dots { display: flex; }
+}
+.slide-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 85, 0, .22);
+  transition: width .25s ease, background .25s ease;
+}
+body.light-mode .slide-dot { background: rgba(0, 0, 0, .14); }
+.slide-dot--active {
+  width: 20px;
+  border-radius: 4px;
+  background: var(--accent);
+}
+
 .tl-card.blog-mobile-card {
+  transition: transform .15s ease;
   text-decoration: none;
   justify-content: flex-start;
+}
+.tl-card.blog-mobile-card:active {
+  transform: scale(.97);
 }
 .blog-mobile-tag {
   display: inline-block;

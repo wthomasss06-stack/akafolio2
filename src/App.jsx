@@ -2133,6 +2133,7 @@ function TimelineCard({ item, index, layout, setCardRef }) {
 function TimelineBoard() {
   const boardRef = useRef(null)
   const spotlightRef = useRef(null)
+  const cardsWrapRef = useRef(null)
   const cardsRef = useRef([])
   const highestZRef = useRef(30)
   const draggingRef = useRef(null)
@@ -2281,7 +2282,7 @@ function TimelineBoard() {
         <span>DÉVELOPPEMENT</span>
         <span>WEB</span>
       </div>
-      <div className="tl-board-cards">
+      <div className="tl-board-cards" ref={cardsWrapRef}>
         {TIMELINE.map((item, i) => (
           <TimelineCard
             key={i}
@@ -2292,6 +2293,7 @@ function TimelineBoard() {
           />
         ))}
       </div>
+      <SlideDots containerRef={cardsWrapRef} count={TIMELINE.length} />
     </div>
   )
 }
@@ -2533,6 +2535,33 @@ function useIsMobile() {
    maintenant des slides plein écran, navigation au swipe uniquement
    (un auto-drift continu fighting le geste de l'utilisateur). */
 
+/* Pagination (points) pour une rangée de slides plein écran mobile —
+   suit le scroll du conteneur pour indiquer la carte active. Masqué en
+   desktop via CSS (ces sections n'y sont pas des slides swipées). */
+function SlideDots({ containerRef, count }) {
+  const [active, setActive] = useState(0)
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el || count < 2) return
+    const onScroll = () => {
+      const idx = Math.round(el.scrollLeft / (el.clientWidth || 1))
+      setActive(Math.max(0, Math.min(count - 1, idx)))
+    }
+    el.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => el.removeEventListener('scroll', onScroll)
+  }, [containerRef, count])
+
+  if (count < 2) return null
+  return (
+    <div className="slide-dots" role="tablist" aria-label="Navigation des cartes">
+      {Array.from({ length: count }).map((_, i) => (
+        <span key={i} className={`slide-dot${i === active ? ' slide-dot--active' : ''}`} aria-hidden="true" />
+      ))}
+    </div>
+  )
+}
+
 function InteractiveContentBoard({ items, variant }) {
   const boardRef = useRef(null)
   const spotlightRef = useRef(null)
@@ -2652,6 +2681,7 @@ function InteractiveContentBoard({ items, variant }) {
           <ContentBoardCard key={`${variant}-${item.n || i}`} item={item} index={i} total={items.length} layout={layoutFor(i)} setCardRef={setCardRef} />
         ))}
       </div>
+      <SlideDots containerRef={cardsWrapRef} count={items.length} />
     </div>
   )
 }
@@ -3138,6 +3168,7 @@ function WritingSection() {
                 </a>
               ))}
             </div>
+            <SlideDots containerRef={blogMobileRef} count={WRITING_POSTS.length} />
           </div>
         ) : (
         <div className="blog-cardswap-slot"
@@ -3268,7 +3299,7 @@ function TestimonialsSection() {
           <SectionHeading num="03" title="Avis" sub={`${TESTIMONIALS.length} avis clients`} style={{ marginBottom: '1.2rem' }} />
 
           <h3 style={{ fontSize: '.88rem', color: 'var(--muted)', lineHeight: 1.7 }}>
-            Chaque carte défile automatiquement pour révéler une nouvelle histoire client.
+            Glissez pour découvrir chaque histoire client.
           </h3>
 
           <div style={{ marginTop: '1.5rem', display: 'flex', gap: '.5rem', flexWrap: 'wrap' }}>
@@ -3321,6 +3352,7 @@ function TestimonialsSection() {
                 </div>
               ))}
             </div>
+            <SlideDots containerRef={testiMobileRef} count={TESTIMONIALS.length} />
           </div>
         ) : (
         <div

@@ -59,7 +59,7 @@
    
    /* ══════════ RESET ══════════ */
    *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
-   html { scroll-behavior: smooth; }
+   html { scroll-behavior: smooth; overflow-x: hidden; }
    ::-webkit-scrollbar { width: 4px; }
    ::-webkit-scrollbar-track { background: transparent; }
    ::-webkit-scrollbar-thumb { background: #FF5500; border-radius: 2px; }
@@ -104,6 +104,13 @@
      transition: width .15s, height .15s;
      box-shadow: 0 0 12px var(--accent);
    }
+   /* Sur tactile, mousemove ne se redéclenche pas pendant un scroll —
+      seul un éventuel mousemove de compatibilité au 1er tap le positionne,
+      puis il reste figé là pour toute la session (point orange perdu
+      n'importe où sur la page selon où l'utilisateur a d'abord touché). */
+   @media (hover: none), (pointer: coarse) {
+     #cursor-dot { display: none; }
+   }
    
    /* ══════════ SCROLL PROGRESS BAR ══════════ */
    #scroll-bar {
@@ -122,7 +129,7 @@
    
    /* ══════════ TOAST ══════════ */
    #toast {
-     position: fixed; bottom: 2rem; right: 2rem; z-index: 500;
+     position: fixed; bottom: calc(2rem + env(safe-area-inset-bottom)); right: calc(2rem + env(safe-area-inset-right)); z-index: 500;
      background: #1a0800; color: var(--text);
      padding: 1rem 1.6rem; border-radius: 20px;
      border: 2px solid rgba(255,85,0,0.25);
@@ -753,8 +760,8 @@
    @keyframes scrollLine { from { top: -50%; } to { top: 150%; } }
 
    @media(max-width:900px){
-     #hero { min-height: 100svh; height: auto; padding: 104px 0 56px; }
-     .hv4-scene-wrap { flex-direction: column; gap: 28px; padding: 0 6vw; }
+     #hero { min-height: 100svh; height: auto; padding: 104px 0 56px; overflow: visible; }
+     .hv4-scene-wrap { flex-direction: column; gap: 28px; padding: 0 6vw; height: auto; }
      .hv4-portrait { position: relative; height: auto; padding-top: 12px; transform: none; }
      .hv4-portrait-photo {
        position: relative; top: auto; left: auto; transform: none;
@@ -984,6 +991,14 @@
      opacity: .55;
      line-height: 1;
      margin: 0;
+   }
+   /* En dessous de 512px de large, clamp(3.2rem,10vw,8.4rem) restait
+      bloqué sur son plancher fixe de 3.2rem (51.2px) — donc identique
+      sur TOUS les téléphones, sans marge pour les titres plus longs
+      (À propos, Clientèle) qui risquent de déborder ou d'être coupés
+      par le white-space:nowrap de .sh-cycle-wrap juste en dessous. */
+   @media(max-width:480px){
+     .sh-title { font-size: clamp(2.4rem, 11vw, 8.4rem); }
    }
    /* ── SH cycle-text reveal — même mécanique que .sm-toggle-textWrap
       du StaggeredMenu (pile de lignes, yPercent, overflow:hidden) ── */
@@ -1490,12 +1505,13 @@
      }
      .tl-card {
        position: static;
-       flex: 0 0 auto;
-       width: min(280px, 82vw);
+       flex: 0 0 100%;
+       width: 100%;
        opacity: 1 !important;
        transform: none !important;
        scroll-snap-align: start;
        cursor: default;
+       touch-action: pan-x;
      }
      .tl-pin { display: none; }
    }
@@ -2685,14 +2701,18 @@
    body.light-mode .force-dark .coj-list-link { color: #0A0A0A; }
    body.light-mode .force-dark .contact-links-col .clk-link { color: #0A0A0A !important; }
    body.light-mode .force-dark .contact-links-col .clk-label { color: #0A0A0A !important; }
-   @media(max-width: 700px) {
+   @media(max-width: 900px) {
      /* sticky peut être instable sur certains mobiles/iOS Safari avec le scroll
-        global custom du site → on retombe sur un fond fixe plus court et discret */
+        global custom du site → on retombe sur un fond fixe plus discret.
+        height:100% (au lieu d'un 60vh fixe) couvre tout .full-beams-zone
+        (Contact + Footer), quelle que soit sa hauteur réelle sur mobile —
+        sinon le fond s'arrête à 60vh et laisse un vide de la couleur de
+        fond nue en dessous (#1a1208 / #f5ede0 en light-mode). */
      .full-beams-zone__bg {
        position: absolute;
-       height: 60vh;
+       height: 100%;
        margin-bottom: 0;
-       opacity: .4;
+       opacity: .85;
      }
    }
    /* Compatibilité : end-zone-beams conservé mais sans fond propre */
@@ -2933,6 +2953,9 @@
      grid-template-columns: repeat(4, 1fr);
      gap: 1rem;
      margin-bottom: 0.5rem;
+   }
+   @media (max-width: 640px) {
+     .github-stats-row { grid-template-columns: repeat(2, 1fr); gap: .7rem; }
    }
    
    .github-stat-item {
@@ -3653,7 +3676,7 @@
    
    /* ══════════ SCROLL TOP BUTTON ══════════ */
    #scroll-top-btn {
-     position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+     position: fixed; bottom: calc(32px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%);
      width: 52px; height: 52px;
      border: var(--border); background: var(--accent); color: var(--text);
      z-index: 900; display: flex; align-items: center; justify-content: center;
@@ -5884,23 +5907,83 @@ body.light-mode .writing-card    { background: #f7f5f2 !important; }
 
 @media (max-width: 900px) {
   .rp-section-head { padding: 0 5vw 4vh; }
-  .pcard-title { font-size: 5vw; }
-  .pcard-year { font-size: 4vw; }
-  .proj-marquee-item { font-size: 3.2vw; }
+  .pcard-title { font-size: max(1rem, 5vw); }
+  .pcard-year { font-size: max(.85rem, 4vw); }
+  .proj-marquee-item { font-size: max(.75rem, 3.2vw); }
 
-  .rp-featured-grid { height: auto; padding: 0 5vw; }
+  .rp-featured-grid {
+    height: auto;
+    padding: 0 5vw;
+    max-width: 100%;
+  }
   .rp-featured-grid .pcard {
     position: relative !important; top: 0 !important; left: 0 !important; right: 0 !important;
-    width: 92vw; height: 70vh; margin: 0 auto 4vh;
+    width: min(88vw, 540px);
+    height: clamp(250px, 56vw, 360px);
+    margin: 0 auto 4vh;
   }
-  .pcard-upper { top: 35%; width: 92%; height: 48vh; border-radius: 3vw; }
+  .pcard-upper {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 72%;
+    border-radius: 16px 16px 0 0;
+  }
   .pcard-hover-reveal { display: none; } /* pas de hover tactile, comme la vidéo désactivée dans la référence */
-  .pcard-bottom { top: 78%; }
-  .proj-marquee-wrap { top: 90%; }
+  .pcard-bottom {
+    top: auto;
+    bottom: 0;
+    height: 16%;
+    padding: 0 1rem;
+  }
+  .proj-marquee-wrap { top: 72%; }
 
   .rp-slider-header { padding: 5vh 5vw 2vh; }
-  .rp-track-wrap { padding-left: 5vw; height: 70vh; }
-  .rp-track .pcard { width: 84vw; height: 70vh; }
+  .rp-track-wrap {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 5vw;
+    height: clamp(250px, 56vw, 360px);
+  }
+  .rp-track { height: 100%; }
+  .rp-track .pcard {
+    width: min(88vw, 540px);
+    height: 100%;
+  }
+}
+
+/* Mobile cards must stay inside the viewport and use the same horizontal
+   scroll treatment for Blog and testimonials. */
+@media (max-width: 900px) {
+  .recent-projects-section,
+  .blog-cardswap-section,
+  #testimonials-section,
+  #process-section,
+  #services-section,
+  #timeline-section {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .blog-cardswap-layout,
+  .blog-mobile-board,
+  .testi-mobile-board {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .mobile-scroll-board .tl-board-cards {
+    width: 100%;
+    max-width: 100%;
+    overscroll-behavior-x: contain;
+  }
+
+  /* Slides plein écran (un à la fois, on glisse pour passer au suivant)
+     au lieu du peek partiel min(300px,82vw) — Blog/Process/Services/Avis. */
+  .mobile-scroll-board .tl-card {
+    flex: 0 0 100%;
+    width: 100%;
+  }
 }
 
 
@@ -6636,6 +6719,136 @@ body.light-mode .writing-card    { background: #f7f5f2 !important; }
   }
 }
 
+/* ─── Blog mobile : carte-grille défilante (remplace CardSwap cassé) ─
+   Réutilise .content-board / .tl-board-cards / .tl-card (déjà responsives
+   pour Process/Services à 900px) : même look, même scroll-snap, même
+   auto-scroll. Seuls le conteneur et les éléments internes propres au
+   contenu Blog (tag/titre/CTA) sont nouveaux. ────────────────────── */
+.content-board--blog { height: auto !important; }
+/* ─── Pagination (dots) des rangées de slides mobiles ────────────── */
+.slide-dots {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  gap: .5rem;
+  margin: .9rem 0 0;
+}
+@media (max-width: 900px) {
+  .slide-dots { display: flex; }
+}
+.slide-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 85, 0, .22);
+  transition: width .25s ease, background .25s ease;
+}
+body.light-mode .slide-dot { background: rgba(0, 0, 0, .14); }
+.slide-dot--active {
+  width: 20px;
+  border-radius: 4px;
+  background: var(--accent);
+}
+
+.tl-card.blog-mobile-card {
+  transition: transform .15s ease;
+  text-decoration: none;
+  justify-content: flex-start;
+}
+.tl-card.blog-mobile-card:active {
+  transform: scale(.97);
+}
+.blog-mobile-tag {
+  display: inline-block;
+  font-family: 'Space Mono', monospace;
+  font-size: .58rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid rgba(255,85,0,.3);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+.blog-mobile-hook {
+  font-family: var(--fd);
+  font-size: 1rem;
+  line-height: 1.4;
+  color: var(--text);
+  margin: 0;
+}
+.blog-mobile-cta {
+  font-family: var(--fb);
+  font-size: .76rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* ─── Avis mobile : carte-grille défilante (même pattern que Blog) ──
+   Réutilise .content-board / .tl-board-cards / .tl-card : même look,
+   même scroll-snap, même auto-scroll que Parcours/Process/Services/
+   Blog. Seuls les éléments internes propres au contenu Avis (tag/
+   étoiles/citation/auteur) sont nouveaux. ─────────────────────────── */
+.content-board--testimonials { height: auto !important; }
+.tl-card.testi-mobile-card {
+  justify-content: flex-start;
+}
+.testi-mobile-tag {
+  align-self: flex-start;
+  font-family: var(--fd);
+  font-size: .56rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  background: var(--accent);
+  border: 2px solid var(--text);
+  padding: 3px 10px;
+  border-radius: 999px;
+  color: var(--bg);
+  font-weight: 800;
+  margin-bottom: .7rem;
+}
+.testi-mobile-stars {
+  display: flex;
+  gap: 3px;
+  margin-bottom: .6rem;
+}
+.testi-mobile-quote {
+  font-style: italic;
+}
+.testi-mobile-footer {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  padding-top: .8rem;
+  margin-top: .6rem;
+  border-top: 1px solid rgba(255,85,0,.15);
+  flex: 0 0 auto;
+}
+.testi-mobile-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg,var(--accent),#cc3300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--fd);
+  font-weight: 800;
+  font-size: .8rem;
+  color: #0A0A0A;
+  flex-shrink: 0;
+}
+.testi-mobile-name {
+  font-family: var(--fd);
+  font-weight: 700;
+  font-size: .8rem;
+  color: var(--text);
+}
+.testi-mobile-role {
+  font-size: .6rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
 /* ─── UI/UX partagé Blog · Process · Services ───────────────────── */
 .content-section-layout {
   display: grid;
@@ -6725,11 +6938,6 @@ body.light-mode .writing-card    { background: #f7f5f2 !important; }
   }
   .content-section-layout .content-cardswap {
     height: 440px;
-  }
-  .content-section-copy .proc-header-text,
-  .content-section-copy .svc-header-text {
-    font-size: .82rem;
-    line-height: 1.65;
   }
 }
 
@@ -6905,8 +7113,8 @@ body.light-mode .writing-card    { background: #f7f5f2 !important; }
   }
   .content-board .tl-card {
     position: static;
-    flex: 0 0 min(300px, 82vw);
-    width: min(300px, 82vw);
+    flex: 0 0 100%;
+    width: 100%;
     min-height: 270px;
     opacity: 1 !important;
     transform: none !important;
@@ -6995,7 +7203,7 @@ body.light-mode .writing-card    { background: #f7f5f2 !important; }
   #process-section,
   #services-section {
     padding-top: 12vh;
-    padding-bottom: 16vh;
+    padding-bottom: 8vh;
   }
   .content-section-layout--board {
     gap: 3rem;
@@ -7010,7 +7218,7 @@ body.light-mode .writing-card    { background: #f7f5f2 !important; }
   #process-section,
   #services-section {
     padding-top: 10vh;
-    padding-bottom: 14vh;
+    padding-bottom: 7vh;
   }
   .content-section-layout--board { gap: 2.4rem; }
 }

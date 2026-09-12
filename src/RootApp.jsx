@@ -32,8 +32,9 @@
 // à app/appmobile, il n'a pas besoin d'un <link> togglé séparément :
 // AKATECH.jsx importe sa propre CSS scopée sous .akatech-root (voir
 // src/akatech/AKATECH.css), donc rien à ajouter ici côté feuilles de
-// style. Il est disponible dans les deux cycles du switcher (desktop :
-// app → akatech → win95 ; mobile : appmobile → akatech → win95).
+// style. C'est le mode PAR DÉFAUT pour un nouveau visiteur, et le
+// premier des deux cycles du switcher (desktop : akatech → app →
+// win95 ; mobile : akatech → appmobile → win95).
 // ════════════════════════════════════════════════════════════════
 
 import { useState, useEffect } from 'react'
@@ -47,10 +48,13 @@ const Win95App   = dynamic(() => import('./Win95Portfolio.jsx'), { ssr: false, l
 
 const MODE_KEY           = 'akafolio-mode-v2'
 const VALID_MODES        = ['akatech', 'app', 'appmobile', 'win95']
-const DESKTOP_ONLY_MODES = ['app']
+const DESKTOP_ONLY_MODES = []
 const MOBILE_ONLY_MODES  = ['appmobile']
+// App est maintenant optimisée mobile : disponible ET par défaut sur
+// desktop comme sur mobile. Appmobile reste accessible manuellement
+// dans le cycle mobile. AKATech et Win95 restent le cycle secondaire.
 const DESKTOP_CYCLE = ['app', 'akatech', 'win95']
-const MOBILE_CYCLE  = ['appmobile', 'akatech', 'win95']
+const MOBILE_CYCLE  = ['app', 'appmobile', 'akatech', 'win95']
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(
@@ -204,7 +208,7 @@ export default function RootApp() {
   const [mode, setMode] = useState(() => {
     const saved = readSavedMode()
     if (saved) return saved
-    return isMobile ? 'appmobile' : 'app'
+    return 'app'
   })
 
   useEffect(() => {

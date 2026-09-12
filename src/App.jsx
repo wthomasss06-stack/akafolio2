@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { createContext, useContext, useState, useEffect, useRef, useCallback, useMemo, Children, isValidElement, cloneElement } from 'react'
 import './style.css'
@@ -608,7 +608,6 @@ const HPSLIDES = [
 function HorizontalParallax() {
   const sectionRef = useRef(null)
   const trackRef = useRef(null)
-  const hpxStickyRef = useRef(null)
 
   useEffect(() => {
     const section = sectionRef.current
@@ -656,36 +655,10 @@ function HorizontalParallax() {
     }
   }, [])
 
-  /* Pin mobile (fixed via GSAP, comme le footer et DissolveTransition) :
-     .hpx-sticky en position:sticky peut être instable sur mobile avec le
-     scroll custom du site, laissant la section quasi vide (mots jamais
-     affichés à leur vraie taille/position). update() ci-dessus continue
-     de fonctionner tel quel : il lit les positions DOM réelles, peu
-     importe que .hpx-sticky soit fixé par le CSS (desktop) ou par GSAP
-     (mobile). Desktop : sticky CSS inchangé, ce useEffect ne fait rien
-     au-dessus de 900px. */
-  useEffect(() => {
-    const section = sectionRef.current
-    const stickyEl = hpxStickyRef.current
-    if (!section || !stickyEl) return
-    const mm = ScrollTrigger.matchMedia({
-      '(max-width: 900px)': function () {
-        return ScrollTrigger.create({
-          trigger: section,
-          start: 'top top',
-          end: 'bottom bottom',
-          pin: stickyEl,
-          pinSpacing: false,
-        })
-      },
-    })
-    return () => mm.revert()
-  }, [])
-
   return (
     <section ref={sectionRef} id="hpx-section" className="hpx-section">
       {/* Zone sticky : l'écran reste figé, le carrousel glisse */}
-      <div className="hpx-sticky" ref={hpxStickyRef}>
+      <div className="hpx-sticky">
         <ul ref={trackRef} id="hpx-track" className="hpx-track">
           {HPSLIDES.map((s, i) => (
             <li key={i} className="hpx-slide" style={{ '--hpx-color': s.color, '--hpx-color-light': s.lightColor || s.color }}>
@@ -1400,7 +1373,7 @@ function Hero() {
               ref={photoRef}
               className="hv4-rv"
               style={{ '--d': '.26s' }}
-              src={cld("/assets/images/IMG_20250124_124101KK.webp")}
+              src={cld("/assets/images/MBA.webp")}
               alt="M'Bollo Aka"
               onError={e => { e.target.src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600' }}
             />
@@ -1740,13 +1713,6 @@ function RecentProjects() {
     window.clearTimeout(nudgeTimerRef.current)
     nudgeTimerRef.current = window.setTimeout(resume, 2200)
   }
-  /* Swipe tactile : on coupe l'auto-scroll pendant le drag du doigt, puis
-     on relance après un court délai (même pattern que nudge) pour ne pas
-     lutter contre le scroll natif / l'inertie mobile. */
-  const onTouchRelease = () => {
-    window.clearTimeout(nudgeTimerRef.current)
-    nudgeTimerRef.current = window.setTimeout(resume, 2200)
-  }
 
   return (
     <section className="recent-projects-section" id="projets-section">
@@ -1797,7 +1763,7 @@ function RecentProjects() {
         </div>
       </div>
 
-      <div className="rp-track-wrap" ref={trackWrapRef} onTouchStart={pause} onTouchEnd={onTouchRelease} onTouchCancel={onTouchRelease}>
+      <div className="rp-track-wrap" ref={trackWrapRef}>
         <div className="rp-track">
           {loopedProjects.map((p, i) => (
             <div key={`${p.id}-${i}`} className="pcard" onClick={() => select(p)}>
@@ -2133,7 +2099,6 @@ function TimelineCard({ item, index, layout, setCardRef }) {
 function TimelineBoard() {
   const boardRef = useRef(null)
   const spotlightRef = useRef(null)
-  const cardsWrapRef = useRef(null)
   const cardsRef = useRef([])
   const highestZRef = useRef(30)
   const draggingRef = useRef(null)
@@ -2282,7 +2247,7 @@ function TimelineBoard() {
         <span>DÉVELOPPEMENT</span>
         <span>WEB</span>
       </div>
-      <div className="tl-board-cards" ref={cardsWrapRef}>
+      <div className="tl-board-cards">
         {TIMELINE.map((item, i) => (
           <TimelineCard
             key={i}
@@ -2293,7 +2258,6 @@ function TimelineBoard() {
           />
         ))}
       </div>
-      <SlideDots containerRef={cardsWrapRef} count={TIMELINE.length} />
     </div>
   )
 }
@@ -2516,56 +2480,9 @@ function ContentBoardCard({ item, index, layout, setCardRef, total }) {
     </div>
   )
 }
-/* Même détection que RootApp.jsx (breakpoint 900px) pour rester
-   cohérent avec tout le reste du site. */
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(
-    () => typeof window !== 'undefined' && window.innerWidth <= 900
-  )
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 900px)')
-    const check = (e) => setIsMobile(e.matches)
-    mq.addEventListener('change', check)
-    return () => mq.removeEventListener('change', check)
-  }, [])
-  return isMobile
-}
-
-/* Auto-scroll horizontal retiré : Blog/Process/Services/Avis sont
-   maintenant des slides plein écran, navigation au swipe uniquement
-   (un auto-drift continu fighting le geste de l'utilisateur). */
-
-/* Pagination (points) pour une rangée de slides plein écran mobile —
-   suit le scroll du conteneur pour indiquer la carte active. Masqué en
-   desktop via CSS (ces sections n'y sont pas des slides swipées). */
-function SlideDots({ containerRef, count }) {
-  const [active, setActive] = useState(0)
-  useEffect(() => {
-    const el = containerRef.current
-    if (!el || count < 2) return
-    const onScroll = () => {
-      const idx = Math.round(el.scrollLeft / (el.clientWidth || 1))
-      setActive(Math.max(0, Math.min(count - 1, idx)))
-    }
-    el.addEventListener('scroll', onScroll, { passive: true })
-    onScroll()
-    return () => el.removeEventListener('scroll', onScroll)
-  }, [containerRef, count])
-
-  if (count < 2) return null
-  return (
-    <div className="slide-dots" role="tablist" aria-label="Navigation des cartes">
-      {Array.from({ length: count }).map((_, i) => (
-        <span key={i} className={`slide-dot${i === active ? ' slide-dot--active' : ''}`} aria-hidden="true" />
-      ))}
-    </div>
-  )
-}
-
 function InteractiveContentBoard({ items, variant }) {
   const boardRef = useRef(null)
   const spotlightRef = useRef(null)
-  const cardsWrapRef = useRef(null)
   const cardsRef = useRef([])
   const highestZRef = useRef(30)
   const draggingRef = useRef(null)
@@ -2676,12 +2593,11 @@ function InteractiveContentBoard({ items, variant }) {
     <div className={`tl-board content-board content-board--${variant}`} ref={boardRef}>
       <div className="tl-board-spotlight" ref={spotlightRef} aria-hidden="true" />
       <div className="tl-board-bgtext" aria-hidden="true"><span>{variant}</span><span>AKATECH</span></div>
-      <div className="tl-board-cards" ref={cardsWrapRef}>
+      <div className="tl-board-cards">
         {items.map((item, i) => (
           <ContentBoardCard key={`${variant}-${item.n || i}`} item={item} index={i} total={items.length} layout={layoutFor(i)} setCardRef={setCardRef} />
         ))}
       </div>
-      <SlideDots containerRef={cardsWrapRef} count={items.length} />
     </div>
   )
 }
@@ -3104,9 +3020,6 @@ function TestiCard({ t }) {
  renvoi vers le profil complet.
  ════════════════════════════════════════════ */
 function WritingSection() {
-  const isMobile = useIsMobile()
-  const blogMobileRef = useRef(null)
-
   return (
     <section id="writing-section" className="blog-cardswap-section" style={{ padding: '10vh 0 4vh', overflow: 'hidden' }}>
       <div
@@ -3146,31 +3059,6 @@ function WritingSection() {
           </a>
         </div>
 
-        {isMobile ? (
-          /* Mobile : CardSwap est en position absolue + tailles fixes en
-             px, ça ne reflow pas → remplacé par la même carte-grille
-             défilante (horizontal-scroll + auto-scroll) que Process et
-             Services. Desktop intact dans la branche ternaire ci-dessous. */
-          <div className="content-board content-board--blog blog-mobile-board mobile-scroll-board">
-            <div className="tl-board-cards" ref={blogMobileRef}>
-              {WRITING_POSTS.map((post) => (
-                <a
-                  key={post.id}
-                  href={post.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="tl-card blog-mobile-card"
-                >
-                  <span className="blog-mobile-tag">{post.tag}</span>
-                  <h3 className="blog-mobile-hook">{post.hook}</h3>
-                  <p className="content-board-desc">{post.excerpt}</p>
-                  <span className="blog-mobile-cta">Lire sur LinkedIn ↗</span>
-                </a>
-              ))}
-            </div>
-            <SlideDots containerRef={blogMobileRef} count={WRITING_POSTS.length} />
-          </div>
-        ) : (
         <div className="blog-cardswap-slot"
           style={{
             position: 'relative',
@@ -3266,7 +3154,6 @@ function WritingSection() {
             ))}
           </CardSwap>
         </div>
-        )}
         </div>
       </div>
     </section>
@@ -3274,9 +3161,6 @@ function WritingSection() {
 }
 
 function TestimonialsSection() {
-  const isMobile = useIsMobile()
-  const testiMobileRef = useRef(null)
-
   return (
     <section
       id="testimonials-section"
@@ -3299,7 +3183,7 @@ function TestimonialsSection() {
           <SectionHeading num="03" title="Avis" sub={`${TESTIMONIALS.length} avis clients`} style={{ marginBottom: '1.2rem' }} />
 
           <h3 style={{ fontSize: '.88rem', color: 'var(--muted)', lineHeight: 1.7 }}>
-            Chaque histoire client, racontée avec la même exigence que le projet.
+            Chaque carte défile automatiquement pour révéler une nouvelle histoire client.
           </h3>
 
           <div style={{ marginTop: '1.5rem', display: 'flex', gap: '.5rem', flexWrap: 'wrap' }}>
@@ -3321,40 +3205,6 @@ function TestimonialsSection() {
           </div>
         </div>
 
-        {isMobile ? (
-          /* Mobile : CardSwap est en position absolue + tailles fixes en
-             px, ça ne reflow pas → remplacé par la même carte-grille
-             défilante (horizontal-scroll + auto-scroll) que Blog, Process
-             et Services, comme pour Parcours. Desktop intact ci-dessous. */
-          <div className="content-board content-board--testimonials testi-mobile-board mobile-scroll-board">
-            <div className="tl-board-cards" ref={testiMobileRef}>
-              {TESTIMONIALS.map((t) => (
-                <div key={t.name} className="tl-card testi-mobile-card">
-                  <span className="testi-mobile-tag">{t.proj}</span>
-                  <div className="testi-mobile-stars">
-                    {Array.from({ length: 5 }).map((_, j) => (
-                      <svg key={j} viewBox="0 0 24 24" width="12" height="12">
-                        <polygon
-                          points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"
-                          fill="var(--accent)"
-                        />
-                      </svg>
-                    ))}
-                  </div>
-                  <p className="content-board-desc testi-mobile-quote">{t.text}</p>
-                  <div className="testi-mobile-footer">
-                    <div className="testi-mobile-avatar">{t.avatar}</div>
-                    <div>
-                      <div className="testi-mobile-name">{t.name}</div>
-                      <div className="testi-mobile-role">{t.role}</div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <SlideDots containerRef={testiMobileRef} count={TESTIMONIALS.length} />
-          </div>
-        ) : (
         <div
           style={{
             position: 'relative',
@@ -3478,7 +3328,6 @@ function TestimonialsSection() {
             ))}
           </CardSwap>
         </div>
-        )}
       </div>
     </section>
   )
@@ -3921,7 +3770,6 @@ function ContactSection({ onToast }) {
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
   const [btnTxt, setBtnTxt] = useState('Envoyer le message')
-  const [preferredContact, setPreferredContact] = useState('whatsapp')
 
   const handleSubmit = async e => {
     e.preventDefault(); setSending(true); setBtnTxt('Envoi en cours…')
@@ -3931,9 +3779,7 @@ function ContactSection({ onToast }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: e.target.name.value,
-          email: e.target.email?.value || '',
-          whatsapp: e.target.whatsapp?.value || '',
-          preferredContact,
+          email: e.target.email.value,
           projectType: e.target.projectType.value,
           message: e.target.message.value,
           company: e.target.company.value, // honeypot anti-spam — doit rester vide
@@ -4021,24 +3867,8 @@ function ContactSection({ onToast }) {
                 />
                 <div className="form-row">
                   <div className="form-field"><label>Nom complet *</label><input type="text" name="name" placeholder="Jean Kouassi" required /></div>
-                  <div className="form-field">
-                    <label>Contact préféré *</label>
-                    <select
-                      name="preferredContact"
-                      required
-                      value={preferredContact}
-                      onChange={e => setPreferredContact(e.target.value)}
-                    >
-                      <option value="whatsapp">Numéro WhatsApp</option>
-                      <option value="email">Email</option>
-                    </select>
-                  </div>
-                </div>
-                {preferredContact === 'whatsapp' ? (
-                  <div className="form-field"><label>Numéro WhatsApp *</label><input type="tel" name="whatsapp" placeholder="+225 01 42 50 77 50" required /></div>
-                ) : (
                   <div className="form-field"><label>Email *</label><input type="email" name="email" placeholder="jean@exemple.com" required /></div>
-                )}
+                </div>
                 <div className="form-field">
                   <label>Type de projet *</label>
                   <select name="projectType" required>
@@ -4351,7 +4181,6 @@ function Toast({ show }) {
 function CursorAndScrollBar() {
   useEffect(() => {
     const dot = document.getElementById('cursor-dot'), fill = document.getElementById('scroll-fill')
-    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches
     // BUG DE PERF corrigé : dot.style.left/top déclenchait un recalcul
     // de layout à CHAQUE pixel de déplacement de la souris, sur toute
     // la page, en continu — un des schémas les plus connus pour
@@ -4362,10 +4191,8 @@ function CursorAndScrollBar() {
     const onScroll = () => { const max = document.body.scrollHeight - window.innerHeight; if (fill) fill.style.transform = `scaleY(${window.scrollY / max})` }
     const expand = () => { if (dot) { dot.style.width = '16px'; dot.style.height = '16px' } }
     const shrink = () => { if (dot) { dot.style.width = '8px'; dot.style.height = '8px' } }
-    if (canHover) {
-      document.querySelectorAll('a,button,[role=button]').forEach(el => { el.addEventListener('mouseenter', expand); el.addEventListener('mouseleave', shrink) })
-      window.addEventListener('mousemove', onMouse)
-    }
+    document.querySelectorAll('a,button,[role=button]').forEach(el => { el.addEventListener('mouseenter', expand); el.addEventListener('mouseleave', shrink) })
+    window.addEventListener('mousemove', onMouse)
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => { window.removeEventListener('mousemove', onMouse); window.removeEventListener('scroll', onScroll) }
   }, [])

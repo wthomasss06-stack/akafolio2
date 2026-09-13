@@ -1399,7 +1399,7 @@ function Hero() {
             Développeur&nbsp;<span className="hero-word" style={{ color: '#ffffff', display: 'inline-block' }}>
               <span className="sh-cycle-wrap">
                 <span className="sh-cycle-inner" ref={rotating.innerRef}>
-                  {rotating.lines.map((l, i) => <span className="sh-cycle-line" key={i}>{l}</span>)}
+                  {rotating.lines.map((l, i) => <span className="sh-cycle-line" key={`${i}-${l}`}>{l}</span>)}
                 </span>
               </span>
             </span>

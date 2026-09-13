@@ -698,7 +698,14 @@
      color: rgba(242,237,232,0.55);
      display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
    }
-   .hero-word { font-weight: 800; color: #F2EDE8; border-bottom: 3px solid var(--accent); padding-bottom: 2px; }
+   .hero-word {
+     min-width: 15ch;
+     font-weight: 800;
+     color: #F2EDE8;
+     border-bottom: 3px solid var(--accent);
+     padding-bottom: 2px;
+     isolation: isolate;
+   }
    .hero-impact-line {
      font-family: 'JetBrains Mono', monospace; font-size: clamp(13px, 1.15vw, 15px);
      color: rgba(242,237,232,0.62); max-width: 460px; line-height: 1.6;

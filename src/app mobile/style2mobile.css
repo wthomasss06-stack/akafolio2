@@ -1009,11 +1009,15 @@
      overflow: hidden;
      white-space: nowrap;
      vertical-align: bottom;
+     contain: layout paint;
+     backface-visibility: hidden;
+     transform: translateZ(0);
    }
    .sh-cycle-inner {
      display: flex;
      flex-direction: column;
      will-change: transform;
+     backface-visibility: hidden;
    }
    .sh-cycle-line {
      display: block;
@@ -5052,7 +5056,7 @@
 .pe-overlay {
   position: fixed;
   inset: 0;
-  z-index: 950;
+  z-index: 1400;
   background: #020202;
   opacity: 0;
   visibility: hidden;
@@ -5159,22 +5163,22 @@
 .tunnel-modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 200;
+  z-index: 1;
   background: rgba(1,1,1,.82);
   backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6vh 6vw;
+  padding: 4vh 4vw;
   animation: tunnelModalFade .25s ease both;
 }
 @keyframes tunnelModalFade { from { opacity: 0; } to { opacity: 1; } }
 
 .tunnel-modal {
   position: relative;
-  width: min(1100px, 100%);
-  height: 88vh;
-  max-height: 88vh;
+  width: min(980px, 100%);
+  height: min(760px, calc(100vh - 8vh));
+  max-height: calc(100vh - 8vh);
   overflow: hidden;
   display: grid;
   grid-template-columns: 1.3fr 1fr;
@@ -5385,9 +5389,9 @@
 @media (max-width: 900px) {
   .tunnel-modal {
     grid-template-columns: 1fr;
-    grid-template-rows: 38vh 1fr;
-    height: 92vh;
-    max-height: 92vh;
+    grid-template-rows: minmax(170px, 30vh) 1fr;
+    height: min(760px, calc(100vh - 8vh));
+    max-height: calc(100vh - 8vh);
   }
   .tunnel-modal-image { height: 100%; min-height: 0; }
   .tunnel-modal-info { padding: 1.6rem 1.4rem 2rem; }

@@ -42,15 +42,16 @@ import dynamic from 'next/dynamic'
 // ── Les quatre portfolios — chargés à la demande, un seul monté à la fois.
 const AkatechApp = dynamic(() => import('./akatech/AKATECH.jsx'), { ssr: false, loading: () => <RootLoader /> })
 const DesktopApp = dynamic(() => import('./Appdesktop.jsx'), { ssr: false, loading: () => <RootLoader /> })
-const MobileApp  = dynamic(() => import('./app mobile/App2mobile.jsx'), { ssr: false, loading: () => <RootLoader /> })
+const MobileApp  = dynamic(() => import('./Appmobile.jsx'), { ssr: false, loading: () => <RootLoader /> })
+const MobileApp2 = dynamic(() => import('./app mobile/App2mobile.jsx'), { ssr: false, loading: () => <RootLoader /> })
 const Win95App   = dynamic(() => import('./Win95Portfolio.jsx'), { ssr: false, loading: () => <RootLoader /> })
 
 const MODE_KEY           = 'akafolio-mode-v2'
-const VALID_MODES        = ['akatech', 'app', 'appmobile', 'win95']
+const VALID_MODES        = ['akatech', 'app', 'appmobile', 'appmobile2', 'win95']
 const DESKTOP_ONLY_MODES = ['app']
-const MOBILE_ONLY_MODES  = ['appmobile']
-const DESKTOP_CYCLE = ['app', 'akatech', 'win95']
-const MOBILE_CYCLE  = ['appmobile', 'akatech', 'win95']
+const MOBILE_ONLY_MODES  = ['appmobile', 'appmobile2']
+const DESKTOP_CYCLE = ['app', 'win95', 'akatech']
+const MOBILE_CYCLE  = ['appmobile', 'appmobile2', 'win95', 'akatech']
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(
@@ -128,7 +129,8 @@ const switcherStyle = {
 const MODE_LABELS = {
   akatech:   { label: 'AKATech', short: 'AKATech', title: 'Passer au portfolio AKATech', accent: '#ff5500' },
   app:       { label: 'Moderne', short: 'App', title: 'Passer au mode AKATech', accent: '#f5f2ed' },
-  appmobile: { label: 'Mobile', short: 'App mobile', title: 'Passer au mode AKATech', accent: '#55c7ff' },
+  appmobile: { label: 'Mobile', short: 'Appmobile', title: 'Passer à App2mobile', accent: '#55c7ff' },
+  appmobile2: { label: 'Mobile', short: 'App2mobile', title: 'Passer au mode Win95', accent: '#55c7ff' },
   win95:     { label: 'Win95', short: 'Windows 95', title: 'Passer au mode AKATech', accent: '#f5f2ed' },
 }
 
@@ -255,12 +257,14 @@ export default function RootApp() {
           incompatibles. AKATECH gère sa propre CSS scopée (import direct
           dans AKATECH.jsx), donc rien à toggler ici pour ce mode. */}
       <link rel="stylesheet" href="/styles/styledesktop.compiled.css" disabled={mode !== 'app'} />
-      <link rel="stylesheet" href="/styles/style2mobile.compiled.css" disabled={mode !== 'appmobile'} />
+      <link rel="stylesheet" href="/styles/stylemobile.compiled.css" disabled={mode !== 'appmobile'} />
+      <link rel="stylesheet" href="/styles/style2mobile.compiled.css" disabled={mode !== 'appmobile2'} />
 
-      {mode === 'akatech'   && <AkatechApp />}
-      {mode === 'win95'     && <div style={{ height: '100%' }}><Win95App /></div>}
-      {mode === 'appmobile' && <MobileApp />}
-      {mode === 'app'       && <DesktopApp />}
+      {mode === 'appmobile'  && <MobileApp />}
+      {mode === 'appmobile2' && <MobileApp2 />}
+      {mode === 'win95'      && <div style={{ height: '100%' }}><Win95App /></div>}
+      {mode === 'akatech'    && <AkatechApp />}
+      {mode === 'app'        && <DesktopApp />}
       <SwitcherBtn mode={mode} cycle={cycle} onToggle={toggle} isMobile={isMobile} />
     </div>
   )

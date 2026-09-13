@@ -18,7 +18,9 @@ export default function SectionHeading({ num, title, sub, className = '' }) {
     const el = ref.current
     if (!el) return undefined
     const ctx = gsap.context(() => {
-      gsap.from(el.querySelectorAll('.akatech-sh-title, .akatech-sh-num, .akatech-sh-sub'), {
+      const targets = el.querySelectorAll('.akatech-sh-title, .akatech-sh-num, .akatech-sh-sub')
+      if (!targets.length) return
+      gsap.from(targets, {
         opacity: 0,
         y: 24,
         duration: 0.7,

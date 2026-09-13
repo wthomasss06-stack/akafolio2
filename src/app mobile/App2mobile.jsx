@@ -218,15 +218,17 @@ function useSHNameCycle(text) {
 function useSHRotatingCycle(texts, interval = 2500) {
   const innerRef = useRef(null)
   const tweenRef = useRef(null)
+  const frameRef = useRef(null)
   const idxRef = useRef(0)
   const [lines, setLines] = useState([texts[0]])
 
   const runCycle = useCallback(() => {
+    if (!texts.length) return
     const text = texts[idxRef.current]
     tweenRef.current?.kill()
     const seq = shBuildCycleSequence(true, text, 2)
     setLines(seq)
-    requestAnimationFrame(() => {
+    frameRef.current = requestAnimationFrame(() => {
       const inner = innerRef.current
       if (!inner) return
       gsap.set(inner, { yPercent: 0 })
@@ -246,7 +248,11 @@ function useSHRotatingCycle(texts, interval = 2500) {
       idxRef.current = (idxRef.current + 1) % texts.length
       runCycle()
     }, interval)
-    return () => clearInterval(timer)
+    return () => {
+      clearInterval(timer)
+      if (frameRef.current) cancelAnimationFrame(frameRef.current)
+      tweenRef.current?.kill()
+    }
   }, [runCycle, texts, interval])
 
   return { innerRef, lines }

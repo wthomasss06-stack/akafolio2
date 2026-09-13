@@ -41,8 +41,8 @@ import dynamic from 'next/dynamic'
 
 // ── Les quatre portfolios — chargés à la demande, un seul monté à la fois.
 const AkatechApp = dynamic(() => import('./akatech/AKATECH.jsx'), { ssr: false, loading: () => <RootLoader /> })
-const ModernApp  = dynamic(() => import('./App.jsx'), { ssr: false, loading: () => <RootLoader /> })
-const AppMobile  = dynamic(() => import('./Appmobile.jsx'), { ssr: false, loading: () => <RootLoader /> })
+const DesktopApp = dynamic(() => import('./Appdesktop.jsx'), { ssr: false, loading: () => <RootLoader /> })
+const MobileApp  = dynamic(() => import('./app mobile/App2mobile.jsx'), { ssr: false, loading: () => <RootLoader /> })
 const Win95App   = dynamic(() => import('./Win95Portfolio.jsx'), { ssr: false, loading: () => <RootLoader /> })
 
 const MODE_KEY           = 'akafolio-mode-v2'
@@ -254,13 +254,13 @@ export default function RootApp() {
           --fd, --fb, --muted etc. portent les mêmes noms avec des valeurs
           incompatibles. AKATECH gère sa propre CSS scopée (import direct
           dans AKATECH.jsx), donc rien à toggler ici pour ce mode. */}
-      <link rel="stylesheet" href="/styles/style.compiled.css" disabled={mode !== 'app'} />
-      <link rel="stylesheet" href="/styles/stylemobile.compiled.css" disabled={mode !== 'appmobile'} />
+      <link rel="stylesheet" href="/styles/styledesktop.compiled.css" disabled={mode !== 'app'} />
+      <link rel="stylesheet" href="/styles/style2mobile.compiled.css" disabled={mode !== 'appmobile'} />
 
       {mode === 'akatech'   && <AkatechApp />}
       {mode === 'win95'     && <div style={{ height: '100%' }}><Win95App /></div>}
-      {mode === 'appmobile' && <AppMobile />}
-      {mode === 'app'       && <ModernApp />}
+      {mode === 'appmobile' && <MobileApp />}
+      {mode === 'app'       && <DesktopApp />}
       <SwitcherBtn mode={mode} cycle={cycle} onToggle={toggle} isMobile={isMobile} />
     </div>
   )

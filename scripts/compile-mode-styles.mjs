@@ -41,8 +41,8 @@ import autoprefixer from 'autoprefixer'
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)))
 
 const JOBS = [
-  ['src/style.css', 'public/styles/style.compiled.css'],
-  ['src/stylemobile.css', 'public/styles/stylemobile.compiled.css'],
+  ['src/styledesktop.css', 'public/styles/styledesktop.compiled.css'],
+  ['src/app mobile/style2mobile.css', 'public/styles/style2mobile.compiled.css'],
 ]
 
 const processor = postcss([tailwindcss(), autoprefixer()])

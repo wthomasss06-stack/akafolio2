@@ -69,8 +69,7 @@ export default function Page() {
 
         <h2>Tarifs (à partir de)</h2>
         <ul>
-          <li>Portfolio — à partir de 100 000 FCFA</li>
-          <li>Site Vitrine — à partir de 220 000 FCFA</li>
+          <li>Site Vitrine — à partir de 150 000 FCFA</li>
           <li>Boutique E-commerce — à partir de 450 000 FCFA</li>
           <li>Application Web / SaaS — sur devis, après diagnostic gratuit</li>
         </ul>

@@ -11,10 +11,14 @@
 // dans App.jsx (vérifié plus récent/complet que Win95Portfolio.jsx
 // sur PROJECTS, PRICING_TABS et FAQ_ITEMS — voir notes dans le chat).
 //
-// Contenu volontairement PAS encore inclus (à discuter avant de
-// centraliser, car les versions divergent sur le fond, pas juste
-// la forme) : SERVICES vs SERVICES_DATA, PROCESS_STEPS,
-// TESTIMONIALS, ABOUT_STATS.
+// Mis à jour le 2026-09-19 : PRICING_TABS, SERVICES, SERVICES_MOBILE_COPY
+// et PROCESS_STEPS sont alignés sur data.js (site AKATech, 2026-09-16) et
+// centralisés ici — Appdesktop.jsx, Appmobile.jsx et App2mobile.jsx ne les
+// redéfinissent plus, ils les importent.
+//
+// Contenu volontairement PAS encore inclus (les versions divergent sur
+// le fond, pas juste la forme) : SERVICES_DATA (Win95Portfolio.jsx, ancien
+// catalogue), TESTIMONIALS, ABOUT_STATS.
 // ════════════════════════════════════════════════════════════════
 
 import { cld } from '../lib/cloudinary.js'
@@ -173,7 +177,7 @@ export const PROJECTS = [
     id: 19, title: 'Chez Florence', sub: 'Vente & Réservation de Lapins', cat: 'en-ligne', img: cld('/assets/images/projects/chez-florence-preview.webp'), responsive: cld('/assets/images/projects/chez-florence-responsive.webp'), responsive2: cld('/assets/images/projects/chez-florence-responsive2.webp'), imgFb: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=600', tech: ['Next.js 14', 'Express.js', 'Prisma', 'PostgreSQL (Neon)', 'Cloudinary'], url: 'https://chez-florence.vercel.app/', github: 'https://github.com/wthomasss06-stack/lapinou', desc: "Plateforme web complète pour vente et réservation de lapins : fiches par race, stock temps réel, réservation en ligne, notifications WhatsApp et administration sécurisée.", year: '2026',
     problem: "Les sites d'élevage étaient trop similaires et incapables de convertir les visiteurs en clients tout en gérant le stock et les réservations en temps réel.",
     solution: "Application Next.js / Express avec fiches détaillées par race, sélection de quantité, stock synchronisé, ouverture automatique de WhatsApp et tableau de bord admin pour gérer les stocks, les réservations et les ventes.",
-        result: "PWA installable en production, centralise les réservations et le stock, rend l'achat plus rapide et automatise la conversion client via WhatsApp et notification admin."  
+    result: "PWA installable en production, centralise les réservations et le stock, rend l'achat plus rapide et automatise la conversion client via WhatsApp et notification admin."
   },
   {
     id: 20,
@@ -193,54 +197,33 @@ export const PROJECTS = [
     result: "Produit déployé sur Vercel avec backend Render et PostgreSQL : première analyse gratuite, diagnostic explicable et préparation complète en quelques minutes, sans abonnement obligatoire.",
   },
 ]
+// ─── Tarifs ─────────────────────────────────────────────────────
+// Aligné sur data.js (PRICING, site AKATech, 2026-09-16) : mêmes 4 onglets
+// (vitrine, ecommerce, saas, gbp), paliers, prix, délais et contenus.
+// L'ancien onglet « portfolio » (100 000 / 175 000 / 275 000 FCFA) est retiré,
+// comme dans data.js : le portfolio se vend désormais via Site Vitrine.
+// Chaque row doit avoir autant de cells que de plans (Appdesktop filtre sur
+// `!== false` : une cellule manquante ferait apparaître la ligne).
 export const PRICING_TABS = [
-  {
-    key: 'portfolio', label: 'Portfolio',
-    plans: [
-      { title: 'Starter', price: '100 000 FCFA', delivery: '5 à 7 jours' },
-      { title: 'Standard', price: '175 000 FCFA', delivery: '7 à 10 jours', isPopular: true },
-      { title: 'Premium', price: '275 000 FCFA', delivery: '10 à 14 jours' },
-    ],
-    rows: [
-      { label: 'Nombre de pages', cells: ['3 pages', '5 pages', 'Illimité'] },
-      { label: 'Design responsive', cells: [true, true, true] },
-      { label: 'Animations modernes', cells: [false, true, true] },
-      { label: 'Section projets', cells: [true, true, true] },
-      { label: 'Formulaire contact', cells: [true, true, true] },
-      { label: 'SEO', cells: [false, 'SEO de base', 'SEO + AEO/GEO'] },
-      { label: 'CRO (CTA + preuve sociale)', cells: [false, false, true] },
-      { label: 'Projets détaillés', cells: [false, true, true] },
-      { label: 'Design personnalisé', cells: [false, false, true] },
-      { label: 'Blog intégré', cells: [false, false, true] },
-      { label: 'Optimisation perf. (SXO)', cells: [false, false, true] },
-      { label: 'Nom de domaine (1 an)', cells: [true, true, true] },
-      { label: 'Hébergement (1 an)', cells: [true, true, true] },
-      { label: 'Support', cells: [false, false, '1 mois'] },
-      { label: 'Maintenance mensuelle', cells: ['20 000 à 40 000/mois', '20 000 à 40 000/mois', '20 000 à 40 000/mois'] },
-    ],
-  },
   {
     key: 'vitrine', label: 'Site Vitrine',
     plans: [
-      { title: 'Starter', price: '220 000 FCFA', delivery: '7 à 10 jours' },
-      { title: 'Pro', price: '350 000 FCFA', delivery: '10 à 14 jours', isPopular: true },
-      { title: 'Elite', price: '550 000 FCFA', delivery: '14 à 21 jours' },
+      { title: 'Landing', price: '150 000 FCFA', delivery: '5 à 7 jours' },
+      { title: 'Starter', price: '250 000 FCFA', delivery: '7 à 10 jours', isPopular: true },
+      { title: 'Premium', price: '550 000 FCFA', delivery: '10 à 14 jours' },
     ],
     rows: [
-      { label: 'Nombre de pages', cells: ['5 pages', '10 pages', '15–20 pages'] },
+      { label: 'Nombre de pages', cells: ['1 page (présentation, services, CTA)', '4 à 6 pages', '10 à 15 pages'] },
       { label: 'Design responsive', cells: [true, true, true] },
-      { label: 'Design premium', cells: [false, true, true] },
-      { label: 'Design sur mesure', cells: [false, false, true] },
-      { label: 'Formulaire contact', cells: [true, true, true] },
-      { label: 'SEO', cells: ['Base', 'Avancé (SEO + AEO)', 'SEO + AEO + GEO + Analytics'] },
-      { label: 'CRO (CTA + preuve sociale)', cells: [false, true, true] },
-      { label: 'Optimisation SXO', cells: [false, true, true] },
-      { label: 'Blog intégré', cells: [false, true, true] },
-      { label: 'CMS complet', cells: [false, false, true] },
+      { label: 'Design sur mesure', cells: [false, true, true] },
+      { label: 'Formulaire de contact', cells: ['WhatsApp', true, true] },
+      { label: 'SEO', cells: [false, 'Base', 'SEO + AEO'] },
+      { label: 'Blog intégré', cells: [false, false, true] },
+      { label: 'Animations avancées', cells: [false, false, true] },
       { label: 'Nom de domaine (1 an)', cells: [true, true, true] },
-      { label: 'Hébergement (1 an)', cells: [false, true, true] },
-      { label: 'Support', cells: ['1 mois', '3 mois', '6 mois'] },
-      { label: 'Formation', cells: [false, '2h', 'Complète'] },
+      { label: 'Hébergement (1 an)', cells: [true, true, true] },
+      { label: 'Support', cells: ['1 mois', '2 mois', '3 mois'] },
+      { label: 'Formation', cells: [false, false, '2h'] },
       { label: 'Maintenance mensuelle', cells: ['20 000 à 40 000/mois', '20 000 à 40 000/mois', '20 000 à 40 000/mois'] },
       { label: 'Page supp.', cells: ['15 000 à 25 000 FCFA', '15 000 à 25 000 FCFA', '15 000 à 25 000 FCFA'] },
     ],
@@ -250,7 +233,7 @@ export const PRICING_TABS = [
     plans: [
       { title: 'Starter', price: '450 000 FCFA', delivery: '1 mois à 1 mois 2 semaines' },
       { title: 'Pro', price: '750 000 FCFA', delivery: '1 mois à 1 mois 2 semaines', isPopular: true },
-      { title: 'Elite', price: '1 200 000 FCFA', delivery: '1 mois à 1 mois 2 semaines' },
+      { title: 'Elite', price: '1 500 000 FCFA', delivery: '1 mois à 1 mois 2 semaines' }, // 1 200 000 → 1 500 000 (data.js, sept. 2026)
     ],
     rows: [
       { label: 'Produits', cells: ["Jusqu'à 50", '200–500', 'Illimités'] },
@@ -275,23 +258,40 @@ export const PRICING_TABS = [
   },
   {
     key: 'saas', label: 'App Web / SaaS',
+    // 3 archétypes en fourchettes (data.js, étude de marché sept. 2026) à la place
+    // de l'ancien palier unique « Sur devis ». Le diagnostic gratuit et le devis
+    // sous 48h (anciennes lignes de l'onglet) sont conservés en fin de liste.
+    // Milliers des fourchettes séparés par des espaces insécables (\u00a0) : sinon le
+    // prix se coupe au milieu d'un nombre (« 1 000 / 000 FCFA ») dans les cartes.
     plans: [
-      {
-        title: 'Sur devis', price: 'Étude personnalisée', delivery: 'Après diagnostic gratuit',
-        desc: "Chaque projet SaaS est unique. J'étudie la complexité réelle (architecture, intégrations, sécurité, volume) avant de donner un prix juste et engageant."
-      },
+      { title: 'MVP / Outil métier', price: '600\u00a0000 – 1\u00a0000\u00a0000 FCFA', delivery: '3 à 5 semaines' },
+      { title: 'Plateforme + abonnement', price: '1\u00a0200\u00a0000 – 2\u00a0200\u00a0000 FCFA', delivery: '6 à 10 semaines', isPopular: true },
+      { title: 'Marketplace multi-acteurs', price: '2\u00a0500\u00a0000 – 4\u00a0500\u00a0000 FCFA', delivery: '10 à 16 semaines' },
     ],
     rows: [
-      { label: 'Diagnostic gratuit de votre besoin', cells: [true] },
-      { label: 'Authentification + rôles', cells: [true] },
-      { label: 'API REST', cells: [true] },
-      { label: 'Dashboard sur mesure', cells: [true] },
-      { label: 'Intégrations tierces (paiement, email…)', cells: [true] },
-      { label: 'Multi-tenant (si besoin)', cells: [true] },
-      { label: 'Onboarding optimisé (CRO)', cells: [true] },
-      { label: 'Déploiement cloud', cells: [true] },
-      { label: 'Devis détaillé sous 48h', cells: [true] },
-      { label: 'Accompagnement post-lancement', cells: [true] },
+      { label: "1 à 2 types d'utilisateurs (utilisateur + admin)", cells: [true, false, false] },
+      { label: 'Authentification simple', cells: [true, false, false] },
+      { label: 'Tableau de bord basique', cells: [true, false, false] },
+      { label: '1 workflow métier principal automatisé', cells: [true, false, false] },
+      { label: 'Export de données (PDF, Excel)', cells: [true, false, false] },
+      { label: 'Comptes utilisateurs avec rôles (client / admin)', cells: [false, true, false] },
+      { label: 'Paiement récurrent + Mobile Money', cells: [false, true, false] },
+      { label: 'Dashboard utilisateur + back-office admin', cells: [false, true, false] },
+      { label: 'Notifications (email, WhatsApp)', cells: [false, true, false] },
+      { label: 'Intégrations tierces (paiement, emailing)', cells: [false, true, false] },
+      { label: "Plusieurs types d'utilisateurs (client, vendeur/prestataire, admin)", cells: [false, false, true] },
+      { label: 'Rôles et permissions avancés, multi-tenant si besoin', cells: [false, false, true] },
+      { label: 'Paiement avec répartition entre acteurs', cells: [false, false, true] },
+      { label: 'Géolocalisation / suivi temps réel si pertinent', cells: [false, false, true] },
+      { label: 'Notifications multi-canal temps réel', cells: [false, false, true] },
+      { label: 'Dashboard analytics avancé', cells: [false, false, true] },
+      { label: 'API pour intégrations futures', cells: [false, false, true] },
+      { label: 'Nom de domaine offert (1 an)', cells: [true, true, true] },
+      { label: 'Hébergement inclus (1 an)', cells: [true, true, true] },
+      { label: 'Support', cells: ['1 mois', '3 mois', '6 mois'] },
+      { label: 'Formation', cells: [false, 'Admin', 'Équipe'] },
+      { label: 'Diagnostic gratuit de votre besoin', cells: [true, true, true] },
+      { label: 'Devis détaillé sous 48h', cells: [true, true, true] },
     ],
   },
   {
@@ -433,6 +433,77 @@ PRICING_TABS.forEach(tab => {
   })
 })
 
+// ─── Services ────────────────────────────────────────────────────
+// Aligné sur data.js (SERVICES, site AKATech, 2026-09-16) : mêmes 6 offres, même
+// ordre. « API & Backend » n'y figure plus (retiré du catalogue) ; IA Chatbot et
+// Paiement en ligne y sont ajoutés. Champs propres au portfolio : `sub`, `icon`
+// (clé de LI_ICONS dans Appmobile.jsx — une clé inconnue n'affiche rien), `desc`
+// condensée (cartes : 3 lignes max) et 3 features (les 3 premières de data.js ;
+// liste limitée à ~78 px). `img` : uniquement des visuels déjà présents dans
+// cloudinaryVersions.js — ceux de data.js pour l'IA et le paiement n'y sont pas
+// (aucun des 3 portfolios ne lit service.img aujourd'hui).
+export const SERVICES = [
+  {
+    n: '01', icon: 'globe', title: 'Conception de Site Web',
+    sub: 'Votre présence en ligne professionnelle',
+    desc: 'Création de sites web modernes, responsive et optimisés pour convertir vos visiteurs en clients.',
+    img: cld('/assets/images/service/creation de site web.webp'),
+    features: ['Design sur-mesure', 'SEO optimisé', 'Formulaire de contact'],
+  },
+  {
+    n: '02', icon: 'chart-bar', title: 'Cartes Interactives & Dashboards',
+    sub: 'Cartes Mapbox et visualisation de données',
+    desc: 'Intégration de cartes interactives Mapbox / Leaflet et de dashboards de visualisation de données.',
+    img: cld('/assets/images/service/dasbord.webp'),
+    features: ['Cartes Mapbox / Leaflet', 'Dashboards data temps réel', 'Filtres et exports'],
+  },
+  {
+    n: '03', icon: 'tools', title: 'Maintenance & Support',
+    sub: 'Votre projet performant, sécurisé et à jour',
+    desc: 'Suivi technique, corrections de bugs, mises à jour de sécurité et améliorations continues.',
+    img: cld('/assets/images/service/maintenence.webp'),
+    features: ['Mises à jour régulières', 'Corrections de bugs', 'Sauvegardes automatiques'],
+  },
+  {
+    n: '04', icon: 'map-marked-alt', title: 'Fiche Google My Business',
+    sub: 'Soyez visible sur Google Maps et la recherche locale',
+    desc: 'Création ou optimisation de votre fiche Google et suivi mensuel : avis, publications et statistiques.',
+    img: cld('/assets/images/service/fiche-google.webp'),
+    features: ['Création ou optimisation', 'SEO local (NAP)', 'Photos & description'],
+  },
+  {
+    n: '05', icon: 'comment-dots', title: 'Intégration IA Chatbot',
+    sub: 'Un assistant qui guide vos visiteurs 24h/24',
+    desc: 'Un chatbot conversationnel intégré à votre site pour interagir avec vos visiteurs et les guider.',
+    features: ['Assistant conversationnel sur-mesure', 'Qualification automatique des visiteurs', 'Réponses sur vos services et tarifs'],
+  },
+  {
+    n: '06', icon: 'credit-card', title: 'Intégration de Paiement en Ligne',
+    sub: 'Encaissez en ligne sans friction',
+    desc: 'Intégration de paiement sur votre site : Mobile Money (Orange Money, MTN MoMo, Wave) et carte bancaire.',
+    features: ['Orange Money / MTN MoMo / Wave', 'Carte bancaire (selon besoin)', 'Suivi des transactions'],
+  },
+]
+
+// Version « carte » (board desktop, App2mobile) : mêmes champs sans icon/img,
+// dérivée de SERVICES pour ne maintenir qu'une seule liste.
+export const SERVICES_MOBILE_COPY = SERVICES.map(({ n, title, sub, desc, features }) => ({ n, title, sub, desc, features }))
+
+// ─── Process ─────────────────────────────────────────────────────
+// Les 6 étapes du contrat de prestation AKATech (data.js PROCESS_STEPS, source
+// canonique : texte repris tel quel, à la voix « nous »). Auparavant 7 étapes
+// (« Solde payé » et « Mise en ligne & Support » sont fusionnées en « Livraison
+// & suivi »). `tag`, `img` et `imgAlt` sont propres au portfolio : les images sont
+// celles déjà sur Cloudinary (les process_akatech_* de data.js n'y existent pas).
+export const PROCESS_STEPS = [
+  { n: '01', title: 'Brief & découverte', tag: '1 à 2 jours', desc: 'Nous échangeons sur votre projet, vos objectifs et vos besoins. Premier échange gratuit et sans engagement.', img: cld('/assets/images/process/prise de contact.webp'), imgAlt: 'Brief et découverte' },
+  { n: '02', title: 'Devis & contrat', tag: '1 jour', desc: 'Nous définissons le périmètre, le prix et le délai, puis validons le projet ensemble.', img: cld('/assets/images/process/devis et condition.webp'), imgAlt: 'Devis et contrat' },
+  { n: '03', title: 'Acompte & contenus', tag: 'Feu vert', desc: "Vous versez 50 % d'acompte et transmettez les éléments nécessaires (logo, informations, visuels...). Le délai démarre lorsque l'acompte et les contenus sont reçus.", img: cld('/assets/images/process/acompte.webp'), imgAlt: 'Acompte et contenus' },
+  { n: '04', title: 'Conception & développement', tag: 'Délai annoncé', desc: 'Nous concevons et développons votre projet conformément au devis.', img: cld('/assets/images/process/creation du site.webp'), imgAlt: 'Conception et développement' },
+  { n: '05', title: 'Prévisualisation & validation', tag: '1 à 2 jours', desc: 'Vous recevez un lien de prévisualisation, testez le projet, et nous effectuons les corrections mineures incluses.', img: cld('/assets/images/process/livraison.webp'), imgAlt: 'Prévisualisation et validation' },
+  { n: '06', title: 'Livraison & suivi', tag: 'Projet livré', desc: 'Après paiement du solde, le projet est mis en ligne et les accès sont transmis. La période de garantie/support commence ensuite.', img: cld('/assets/images/process/mise en ligne.webp'), imgAlt: 'Livraison et suivi' },
+]
+
 // Version App.jsx : 14 questions orientées process de commande.
 // Win95Portfolio.jsx n'a que 5 questions génériques et mentionne
 // encore un prix de départ à 60 000 FCFA (obsolète) — à remplacer
@@ -506,7 +577,7 @@ export const NAV_LINKS = [
   { id: 'home', label: 'Accueil', num: '00', sub: "M'Bollo Aka" },
   { id: 'story', label: 'Mon histoire', num: '01', sub: 'Pourquoi autodidacte' },
   { id: 'method', label: 'Ma méthode', num: '02', sub: 'Comment je travaille' },
-    { id: 'projects', label: 'Projets', num: '03', sub: `${PROJECTS.length} réalisations` },
+  { id: 'projects', label: 'Projets', num: '03', sub: `${PROJECTS.length} réalisations` },
 
   { id: 'sandbox', label: 'Bac à sable', num: '04', sub: 'Expérimentations' },
   { id: 'services', label: 'Services', num: '05', sub: 'Prestations & tarifs' },

@@ -9,7 +9,7 @@ import MobileLoader from './components/MobileLoader.jsx';
 import { gsap } from 'gsap';
 import SoundToggle from './components/SoundToggle.jsx';
 import { useImmersiveSound } from './hooks/useImmersiveSound.js';
-import { PROJECTS, PRICING_TABS, FAQ_ITEMS, WRITING_POSTS, CONTACT } from './data/portfolioData.js';
+import { PROJECTS, PRICING_TABS, FAQ_ITEMS, WRITING_POSTS, CONTACT, SERVICES, PROCESS_STEPS } from './data/portfolioData.js';
 import { cld } from './lib/cloudinary'
 
 
@@ -284,6 +284,10 @@ const LI_ICONS = {
   'graduation-cap': (C, sw) => (<svg viewBox="0 0 24 24" fill="none" stroke={C} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round"><polygon points="12 3 22 8 12 13 2 8 12 3" fill={C} fillOpacity=".18" /><path d="M6 10.5V16c0 1.5 2.5 3 6 3s6-1.5 6-3v-5.5" /><path className="li-pin" d="M22 8v6" /></svg>),
   /* ── SCHOOL — bâtiment scolaire, porte qui pulse (Parcours : bac) ── */
   school: (C, sw) => (<svg viewBox="0 0 24 24" fill="none" stroke={C} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round"><path d="M3 10.5L12 4l9 6.5" /><rect x="4.5" y="10.5" width="15" height="10.5" rx="1" fill={C} fillOpacity=".08" /><rect className="li-w2" x="10.5" y="14" width="3" height="7" fill={C} fillOpacity=".5" stroke="none" /><line x1="2.5" y1="21" x2="21.5" y2="21" /></svg>),
+  /* ── COMMENT-DOTS — bulle de chat + 3 points (service IA Chatbot) ── */
+  'comment-dots': (C, sw) => (<svg viewBox="0 0 24 24" fill="none" stroke={C} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round"><g className="li-cart"><path d="M12 3.5a8.5 8.5 0 1 1-3.9 16.06L3.5 21l1.4-4.3A8.5 8.5 0 0 1 12 3.5z" fill={C} fillOpacity=".1" /><circle cx="8.5" cy="12" r="1" fill={C} stroke="none" /><circle cx="12" cy="12" r="1" fill={C} stroke="none" /><circle cx="15.5" cy="12" r="1" fill={C} stroke="none" /></g></svg>),
+  /* ── CREDIT-CARD — carte bancaire (service Paiement en ligne) ── */
+  'credit-card': (C, sw) => (<svg viewBox="0 0 24 24" fill="none" stroke={C} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round"><g className="li-cart"><rect x="2" y="5" width="20" height="14" rx="3" fill={C} fillOpacity=".1" /><line x1="2" y1="10" x2="22" y2="10" /><line x1="6" y1="15" x2="10" y2="15" /></g></svg>),
 };
 
 
@@ -389,24 +393,8 @@ const WindowChrome = ({ title, dark, inner = false }) => (
 const FACEBOOK_URL = "https://web.facebook.com/profile.php?id=61577494705852";
 
 
-const SERVICES = [
-  { n: "01", icon: "globe", title: "Conception de Site Web", sub: "Votre présence en ligne professionnelle", desc: "Création de sites web modernes, responsive et optimisés pour convertir vos visiteurs en clients.", img: cld("/assets/images/service/creation de site web.webp"), features: ["Sites responsive & modernes", "Optimisés pour la conversion", "Du portfolio à l'e-commerce"] },
-  { n: "02", icon: "chart-bar", title: "Cartes Interactives & Dashboards", sub: "Cartes Mapbox et visualisation de données", desc: "Intégration de cartes interactives Mapbox / Leaflet et de dashboards de visualisation de données.", img: cld("/assets/images/service/dasbord.webp"), features: ["Cartes Mapbox / Leaflet", "Dashboards de données", "Interfaces lisibles & actionnables"] },
-  { n: "03", icon: "server", title: "API & Backend Robustes", sub: "Connectez et automatisez vos systèmes", desc: "Conception d'API RESTful sécurisées avec Django ou Flask, auth JWT et déploiement.", img: cld("/assets/images/service/api.webp"), features: ["API RESTful Django / Flask", "Auth JWT & gestion des rôles", "Intégration Mobile Money"] },
-  { n: "04", icon: "tools", title: "Maintenance & Support", sub: "Votre projet performant, sécurisé et à jour", desc: "Suivi technique, corrections de bugs, mises à jour de sécurité et améliorations continues.", img: cld("/assets/images/service/maintenence.webp"), features: ["Suivi technique continu", "Mises à jour de sécurité", "Améliorations sur la durée"] },
-  { n: "05", icon: "map-marked-alt", title: "Fiche Google My Business", sub: "Soyez visible sur Google Maps et la recherche locale", desc: "Création ou optimisation de votre fiche Google et suivi mensuel : avis, publications et statistiques.", img: cld("/assets/images/service/fiche-google.webp"), features: ["Création ou optimisation de la fiche", "Description optimisée SEO local", "Suivi mensuel : avis & statistiques"] },
-];
-
-/* ─── Processus A à Z — de l'acompte à la livraison ─── */
-const PROCESS_STEPS = [
-  { n: "01", title: "Prise de contact & Brief", tag: "1 à 2 jours", desc: "On discute de votre projet : besoins, objectifs, exemples qui vous plaisent. Je vous propose ensuite le pack le plus adapté.", img: cld("/assets/images/process/prise de contact.webp"), imgAlt: "Prise de contact et brief" },
-  { n: "02", title: "Devis & Conditions", tag: "1 jour", desc: "Je vous envoie un devis clair : prix total, acompte de 50%, délai de livraison et liste des prestations incluses.", img: cld("/assets/images/process/devis et condition.webp"), imgAlt: "Devis et conditions" },
-  { n: "03", title: "Acompte reçu", tag: "Feu vert", desc: "Une fois l'acompte versé, je récupère vos contenus — logo, textes, photos — et je lance le développement.", img: cld("/assets/images/process/acompte.webp"), imgAlt: "Acompte reçu" },
-  { n: "04", title: "Création du site", tag: "Délai annoncé", desc: "Je construis votre site de A à Z : pages, design responsive, animations, formulaire de contact, SEO de base. J'active aussi l'hébergement et le nom de domaine.", img: cld("/assets/images/process/creation du site.webp"), imgAlt: "Création du site" },
-  { n: "05", title: "Livraison & Validation", tag: "1 à 2 jours", desc: "Vous testez le site sur un lien de prévisualisation et me partagez vos retours avant la mise en ligne.", img: cld("/assets/images/process/livraison.webp"), imgAlt: "Livraison et validation" },
-  { n: "06", title: "Solde payé", tag: "Fichiers transmis", desc: "Une fois le solde réglé, je vous transmets les fichiers sources, les accès à l'hébergement et au nom de domaine, plus le mot de passe d'administration.", img: cld("/assets/images/process/solde.webp"), imgAlt: "Solde payé" },
-  { n: "07", title: "Mise en ligne & Support", tag: "Projet livré", desc: "Votre site est en ligne. Un mois de support est inclus selon le pack, et je reste disponible pour le renouvellement après la première année.", img: cld("/assets/images/process/mise en ligne.webp"), imgAlt: "Mise en ligne et support" },
-];
+/* SERVICES et PROCESS_STEPS : source unique dans src/data/portfolioData.js
+   (alignée sur data.js) — importés en tête de fichier. */
 
 /* ─── Questions fréquentes ─── */
 
@@ -2194,7 +2182,7 @@ const PortfolioPricingFeature = AnimPricingFeature;
 
 const LUCIDE_TAB_ICONS = { Globe: SvgGlobe, ShoppingCart: SvgShoppingCart, Cpu: SvgCpu, Star: SvgStar };
 const ANIM_TAB_ICONS = { Globe: () => <PricingAnimIcon type="globe" size={15} />, ShoppingCart: () => <PricingAnimIcon type="cart" size={15} />, Cpu: () => <PricingAnimIcon type="code" size={15} />, Star: () => <PricingAnimIcon type="star" size={15} />, GMap: () => <PricingAnimIcon type="map" size={15} /> };
-const TAB_SUBTITLES = { vitrine: "Pour présenter votre activité avec élégance.", ecommerce: "Pour vendre en ligne et gérer vos commandes.", saas: "Pour des applications web complètes sur-mesure.", portfolio: "Pour mettre en valeur vos réalisations.", gbp: "Pour être visible sur Google Maps & la recherche locale." };
+const TAB_SUBTITLES = { vitrine: "Pour présenter votre activité avec élégance.", ecommerce: "Pour vendre en ligne et gérer vos commandes.", saas: "Pour des applications web complètes sur-mesure.", gbp: "Pour être visible sur Google Maps & la recherche locale." };
 
 const PricingTabs = ({ dark }) => {
   const [activeTab, setActiveTab] = useState(0); const [animKey, setAnimKey] = useState(0);

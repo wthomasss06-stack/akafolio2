@@ -19,7 +19,7 @@ import HoverFadeText from '../components/HoverFadeText.jsx'
 import PixelSliceTrail from '../components/PixelSliceTrail.jsx'
 import CardSwap, { Card } from '../components/CardSwap.jsx'
 import FlowingMenu from '../components/FlowingMenu.jsx'
-import { PROJECTS, PRICING_TABS, FAQ_ITEMS, WRITING_POSTS, CONTACT } from '../data/portfolioData.js'
+import { PROJECTS, PRICING_TABS, FAQ_ITEMS, WRITING_POSTS, CONTACT, PROCESS_STEPS, SERVICES_MOBILE_COPY } from '../data/portfolioData.js'
 
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -926,25 +926,8 @@ function useScrollAnimations() {
  ════════════════════════════════════════════ */
 NAV_LINKS.find(l => l.id === 'projets-section').sub = `${PROJECTS.length} réalisations`
 
-const SERVICES = [
-  { n: '01', title: 'Applications Web', desc: 'Apps CRUD complètes, dashboards de gestion, solutions sur-mesure.' },
-  { n: '02', title: 'API RESTful', desc: 'APIs Python/Flask documentées, sécurisées, prêtes pour la production.' },
-  { n: '03', title: 'Interfaces Responsives', desc: "Design et intégration d'interfaces modernes et adaptatives." },
-  { n: '04', title: 'Bases de Données', desc: 'Conception et optimisation de bases de données MySQL.' },
-  { n: '05', title: 'Sécurité Applicative', desc: 'Bonnes pratiques de sécurité intégrées dès la conception.' },
-  { n: '06', title: 'Support Technique', desc: 'Maintenance informatique et assistance technique utilisateur.' },
-]
-
-/* ─── Processus A à Z — de l'acompte à la livraison ─── */
-const PROCESS_STEPS = [
-  { n: '01', title: 'Prise de contact & Brief', tag: '1 à 2 jours', desc: "On discute de votre projet : besoins, objectifs, exemples qui vous plaisent. Je vous propose ensuite le pack le plus adapté.", img: cld('/assets/images/process/prise de contact.webp'), imgAlt: 'Prise de contact et brief' },
-  { n: '02', title: 'Devis & Conditions', tag: '1 jour', desc: "Je vous envoie un devis clair : prix total, acompte de 50%, délai de livraison et liste des prestations incluses.", img: cld('/assets/images/process/devis et condition.webp'), imgAlt: 'Devis et conditions' },
-  { n: '03', title: 'Acompte reçu', tag: 'Feu vert', desc: "Une fois l'acompte versé, je récupère vos contenus — logo, textes, photos — et je lance le développement.", img: cld('/assets/images/process/acompte.webp'), imgAlt: 'Acompte reçu' },
-  { n: '04', title: 'Création du site', tag: 'Délai annoncé', desc: "Je construis votre site de A à Z : pages, design responsive, animations, formulaire de contact, SEO de base. J'active aussi l'hébergement et le nom de domaine.", img: cld('/assets/images/process/creation du site.webp'), imgAlt: 'Création du site' },
-  { n: '05', title: 'Livraison & Validation', tag: '1 à 2 jours', desc: "Vous testez le site sur un lien de prévisualisation et me partagez vos retours avant la mise en ligne.", img: cld('/assets/images/process/livraison.webp'), imgAlt: 'Livraison et validation' },
-  { n: '06', title: 'Solde payé', tag: 'Fichiers transmis', desc: "Une fois le solde réglé, je vous transmets les fichiers sources, les accès à l'hébergement et au nom de domaine, plus le mot de passe d'administration.", img: cld('/assets/images/process/solde.webp'), imgAlt: 'Solde payé' },
-  { n: '07', title: 'Mise en ligne & Support', tag: 'Projet livré', desc: "Votre site est en ligne. Un mois de support est inclus selon le pack, et je reste disponible pour le renouvellement après la première année.", img: cld('/assets/images/process/mise en ligne.webp'), imgAlt: 'Mise en ligne et support' },
-]
+/* SERVICES, SERVICES_MOBILE_COPY et PROCESS_STEPS : source unique dans
+   src/data/portfolioData.js (alignée sur data.js) — importés en tête de fichier. */
 
 /* ─── Données pricing — format matrice ───────────────────────────
    Chaque tab a : plans[] (entête + prix) et rows[] (lignes de features).
@@ -2491,13 +2474,34 @@ const CONTENT_BOARD_LAYOUT = [
   { left: '58%', top: '33%', rot: 7 },
   { left: '76%', top: '10%', rot: -5 },
 ]
+/* Au-delà de 5 cartes on ne peut plus réutiliser les 5 emplacements ci-dessus : la 6e se
+   retrouvait sur la 1re et masquait une étape. On passe alors à une grille de 2 rangées façon
+   collage (6 cartes = 3 × 2), avec un léger désordre (décalage + rotation) pour garder l'effet
+   « cartes épinglées ». La rangée du bas passe au-dessus (z croissant) : un titre n'est jamais
+   recouvert. Jusqu'à 5 cartes : mise en page d'origine, inchangée. */
+const BOARD_DX = [0, 0, 0, 2, 1, -1]
+const BOARD_DY = [0, 3, -1, 0, 2, -1]
+const BOARD_ROT = [-5, 4, -3, 5, -4, 6]
+function contentBoardLayout(n) {
+  if (n <= CONTENT_BOARD_LAYOUT.length) return CONTENT_BOARD_LAYOUT.slice(0, n)
+  const cols = Math.ceil(n / 2)
+  return Array.from({ length: n }, (_, i) => {
+    const k = i % BOARD_ROT.length
+    return {
+      left: `${+(1 + (i % cols) * (69 / (cols - 1)) + BOARD_DX[k]).toFixed(1)}%`,
+      top: `${(i < cols ? 3 : 53) + BOARD_DY[k]}%`,
+      rot: BOARD_ROT[k],
+      z: 10 + i,
+    }
+  })
+}
 function ContentBoardCard({ item, index, layout, setCardRef, total }) {
   const features = item.features?.length ? item.features : [item.tag || item.sub]
   return (
     <div
       ref={(el) => setCardRef(index, el)}
       className="tl-card content-board-card"
-      style={{ left: layout.left, top: layout.top, zIndex: 10 + (total - index) }}
+      style={{ left: layout.left, top: layout.top, zIndex: layout.z ?? 10 + (total - index) }}
     >
       <svg className="tl-pin" viewBox="0 0 100 100" aria-hidden="true">
         <ellipse cx="60" cy="85" rx="15" ry="5" fill="rgba(0,0,0,.35)" />
@@ -2575,7 +2579,8 @@ function InteractiveContentBoard({ items, variant }) {
   const highestZRef = useRef(30)
   const draggingRef = useRef(null)
   const setCardRef = useCallback((i, el) => { cardsRef.current[i] = el }, [])
-  const layoutFor = (i) => CONTENT_BOARD_LAYOUT[i % CONTENT_BOARD_LAYOUT.length]
+  const boardLayout = contentBoardLayout(items.length)
+  const layoutFor = (i) => boardLayout[i]
 
   useEffect(() => {
     const board = boardRef.current
@@ -2719,14 +2724,6 @@ function ProcessSection() {
  ════════════════════════════════════════════ */
 const PROCESS_CARD_COPY = PROCESS_STEPS.map(({ img, imgAlt, ...step }) => step)
 
-const SERVICES_MOBILE_COPY = [
-  { n: '01', title: 'Conception de Site Web', sub: 'Votre présence en ligne professionnelle', desc: 'Création de sites web modernes, responsive et optimisés pour convertir vos visiteurs en clients.', features: ['Sites responsive & modernes', 'Optimisés pour la conversion', "Du portfolio à l'e-commerce"] },
-  { n: '02', title: 'Cartes Interactives & Dashboards', sub: 'Cartes Mapbox et visualisation de données', desc: 'Intégration de cartes interactives Mapbox / Leaflet et de dashboards de visualisation de données.', features: ['Cartes Mapbox / Leaflet', 'Dashboards de données', 'Interfaces lisibles & actionnables'] },
-  { n: '03', title: 'API & Backend Robustes', sub: 'Connectez et automatisez vos systèmes', desc: "Conception d'API RESTful sécurisées avec Django ou Flask, auth JWT et déploiement.", features: ['API RESTful Django / Flask', 'Auth JWT & gestion des rôles', 'Intégration Mobile Money'] },
-  { n: '04', title: 'Maintenance & Support', sub: 'Votre projet performant, sécurisé et à jour', desc: 'Suivi technique, corrections de bugs, mises à jour de sécurité et améliorations continues.', features: ['Suivi technique continu', 'Mises à jour de sécurité', 'Améliorations sur la durée'] },
-  { n: '05', title: 'Fiche Google My Business', sub: 'Soyez visible sur Google Maps et la recherche locale', desc: 'Création ou optimisation de votre fiche Google et suivi mensuel : avis, publications et statistiques.', features: ['Création ou optimisation de la fiche', 'Description optimisée SEO local', 'Suivi mensuel : avis & statistiques'] },
-]
-
 const SERVICES_DATA = [
   {
     num: '01',
@@ -2779,7 +2776,7 @@ function ServicesSection() {
           <div className="svc-header">
             <SectionHeading num="03" title="Services" sub="Ce que je peux faire pour vous" subAs="h2" style={{ marginBottom: '.8rem' }} />
             <NeonFlickerText className="about-text svc-header-text">
-              Cinq offres complémentaires, de la conception au support continu —
+              Six offres complémentaires, de la conception au support continu —
               pour un projet qui reste performant dans la durée.
             </NeonFlickerText>
           </div>

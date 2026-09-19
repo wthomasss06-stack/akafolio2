@@ -128,7 +128,7 @@ export const STRUCTURED_DATA = {
       '@type': 'Country',
       name: "Côte d'Ivoire",
     },
-    priceRange: '100 000 – 1 200 000 FCFA',
+    priceRange: '150 000 – 1 500 000 FCFA',
     telephone: '+225-01-42-50-77-50',
     email: 'wthomasss06@gmail.com',
     openingHoursSpecification: {
@@ -145,16 +145,8 @@ export const STRUCTURED_DATA = {
           '@type': 'Offer',
           itemOffered: {
             '@type': 'Service',
-            name: 'Portfolio Web',
-            description: 'Portfolio moderne animé — 3 à 14 jours, dès 100 000 FCFA',
-          },
-        },
-        {
-          '@type': 'Offer',
-          itemOffered: {
-            '@type': 'Service',
             name: 'Site Vitrine',
-            description: "Site vitrine professionnel — 5 à 14 jours, dès 220 000 FCFA",
+            description: "Site vitrine professionnel — 5 à 14 jours, dès 150 000 FCFA",
           },
         },
         {

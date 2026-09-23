@@ -57,10 +57,10 @@ export const CONTACT = {
 // (mêmes projets, sans le narratif) — à migrer vers celle-ci.
 export const PROJECTS = [
   {
-    id: 1, title: 'ShopCI', sub: 'Marketplace E-commerce', cat: 'en-ligne', img: cld('/assets/images/projects/monmarket-preview.webp'), responsive: cld('/assets/images/projects/shopci-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=600', tech: ['React', 'Django', 'Bootstrap 5', 'Vercel + PythonAnywhere'], url: 'https://shop-ci.vercel.app/', desc: "Marketplace multi-vendeurs conçue pour répondre aux problèmes de fiabilité, de visibilité et de gestion des ventes dans le e-commerce local ivoirien.", year: '2024',
+    id: 1, title: 'ShopCI', sub: 'Marketplace E-commerce', cat: 'en-ligne', img: cld('/assets/images/projects/shopci--preview.webp'), responsive: cld('/assets/images/projects/shopci-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=600', tech: ['Next.js 16', 'Django REST Framework', 'NextAuth v4', 'Tailwind CSS', 'PWA'], url: 'https://shopci-v2.vercel.app/', desc: "Marketplace multi-vendeurs ivoirienne type Amazon : catalogue, panier, commandes, livraison géolocalisée avec preuve photo et paiement à la livraison, PWA installable.", year: '2026',
     private: true,
     problem: "Les vendeurs locaux n'avaient pas de vitrine en ligne fiable pour centraliser leurs produits et rassurer les acheteurs.",
-    solution: "Marketplace multi-vendeurs avec back-office Django, fiches produits structurées et parcours d'achat simplifié.",
+    solution: "Marketplace Next.js 16 / Django REST avec authentification Google, back-office vendeur, livraison géolocalisée avec preuve de réception et paiement à la livraison.",
     result: "Estimation : temps de mise en ligne d'un produit réduit à quelques minutes pour un vendeur, contre plusieurs heures avant."
   },
   {
@@ -195,6 +195,30 @@ export const PROJECTS = [
     problem: "Les candidats manquaient d'un moyen fiable de savoir si leur CV prouvait réellement les exigences d'une offre, sans subir une optimisation artificielle ou inventée.",
     solution: "SaaS React/Vite avec backend Django REST, analyse déterministe de compatibilité, règle anti-invention, CV corrigé ligne par ligne et guide de réponses personnalisées.",
     result: "Produit déployé sur Vercel avec backend Render et PostgreSQL : première analyse gratuite, diagnostic explicable et préparation complète en quelques minutes, sans abonnement obligatoire.",
+  },
+  {
+    id: 21, title: 'Karnet', sub: 'Gestion Opérationnelle PME (Mobile-First)', cat: 'en-ligne', img: cld('/assets/images/projects/karnet-preview.webp'), responsive: cld('/assets/images/projects/karnet-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600', tech: ['Expo / React Native', 'NestJS', 'Prisma', 'Next.js 15', 'PostgreSQL (Neon)'], url: 'https://karnet-ci.vercel.app/', desc: "Plateforme de gestion opérationnelle (clients, ressources, réservations) pour PME de service, mobile-first : app Expo en CRUD complet et web admin Next.js.", year: '2026',
+    problem: "Les PME de service géraient clients, ressources et réservations de façon dispersée, sans outil mobile adapté à leur activité terrain.",
+    solution: "Monorepo Expo (mobile, CRUD complet) + NestJS (API) + Next.js (web admin : dashboard, journal d'audit avec export CSV, gestion d'équipe), types Zod partagés entre les trois.",
+    result: "Mobile et web vérifiés (0 erreur TypeScript, build de production Next.js réussi) ; API construite sur les patterns Prisma 7 / NestJS confirmés."
+  },
+  {
+    id: 22, title: 'ProTech POS', sub: 'Caisse Offline-First pour Boutiques', cat: 'en-ligne', img: cld('/assets/images/projects/pos-preview.webp'), responsive: cld('/assets/images/projects/pos-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600', tech: ['React 19', 'Vite', 'TypeScript', 'Django 6', 'DRF', 'PostgreSQL', 'PWA'], url: 'https://akapos-pi.vercel.app/', desc: "Caisse (POS) et gestion opérationnelle pour petites boutiques, pensée pour continuer à fonctionner même avec une connexion instable.", year: '2026',
+    problem: "Les petites boutiques perdent des ventes ou risquent des doublons quand la connexion Internet coupe en pleine caisse.",
+    solution: "PWA offline-first : chaque vente s'enregistre d'abord en IndexedDB, puis un moteur de synchronisation la rejoue vers l'API Django via une clé d'idempotence générée côté client.",
+    result: "MVP V1 fonctionnel : 42 tests backend passants, build frontend TypeScript strict sans erreur, parcours de bout en bout validé manuellement."
+  },
+  {
+    id: 23, title: 'Anyama Proxy', sub: "Annuaire Local d'Artisans", cat: 'en-ligne', img: cld('/assets/images/projects/anyama-proxy-preview.webp'), responsive: cld('/assets/images/projects/anyama-proxy-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=600', tech: ['Flask', 'PostgreSQL (Neon)', 'HTML / CSS / JS', 'Resend'], url: 'https://anyama-proxy.vercel.app/', desc: "Annuaire local d'artisans et services à Anyama : recherche par métier et quartier, contact direct WhatsApp/téléphone, inscription sans compte.", year: '2026',
+    problem: "La recherche d'un artisan local à Anyama se faisait de façon dispersée : appels, réseaux sociaux, bouche-à-oreille.",
+    solution: "Annuaire Flask/PostgreSQL avec recherche par métier et quartier, inscription artisan sans compte, dashboard admin (validation, retraits, avis) et notifications Resend.",
+    result: "V2 finalisée : annuaire public, page de retrait, modération des avis, thèmes clair/sombre, PWA installable, actualisation admin automatique toutes les 30 secondes."
+  },
+  {
+    id: 24, title: 'R3NS3IGN3M3NT', sub: 'Registre de Visiteurs par QR Code', cat: 'en-ligne', img: cld('/assets/images/projects/r3ns3ngn3m3nt-preview.webp'), responsive: cld('/assets/images/projects/r3ns3ngn3m3nt-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600', tech: ['Next.js 14', 'Django REST Framework', 'PostgreSQL (Neon)', 'Dexie.js / IndexedDB'], url: 'https://renseignement.vercel.app/', desc: "SaaS de prise de renseignements par QR code pour bureaux, restaurants, hôtels et accès de salle : modèle kiosque 100% offline.", year: '2026',
+    problem: "Les bureaux, restaurants et hôtels géraient encore la prise de renseignements avec un cahier papier : lent à consolider, non confidentiel.",
+    solution: "Modèle kiosque : une tablette d'accueil garde tout en offline (Dexie/IndexedDB) et synchronise dès qu'elle retrouve internet ; 3 rôles (Patron, Gérant, Agent), formulaires adaptables par secteur, signature à l'écran.",
+    result: "Backend et frontend testés et déployés : landing plein écran, pages légales, PWA installable, mode sombre, onboarding en 3 étapes."
   },
 ]
 // ─── Tarifs ─────────────────────────────────────────────────────

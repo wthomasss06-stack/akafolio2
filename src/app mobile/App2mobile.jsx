@@ -2281,7 +2281,6 @@ function TimelineBoard() {
           />
         ))}
       </div>
-      <SlideDots containerRef={cardsWrapRef} count={TIMELINE.length} />
     </div>
   )
 }
@@ -2544,33 +2543,6 @@ function useIsMobile() {
    maintenant des slides plein écran, navigation au swipe uniquement
    (un auto-drift continu fighting le geste de l'utilisateur). */
 
-/* Pagination (points) pour une rangée de slides plein écran mobile —
-   suit le scroll du conteneur pour indiquer la carte active. Masqué en
-   desktop via CSS (ces sections n'y sont pas des slides swipées). */
-function SlideDots({ containerRef, count }) {
-  const [active, setActive] = useState(0)
-  useEffect(() => {
-    const el = containerRef.current
-    if (!el || count < 2) return
-    const onScroll = () => {
-      const idx = Math.round(el.scrollLeft / (el.clientWidth || 1))
-      setActive(Math.max(0, Math.min(count - 1, idx)))
-    }
-    el.addEventListener('scroll', onScroll, { passive: true })
-    onScroll()
-    return () => el.removeEventListener('scroll', onScroll)
-  }, [containerRef, count])
-
-  if (count < 2) return null
-  return (
-    <div className="slide-dots" role="tablist" aria-label="Navigation des cartes">
-      {Array.from({ length: count }).map((_, i) => (
-        <span key={i} className={`slide-dot${i === active ? ' slide-dot--active' : ''}`} aria-hidden="true" />
-      ))}
-    </div>
-  )
-}
-
 function InteractiveContentBoard({ items, variant }) {
   const boardRef = useRef(null)
   const spotlightRef = useRef(null)
@@ -2691,7 +2663,6 @@ function InteractiveContentBoard({ items, variant }) {
           <ContentBoardCard key={`${variant}-${item.n || i}`} item={item} index={i} total={items.length} layout={layoutFor(i)} setCardRef={setCardRef} />
         ))}
       </div>
-      <SlideDots containerRef={cardsWrapRef} count={items.length} />
     </div>
   )
 }
@@ -3170,7 +3141,6 @@ function WritingSection() {
                 </a>
               ))}
             </div>
-            <SlideDots containerRef={blogMobileRef} count={WRITING_POSTS.length} />
           </div>
         ) : (
         <div className="blog-cardswap-slot"
@@ -3354,7 +3324,6 @@ function TestimonialsSection() {
                 </div>
               ))}
             </div>
-            <SlideDots containerRef={testiMobileRef} count={TESTIMONIALS.length} />
           </div>
         ) : (
         <div
@@ -4208,8 +4177,6 @@ function Footer() {
   return (
     <footer id="main-footer" ref={footerRef}>
       <div className="ft-bottom-band">
-        <span className="ft-aka-watermark" aria-hidden="true">AKATECH</span>
-
         <div className="ft-bb-inner" style={{ perspective: '1000px' }}>
           <div ref={floatRef}>
             <div ref={tiltRef} className="fts-card">
@@ -4335,7 +4302,13 @@ function ScrollTopBtn() {
       aria-label="Retour en haut"
       onClick={go}
     >
-      <span className="st-rocket" aria-hidden="true">↑</span>
+      <svg className="st-rocket" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+        <path d="M12 2C15.2 4.6 16.6 8 16.6 11.4V16.2H7.4V11.4C7.4 8 8.8 4.6 12 2Z" />
+        <circle cx="12" cy="9.4" r="1.9" />
+        <path d="M7.4 11.8L4.5 15.4V18.2L7.4 16.2" />
+        <path d="M16.6 11.8L19.5 15.4V18.2L16.6 16.2" />
+        <path className="st-flame" d="M10 16.2C10 18.4 10.8 20.4 12 22C13.2 20.4 14 18.4 14 16.2" />
+      </svg>
       <span className="st-label">Haut</span>
     </button>
   )
@@ -4377,6 +4350,25 @@ function CursorAndScrollBar() {
 /* ════════════════════════════════════════════
  APP PRINCIPALE
  ════════════════════════════════════════════ */
+/* Le CTA (DissolveTransition) et la section Contact ne se recouvrent pas de la même façon selon la
+   largeur. Au-dessus de 768px, .full-beams-zone est remontée de 100vh (style2mobile.css) : le dissolve
+   doit donc finir 100vh plus tôt (revealVh = 100, hauteur 320vh). Jusqu'à 768px elle ne l'est plus
+   (margin-top: 0) : garder ces 100vh de « runway » y laissait un grand bloc brun vide entre le CTA
+   et Contact. Les deux valeurs suivent le même breakpoint que le CSS ; le composant est remonté
+   (key) si on le franchit (rotation d'écran) car le scrub ne relit pas revealVh après montage. */
+function useNarrowViewport(maxWidth = 768) {
+  const query = `(max-width: ${maxWidth}px)`
+  const [narrow, setNarrow] = useState(() => typeof window !== 'undefined' && window.matchMedia(query).matches)
+  useEffect(() => {
+    const mq = window.matchMedia(query)
+    const onChange = e => setNarrow(e.matches)
+    setNarrow(mq.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [query])
+  return narrow
+}
+
 export default function App() {
   const [theme, setTheme] = useState(() => {
     try {
@@ -4387,6 +4379,7 @@ export default function App() {
   })
   const [toastVisible, setToastVisible] = useState(false)
   const transitionRef = useRef(null)
+  const ctaNarrow = useNarrowViewport(768)
 
   /* nav-loading masque la navbar pendant le loader */
   useEffect(() => {
@@ -4487,8 +4480,9 @@ export default function App() {
           id="cta-dissolve"
           frontSrc={cld("/assets/images/about-1.webp")}
           backSrc={cld("/assets/images/hero-bg.webp")}
-          heightVh={320}
-          revealVh={100}
+          key={ctaNarrow ? 'cta-narrow' : 'cta-wide'}
+          heightVh={ctaNarrow ? 220 : 320}
+          revealVh={ctaNarrow ? 0 : 100}
           cta={{
             eyebrow: 'Une idée ? Un projet ?',
             title: 'Parlons de votre prochain site',

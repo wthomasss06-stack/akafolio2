@@ -4038,8 +4038,6 @@ function Footer() {
   return (
     <footer id="main-footer" ref={footerRef}>
       <div className="ft-bottom-band">
-        <span className="ft-aka-watermark" aria-hidden="true">AKATECH</span>
-
         <div className="ft-bb-inner" style={{ perspective: '1000px' }}>
           <div ref={floatRef}>
             <div ref={tiltRef} className="fts-card">
@@ -4165,7 +4163,13 @@ function ScrollTopBtn() {
       aria-label="Retour en haut"
       onClick={go}
     >
-      <span className="st-rocket" aria-hidden="true">↑</span>
+      <svg className="st-rocket" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+        <path d="M12 2C15.2 4.6 16.6 8 16.6 11.4V16.2H7.4V11.4C7.4 8 8.8 4.6 12 2Z" />
+        <circle cx="12" cy="9.4" r="1.9" />
+        <path d="M7.4 11.8L4.5 15.4V18.2L7.4 16.2" />
+        <path d="M16.6 11.8L19.5 15.4V18.2L16.6 16.2" />
+        <path className="st-flame" d="M10 16.2C10 18.4 10.8 20.4 12 22C13.2 20.4 14 18.4 14 16.2" />
+      </svg>
       <span className="st-label">Haut</span>
     </button>
   )

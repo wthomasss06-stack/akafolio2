@@ -3496,25 +3496,6 @@
      padding: 3.4rem 6vw 0;
    }
 
-   /* Filigrane massif en fond */
-   .ft-aka-watermark {
-     position: absolute;
-     left: 50%;
-     bottom: -0.18em;
-     transform: translateX(-50%);
-     width: 100%;
-     text-align: center;
-     font-family: var(--fd);
-     font-weight: 800;
-     font-size: clamp(5.5rem, 19vw, 16rem);
-     line-height: 1;
-     letter-spacing: -.02em;
-     white-space: nowrap;
-     color: rgba(242,237,232,.06);
-     pointer-events: none;
-     user-select: none;
-     z-index: 0;
-   }
 
    /* ── Carte 3D wrapper ── */
    .fts-card {
@@ -3626,7 +3607,6 @@
      .fts-row { flex-wrap: wrap; gap: .6rem; justify-content: flex-start; }
      .fts-row--name { font-size: clamp(2.4rem, 14vw, 4rem); }
      .fts-row:not(.fts-row--name):not(.fts-row--small) { font-size: clamp(1.8rem, 10vw, 3rem); }
-     .ft-aka-watermark { font-size: clamp(4rem, 24vw, 8rem); }
      .fts-footer-bar { flex-direction: column; align-items: flex-start; }
      .ft-bb-nav { gap: .8rem; }
    }
@@ -3675,6 +3655,16 @@
    body.light-mode #scroll-top-btn { border: var(--border); box-shadow: var(--shadow-sm); }
    #scroll-top-btn.st-vis { opacity: 1; pointer-events: all; }
    #scroll-top-btn:hover { transform: translateX(-50%) translateY(-4px); box-shadow: 6px 6px 0 var(--text); }
+/* Bouton « Haut » — icône fusée au-dessus du libellé (le bouton reste carré, 52×52) */
+#scroll-top-btn { flex-direction: column; gap: 3px; padding: 0; }
+#scroll-top-btn .st-rocket { display: block; width: 22px; height: 22px; flex: none; transition: transform .3s cubic-bezier(.34,1.56,.64,1); }
+#scroll-top-btn .st-label { font-size: .62rem; font-weight: 700; letter-spacing: .04em; line-height: 1; }
+#scroll-top-btn:hover .st-rocket { transform: translateY(-3px); }
+#scroll-top-btn .st-flame { transform-box: fill-box; transform-origin: 50% 0; animation: stFlame .45s ease-in-out infinite alternate; }
+#scroll-top-btn.st-launch .st-rocket { animation: stRocketShake .1s linear infinite; }
+@keyframes stFlame { from { transform: scaleY(.7); opacity: .75; } to { transform: scaleY(1.25); opacity: 1; } }
+@keyframes stRocketShake { 0%, 100% { transform: translateX(-.7px); } 50% { transform: translateX(.7px); } }
+@media (prefers-reduced-motion: reduce) { #scroll-top-btn .st-flame, #scroll-top-btn.st-launch .st-rocket { animation: none; } }
    #scroll-top-btn.st-launch { animation: stUfoLaunch .65s ease forwards; }
    
    .st-ufo-beam {

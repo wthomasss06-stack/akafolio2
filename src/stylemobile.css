@@ -3057,9 +3057,13 @@
    .app--light .nb-nav-link--active { color: var(--acc) !important; }
    .nb-nav-link--active::before { display: none; }
    
-   /* ── Body padding : seulement top pour le header fixe ── */
+   /* ── Body padding : aucun décalage en haut ──
+      Le header est transparent (cf. « Header mobile transparent » en fin de
+      fichier) : le Hero doit passer derrière lui. Avec l'ancien padding-top de
+      44px (header opaque), cette bande laissait voir le fond de page — blanc en
+      thème clair — au-dessus du Hero. */
    body {
-     padding-top: 44px;
+     padding-top: 0;
      padding-bottom: 0;   /* bottombar transparent = pas besoin de padding */
    }
    

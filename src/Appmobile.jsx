@@ -1745,7 +1745,7 @@ const Hero = ({ dark }) => {
 };
 
 /* Projets fixes pour la section vitrine mobile — même logique que le desktop */
-const FC_PROJECT_IDS = [16, 19];
+const FC_PROJECT_IDS = [21, 22, 23, 24];
 
 const FeaturedCreation = ({ dark }) => {
   const [ref, vis] = useInView(0.08);

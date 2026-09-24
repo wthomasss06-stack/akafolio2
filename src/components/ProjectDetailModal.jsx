@@ -172,6 +172,14 @@ function ProjectDetailModal({ project, caseFlipped, onFlip, onClose }) {
                     <span className="fc-case-tag">Solution</span>
                     <p>{project.solution}</p>
                   </div>
+                  {Array.isArray(project.features) && project.features.length > 0 && (
+                    <div className="fc-case-block">
+                      <span className="fc-case-tag">Fonctionnalités</span>
+                      <ul className="fc-case-features">
+                        {project.features.map((f, i) => <li key={i}>{f}</li>)}
+                      </ul>
+                    </div>
+                  )}
                   <div className="fc-case-block fc-case-block--result">
                     <span className="fc-case-tag">Résultat</span>
                     <p>{project.result}</p>

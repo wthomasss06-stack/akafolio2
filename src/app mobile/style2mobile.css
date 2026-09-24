@@ -5394,6 +5394,8 @@
 }
 .fc-case-block--result .fc-case-tag { color: #88ca53; }
 .fc-case-block p { font-size: .86rem; line-height: 1.65; color: var(--muted); margin: 0; }
+.fc-case-features { margin: 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: .35rem; }
+.fc-case-features li { font-size: .86rem; line-height: 1.5; color: var(--muted); }
 
 @media (max-width: 900px) {
   .tunnel-modal {

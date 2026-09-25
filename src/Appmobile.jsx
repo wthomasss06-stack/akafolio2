@@ -1752,6 +1752,7 @@ const FeaturedCreation = ({ dark }) => {
   const [projIdx, setProjIdx] = useState(0);
   const [mobileSlide, setMobileSlide] = useState(0);
   const [fading, setFading] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   // Auto-slide mobile : alterne responsive ↔ preview toutes les 3.5s
   useEffect(() => {
@@ -1835,13 +1836,19 @@ const FeaturedCreation = ({ dark }) => {
           </div>
           <div className="cr-tags">{proj.tech.slice(0, 3).map(t => <span key={t} className="cr-tag">{t}</span>)}</div>
           <p className="cr-desc">{proj.description}</p>
-          {proj.url && proj.url !== '#' ? (
-            <a href={proj.url} target="_blank" rel="noreferrer" className={`btn ${dark ? 'btn--neon' : 'btn--primary'} cr-cta mi-glint`}><LI name="external-link-alt" color={dark ? "#fff" : "#1a1a1a"} /> Voir le site</a>
-          ) : (
-            <span className={`btn ${dark ? 'btn--neon' : 'btn--primary'} cr-cta`} style={{ opacity: .6, cursor: 'default' }}><LI name="clock" color={dark ? "#fff" : "#1a1a1a"} /> En cours de développement</span>
-          )}
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            {proj.url && proj.url !== '#' ? (
+              <a href={proj.url} target="_blank" rel="noreferrer" className={`btn ${dark ? 'btn--neon' : 'btn--primary'} cr-cta mi-glint`}><LI name="external-link-alt" color={dark ? "#fff" : "#1a1a1a"} /> Voir le site</a>
+            ) : (
+              <span className={`btn ${dark ? 'btn--neon' : 'btn--primary'} cr-cta`} style={{ opacity: .6, cursor: 'default' }}><LI name="clock" color={dark ? "#fff" : "#1a1a1a"} /> En cours de développement</span>
+            )}
+            <button type="button" onClick={() => setDetailsOpen(true)} className={`btn ${dark ? 'btn--ghost-neon' : 'btn--ghost'} cr-cta`}>
+              <LI name="info-circle" color={dark ? "#fff" : "#1a1a1a"} /> Détails du projet
+            </button>
+          </div>
         </div>
       </div>
+      <ProjectModal project={detailsOpen ? proj : null} dark={dark} onClose={() => setDetailsOpen(false)} />
     </section>
   );
 };
@@ -2872,6 +2879,36 @@ const ProjectModal = ({ project, dark, onClose }) => {
           <h3 className="fd-modal-title">{project.title}</h3>
           <p className="fd-modal-sub">{project.subtitle}</p>
           <p className="fd-modal-desc">{project.description}</p>
+          {(project.problem || project.solution || project.result) && (
+            <div className="fd-modal-case">
+              {project.problem && (
+                <div className="fd-modal-case-block">
+                  <span className="fd-modal-case-tag">Problème</span>
+                  <p>{project.problem}</p>
+                </div>
+              )}
+              {project.solution && (
+                <div className="fd-modal-case-block">
+                  <span className="fd-modal-case-tag">Solution</span>
+                  <p>{project.solution}</p>
+                </div>
+              )}
+              {Array.isArray(project.features) && project.features.length > 0 && (
+                <div className="fd-modal-case-block">
+                  <span className="fd-modal-case-tag">Fonctionnalités</span>
+                  <ul className="fd-modal-case-features">
+                    {project.features.map((f, i) => <li key={i}>{f}</li>)}
+                  </ul>
+                </div>
+              )}
+              {project.result && (
+                <div className="fd-modal-case-block fd-modal-case-block--result">
+                  <span className="fd-modal-case-tag">Résultat</span>
+                  <p>{project.result}</p>
+                </div>
+              )}
+            </div>
+          )}
           <div className="fd-modal-techs">
             {project.tech.map(t => <span key={t}>{t}</span>)}
           </div>

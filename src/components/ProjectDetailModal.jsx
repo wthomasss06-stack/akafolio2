@@ -1,6 +1,7 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import HoverFadeText from './HoverFadeText.jsx'
 
 const TECH_ICON_RULES = [
@@ -98,8 +99,10 @@ const AnimIcon = ({ type, size = 15, color = 'currentColor', className = '' }) =
 }
 
 function ProjectDetailModal({ project, caseFlipped, onFlip, onClose }) {
-  if (!project) return null
-  return (
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
+  if (!project || !mounted) return null
+  return createPortal(
     <div className="tunnel-modal-backdrop" onClick={onClose}>
       <div className="tunnel-modal" onClick={e => e.stopPropagation()}>
         <button type="button" className="tunnel-modal-close" onClick={onClose} aria-label="Fermer">
@@ -194,7 +197,8 @@ function ProjectDetailModal({ project, caseFlipped, onFlip, onClose }) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
 

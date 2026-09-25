@@ -372,31 +372,26 @@ Pensé pour **Vercel** :
 | 17 | **Jean Edy · Portfolio**<br>Portfolio développeur avec direction artistique skeuomorphisme | <img src="./public/assets/images/projects/jean-edy.webp" alt="Aperçu Jean Edy  Portfolio" width="180" /> | Voir `portfolioData.js` | Voir `portfolioData.js` | Voir `portfolioData.js` | React 18, Vite, GSAP, Framer Motion, Tailwind CSS | [jean-edy-dev.vercel.app](https://jean-edy-dev.vercel.app/) *(repo privé)* |
 | 18 | **MD Laverie Pressing**<br>Vitrine pressing avec tarifs, hero slider et contact | <img src="./public/assets/images/projects/laverie.webp" alt="Aperçu MD Laverie Pressing" width="180" /> | Voir `portfolioData.js` | Voir `portfolioData.js` | Voir `portfolioData.js` | React 18, Vite, GSAP, React Router v6, EmailJS | [laverie-plus.vercel.app](https://laverie-plus.vercel.app/) |
 | 19 | **Chez Florence**<br>Vente et réservation de lapins avec stock temps réel | <img src="./public/assets/images/projects/chez-florence-responsive.webp" alt="Aperçu Chez Florence" width="180" /> | Voir `portfolioData.js` | Voir `portfolioData.js` | Voir `portfolioData.js` | Next.js 14, Express.js, Prisma, PostgreSQL (Neon), Cloudinary | [chez-florence.vercel.app](https://chez-florence.vercel.app/) |
-| 20 | **ChapChap Bara**<br>SaaS d’analyse de candidature et de préparation d’entretien | <img src="./public/assets/images/projects/chapchapbara-preview.webp" alt="Aperçu ChapChap Bara" width="180" /> | Voir `portfolioData.js` | Voir `portfolioData.js` | Voir `portfolioData.js` | React, Vite, Django REST, Python, PostgreSQL, Vercel + Render | [chapchap-bara.vercel.app](https://chapchap-bara.vercel.app/) *(repo privé)* |
+| 20 | **ChapChap Bara**<br>SaaS d'analyse de candidature et de préparation d'entretien | <img src="./public/assets/images/projects/chapchapbara-preview.webp" alt="Aperçu ChapChap Bara" width="180" /> | Voir `portfolioData.js` | Voir `portfolioData.js` | Voir `portfolioData.js` | React, Vite, Django REST, Python, PostgreSQL, Vercel + Render | [chapchap-bara.vercel.app](https://chapchap-bara.vercel.app/) *(repo privé)* |
+| 21 | **Karnet**<br>Gestion opérationnelle (clients, ressources, réservations) mobile-first pour PME de service | <img src="./public/assets/images/projects/karnet-preview.webp" alt="Aperçu Karnet" width="180" /> | Voir `portfolioData.js` | Voir `portfolioData.js` | Voir `portfolioData.js` | Expo/React Native, NestJS, Prisma, Next.js 15, PostgreSQL (Neon) | [karnet-ci.vercel.app](https://karnet-ci.vercel.app/) |
+| 22 | **ProTech POS**<br>Caisse offline-first pour petites boutiques | <img src="./public/assets/images/projects/pos-preview.webp" alt="Aperçu ProTech POS" width="180" /> | Voir `portfolioData.js` | Voir `portfolioData.js` | Voir `portfolioData.js` | React 19, Vite, TypeScript, Django 6, DRF, PostgreSQL, PWA | [akapos-pi.vercel.app](https://akapos-pi.vercel.app/) |
+| 23 | **Anyama Proxy**<br>Annuaire local d'artisans et services à Anyama | <img src="./public/assets/images/projects/anyama-proxy-preview.webp" alt="Aperçu Anyama Proxy" width="180" /> | Voir `portfolioData.js` | Voir `portfolioData.js` | Voir `portfolioData.js` | Flask, PostgreSQL (Neon), HTML/CSS/JS, Resend | [anyama-proxy.vercel.app](https://anyama-proxy.vercel.app/) |
+| 24 | **R3NS3IGN3M3NT**<br>Registre de visiteurs par QR code, mode kiosque offline | <img src="./public/assets/images/projects/r3ns3ngn3m3nt-preview.webp" alt="Aperçu R3NS3IGN3M3NT" width="180" /> | Voir `portfolioData.js` | Voir `portfolioData.js` | Voir `portfolioData.js` | Next.js 14, Django REST Framework, PostgreSQL (Neon), Dexie.js/IndexedDB | [renseignement.vercel.app](https://renseignement.vercel.app/) |
 
 ---
 
 ## Services & tarifs
 
-<details>
-<summary><b>Portfolio personnel</b></summary>
-
-| Plan | Prix | Délai |
-|---|---|---|
-| Starter | 100 000 FCFA | 3–5 jours |
-| Standard | 175 000 FCFA | 5–7 jours |
-| Premium | 275 000 FCFA | 7–10 jours |
-
-</details>
+> Le Portfolio n'a plus de grille dédiée : il applique désormais la grille Site Vitrine (voir `PRICING` dans `lib/data.js`).
 
 <details>
 <summary><b>Site vitrine</b></summary>
 
 | Plan | Prix | Délai |
 |---|---|---|
-| Starter | 220 000 FCFA | 5–7 jours |
-| Pro | 350 000 FCFA | 7–10 jours |
-| Elite | 550 000 FCFA | 10–14 jours |
+| Landing | 150 000 FCFA | 5–7 jours |
+| Starter | 250 000 FCFA | 7–10 jours |
+| Premium | 550 000 FCFA | 10–14 jours |
 
 </details>
 
@@ -405,16 +400,20 @@ Pensé pour **Vercel** :
 
 | Plan | Prix | Délai |
 |---|---|---|
-| Starter | 450 000 FCFA | 14 jours |
-| Pro | 750 000 FCFA | 21 jours |
-| Elite | 1 200 000 FCFA | 30 jours |
+| Starter | 450 000 FCFA | 1 mois à 1 mois 2 semaines |
+| Pro | 750 000 FCFA | 1 mois à 1 mois 2 semaines |
+| Elite | 1 500 000 FCFA | 1 mois à 1 mois 2 semaines |
 
 </details>
 
 <details>
 <summary><b>Application SaaS</b></summary>
 
-Sur devis après diagnostic gratuit. Devis détaillé sous 48h.
+| Plan | Prix | Délai |
+|---|---|---|
+| MVP / Outil métier | 600 000 – 1 000 000 FCFA | 3 à 5 semaines |
+| Plateforme + abonnement | 1 200 000 – 2 200 000 FCFA | 6 à 10 semaines |
+| Marketplace multi-acteurs | 2 500 000 – 4 500 000 FCFA | 10 à 16 semaines |
 
 </details>
 
@@ -429,7 +428,7 @@ Sur devis après diagnostic gratuit. Devis détaillé sous 48h.
 
 </details>
 
-> Nom de domaine + hébergement offerts la 1ère année sur tous les plans (hors Fiche Google et SaaS sur devis).
+> Nom de domaine + hébergement offerts la 1ère année sur tous les plans (hors Fiche Google et SaaS).
 > Paiements acceptés : Orange Money · MTN Mobile Money · Wave
 
 ---

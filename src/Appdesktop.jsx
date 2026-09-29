@@ -1365,13 +1365,6 @@ function Hero() {
               <HoverFadeText>Contactez-moi</HoverFadeText>
               <span className="btn-arr" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg></span>
             </a>
-            <a
-              href="#projets-section"
-              className="btn-ghost"
-              onClick={e => { e.preventDefault(); scrollTo('projets-section') }}
-            >
-              <HoverFadeText>Voir mes projets</HoverFadeText>
-            </a>
           </div>
 
           <div className="hero-availability hv4-rv" style={{ '--d': '.56s' }}>

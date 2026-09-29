@@ -532,6 +532,16 @@ const AnimIcon = ({ type, size = 15, color = '#FF5500', className = '' }) => {
  fiable, ou si l'icône ne charge pas, on retombe sur le texte — jamais
  d'icône cassée affichée. ════════════════════════════════════════════ */
 const TECH_ICON_RULES = [
+  ['drf', '/assets/icons/devicon/django/django-plain.svg'],
+  ['nestjs', '/assets/icons/devicon/nestjs/nestjs-original.svg'],
+  ['nextauth', '/assets/icons/custom/nextauth.svg'],
+  ['typescript', '/assets/icons/devicon/typescript/typescript-original.svg'],
+  ['mapbox', '/assets/icons/devicon/mapbox/mapbox-original.svg'],
+  ['expo', '/assets/icons/devicon/expo/expo-original.svg'],
+  ['dexie', '/assets/icons/custom/dexie.svg'],
+  ['indexeddb', '/assets/icons/custom/dexie.svg'],
+  ['resend', '/assets/icons/simple-icons/resend.svg'],
+  ['pwa', '/assets/icons/simple-icons/pwa.svg'],
   ['next.js', '/assets/icons/devicon/nextjs/nextjs-original.svg'],
   ['nodejs', '/assets/icons/devicon/nodejs/nodejs-original.svg'],
   ['node.js', '/assets/icons/devicon/nodejs/nodejs-original.svg'],
@@ -1269,23 +1279,16 @@ function Hero() {
     ScrollTrigger.update()
   }
 
-  /* Nom — cycle plain sur le même texte, réutilisé pour le calque
-     contour (avant-plan) du portrait sandwich ci-dessous */
-  const nameLine1 = useSHNameCycle("M'BOLLO")
-  const nameLine2 = useSHNameCycle("Aka")
-
   /* Mots rotatifs — glitch scramble en boucle auto */
   const rotating = useSHRotatingCycle(HERO_ROTATING_WORDS, 2500)
 
   const heroRef = useRef(null)
   const photoRef = useRef(null)
 
-  /* ── Parallaxe souris sur la photo centrale — reprise et adaptée
-     du prototype de référence (setupParallax), en gsap.quickTo()
-     pour rester fluide à 60fps (cf. skill gsap-performance). La
-     bordure/ombre du cadre reste fixe, seule l'image glisse dedans
+  /* ── Parallaxe souris sur la photo — gsap.quickTo() pour rester
+     fluide à 60fps. Le cadre reste fixe, seule l'image glisse dedans
      (overflow:hidden côté CSS). Désactivée au tactile et si
-     prefers-reduced-motion, pour l'accessibilité. ── */
+     prefers-reduced-motion. ── */
   useEffect(() => {
     const section = heroRef.current
     const photo = photoRef.current
@@ -1299,8 +1302,8 @@ function Hero() {
 
     const onMove = e => {
       const r = section.getBoundingClientRect()
-      xTo(((e.clientX - r.left) / r.width - 0.5) * 26)
-      yTo(((e.clientY - r.top) / r.height - 0.5) * 16)
+      xTo(((e.clientX - r.left) / r.width - 0.5) * 20)
+      yTo(((e.clientY - r.top) / r.height - 0.5) * 12)
     }
     const onLeave = () => { xTo(0); yTo(0) }
 
@@ -1327,69 +1330,33 @@ function Hero() {
       <div className="hv4-scan" aria-hidden="true" />
       <div className="hero-vignette" />
 
-      <div className="hv4-scene-wrap" id="hv4-scene">
+      {/* Deux colonnes : texte à gauche (lisible, aligné à gauche),
+          portrait à droite. Plus de nom découpé derrière la photo :
+          le nom est entier, en <h1>, et se lit du premier coup. */}
+      <div className="hv4-scene-wrap hv5-grid" id="hv4-scene">
 
-        {/* ── Portrait central — nom en sandwich (fond plein + contour)
-           avec la photo carrée qui vient "trancher" les deux lignes,
-           repris du prototype de référence (variante Double Stack) ── */}
-        <div className="hv4-portrait">
-          <h1 className="hv4-portrait-name" aria-label="M'Bollo Aka">
-            <span className="hv4-portrait-row hv4-portrait-row--top">
-              <span className="hv4-portrait-bg hv4-rv" style={{ '--d': '.1s' }} aria-hidden="true">M'BOLLO</span>
-              <span className="hv4-portrait-fg" aria-hidden="true">
-                <span className="sh-cycle-wrap" style={{ height: '0.86em', verticalAlign: 'bottom' }}>
-                  <span className="sh-cycle-inner" ref={nameLine1.innerRef}>
-                    {nameLine1.lines.map((l, i) => <span className="sh-cycle-line" style={{ height: '0.86em', lineHeight: '0.86em' }} key={i}>{l}</span>)}
-                  </span>
-                </span>
-              </span>
-            </span>
-            <span className="hv4-portrait-row hv4-portrait-row--bottom">
-              <span className="hv4-portrait-bg hv4-rv" style={{ '--d': '.16s' }} aria-hidden="true">Aka</span>
-              <span className="hv4-portrait-fg" aria-hidden="true">
-                <span className="sh-cycle-wrap" style={{ height: '0.86em', verticalAlign: 'bottom' }}>
-                  <span className="sh-cycle-inner" ref={nameLine2.innerRef}>
-                    {nameLine2.lines.map((l, i) => <span className="sh-cycle-line" style={{ height: '0.86em', lineHeight: '0.86em' }} key={i}>{l}</span>)}
-                  </span>
-                </span>
-              </span>
-            </span>
+        <div className="hv5-copy">
+          <h1 className="hv5-name hv4-rv" style={{ '--d': '.1s' }} aria-label="M'Bollo Aka">
+            <span className="hv5-name-line" aria-hidden="true">M'Bollo</span>
+            <span className="hv5-name-line" aria-hidden="true">Aka</span>
           </h1>
 
-          <div className="hv4-portrait-photo">
-            <img
-              ref={photoRef}
-              className="hv4-rv"
-              style={{ '--d': '.26s' }}
-              src={cld("/assets/images/IMG_20250124_124101KK.webp")}
-              alt="M'Bollo Aka"
-              onError={e => { e.target.src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600' }}
-            />
-          </div>
-        </div>
-
-        {/* ── Coin gauche — mot rotatif, CTA, disponibilité
-           (centré verticalement à gauche via CSS) ── */}
-        <div className="hv4-corner hv4-corner--left">
-
-          <div className="hv4-typed hv4-left-description hv4-rv" style={{ '--d': '.42s' }}>
-            Développeur web orienté produits, spécialisé Django &amp; React.<br />
-            Je construis des applications pensées pour des usages réels.
-          </div>
-
-          {/* Rotating words — cycle-text scramble */}
-          <h3 className="hv4-typed hv4-rv" style={{ '--d': '.56s' }}>
-            Développeur&nbsp;<span className="hero-word" style={{ color: '#ffffff', display: 'inline-block' }}>
+          <p className="hv5-role hv4-rv" style={{ '--d': '.22s' }}>
+            Développeur&nbsp;
+            <span className="hero-word">
               <span className="sh-cycle-wrap">
                 <span className="sh-cycle-inner" ref={rotating.innerRef}>
                   {rotating.lines.map((l, i) => <span className="sh-cycle-line" key={`${i}-${l}`}>{l}</span>)}
                 </span>
               </span>
             </span>
-          </h3>
+          </p>
 
-          {/* CTA */}
-          <div className="hv4-ctas hv4-rv" style={{ '--d': '.6s' }}>
+          <p className="hv5-lede hv4-rv" style={{ '--d': '.34s' }}>
+            Orienté produits, spécialisé Django &amp; React, je construis des applications pensées pour des usages réels.
+          </p>
+
+          <div className="hv5-actions hv4-rv" style={{ '--d': '.46s' }}>
             <a
               href="#contact"
               className="btn-fill"
@@ -1398,14 +1365,35 @@ function Hero() {
               <HoverFadeText>Contactez-moi</HoverFadeText>
               <span className="btn-arr" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg></span>
             </a>
+            <a
+              href="#projets-section"
+              className="btn-ghost"
+              onClick={e => { e.preventDefault(); scrollTo('projets-section') }}
+            >
+              <HoverFadeText>Voir mes projets</HoverFadeText>
+            </a>
           </div>
 
-          {/* Réassurance CRO — sous le bouton */}
-          <div className="hero-availability hv4-rv" style={{ '--d': '.7s' }}>
+          <div className="hero-availability hv4-rv" style={{ '--d': '.56s' }}>
             <span className="hero-dot" aria-hidden="true" />
             <span>Disponible maintenant · réponse sous 24h</span>
           </div>
         </div>
+
+        <figure className="hv5-portrait hv4-rv" style={{ '--d': '.3s' }}>
+          <div className="hv5-photo">
+            <img
+              ref={photoRef}
+              src={cld("/assets/images/IMG_20250124_124101KK.webp")}
+              alt="M'Bollo Aka, développeur web à Abidjan"
+              onError={e => { e.target.src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600' }}
+            />
+          </div>
+          <figcaption className="hv5-caption">
+            <span className="hv5-caption-dot" aria-hidden="true" />
+            Abidjan, Côte d'Ivoire
+          </figcaption>
+        </figure>
 
       </div>
       <div className="hero-scroll"><span>scroll</span><div className="hsl" /></div>
@@ -4340,4 +4328,4 @@ export default function App() {
       </div>
     </PageTransitionContext.Provider>
   )
-}
+}

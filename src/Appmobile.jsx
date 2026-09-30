@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import ScrollDepthScene from './components/ScrollDepthScene';
 import ScrambleText from './components/ScrambleText';
 import { useSoundSystem } from './components/useClickSound.js';
@@ -2833,18 +2834,37 @@ const About = ({ dark }) => {
 const ProjectModal = ({ project, dark, onClose }) => {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
-    if (project) { requestAnimationFrame(() => setVisible(true)); document.body.style.overflow = 'hidden'; }
-    else { setVisible(false); document.body.style.overflow = ''; }
+    if (project) {
+      requestAnimationFrame(() => setVisible(true));
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      setVisible(false);
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    }
     const onKey = e => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', onKey);
-    return () => { window.removeEventListener('keydown', onKey); };
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
   }, [project, onClose]);
 
   if (!project) return null;
 
-  return (
+  /* Portail : les sections sont enveloppées par ScrollDepthScene (.sdz-section avec
+     will-change: transform) → un position:fixed posé dedans se fixe à la SECTION,
+     pas à l'écran. On monte donc le modal dans .app (hors des sections) pour qu'il
+     soit réellement fixe ; .app garde les variables de thème clair/sombre. */
+  const portalTarget = document.querySelector('.app') || document.body;
+
+  return createPortal(
     <div className={`fd-modal-bg ${visible ? 'fd-modal-bg--show' : ''}`}
-      onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
+      onWheel={e => e.stopPropagation()}
+      onTouchMove={e => e.stopPropagation()}>
       <div className={`fd-modal ${dark ? 'fd-modal--dark' : ''} ${visible ? 'fd-modal--show' : ''}`}>
         {/* Image */}
         <div className="fd-modal-img-wrap" style={{ background: GRAD[(project.id - 1) % GRAD.length] }}>
@@ -2914,7 +2934,8 @@ const ProjectModal = ({ project, dark, onClose }) => {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    portalTarget
   );
 };
 

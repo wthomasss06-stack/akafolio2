@@ -2026,9 +2026,10 @@
      background: rgba(0,0,0,.72);
      backdrop-filter: blur(8px);
      -webkit-backdrop-filter: blur(8px);
-     z-index: 1000;
+     z-index: 5000;
      display: flex; align-items: center; justify-content: center;
      padding: clamp(12px, 3vw, 24px);
+     overscroll-behavior: contain;
      opacity: 0; pointer-events: none;
      transition: opacity 0.28s ease;
    }
@@ -2036,8 +2037,9 @@
    
    .fd-modal {
      width: min(560px, 96vw);
-     max-height: 90vh;
-     overflow-y: auto;
+     max-height: 90vh; max-height: 90dvh;
+     overflow-y: auto; overscroll-behavior: contain;
+     -webkit-overflow-scrolling: touch;
      background: var(--paper);
      border: 2px solid var(--border);
      box-shadow: var(--shadow-lg), 0 40px 100px rgba(0,0,0,.5);
@@ -2146,7 +2148,7 @@
        margin-left: clamp(-105px, -22vw, -80px);
      }
      .fd-nav-dots { max-width: 160px; }
-     .fd-modal { max-height: 95vh; }
+     .fd-modal { max-height: 95vh; max-height: 95dvh; }
      .fd-modal-img-wrap { height: clamp(160px, 45vw, 200px); }
      .fd-modal-actions { flex-direction: column; }
      .fd-modal-btn-primary { width: 100%; }

@@ -15,6 +15,7 @@ import {
   CONTACT as ME, PROJECTS, TIMELINE, PRICING_TABS, FAQ_ITEMS as FAQ,
 } from './data/portfolioData.js';
 import { cld } from './lib/cloudinary';
+import { useSoundSystem } from './components/useClickSound.js';
 
 // ═══════════════════════════════════════════════════════════════
 // 0. DONNÉES
@@ -2225,6 +2226,8 @@ function mkWin(type, opts = {}) {
 
 export default function Win95Portfolio() {
   useCSS();
+  /* Sons de clic + survol (touche S = mute). useImmersiveSound reste débranché. */
+  useSoundSystem();
 
   // Persister le boot dans sessionStorage — évite de rejouer le boot au switch de mode
   const [booted, setBooted] = useState(() => {

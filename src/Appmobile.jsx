@@ -4193,8 +4193,9 @@ export default function App() {
     return next;
   });
   const dark = !light;
-  /* Seuls les sons de clic restent actifs : ni piste d'ambiance, ni son de survol. */
-  const { muted, toggleMute } = useSoundSystem({ hover: false });
+  /* Sons de clic ET de survol actifs. La piste d'ambiance (useImmersiveSound)
+     reste volontairement débranchée. */
+  const { muted, toggleMute } = useSoundSystem();
 
   /* Loader dédié mobile : aucun papier brûlé. GooeyTransition.mobile
      couvre puis révèle le Hero déjà monté sous cet écran. */

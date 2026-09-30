@@ -24,6 +24,8 @@ import { PROJECTS, PRICING_TABS, FAQ_ITEMS, WRITING_POSTS, CONTACT, PROCESS_STEP
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import StaggeredMenu from './components/StaggeredMenu.jsx'
+import { useSoundSystem } from './components/useClickSound.js'
+import SoundToggle from './components/SoundToggle.jsx'
 import dynamic from 'next/dynamic'
 import ProjectDetailModal from './components/ProjectDetailModal.jsx'
 const HeroZoomSection = dynamic(() => import('./components/HeroZoomSection.jsx'), { ssr: false })
@@ -4190,6 +4192,8 @@ function CursorAndScrollBar() {
  APP PRINCIPALE
  ════════════════════════════════════════════ */
 export default function App() {
+  /* Sons de clic + survol (touche S = mute). useImmersiveSound reste débranché. */
+  const { muted, toggleMute } = useSoundSystem()
   const [theme, setTheme] = useState(() => {
     try {
       const saved = localStorage.getItem('aka-html-theme')
@@ -4264,6 +4268,7 @@ export default function App() {
   return (
     <PageTransitionContext.Provider value={transitionToSection}>
       <div className="modern-app-root">
+        <SoundToggle muted={muted} onToggle={toggleMute} />
         <Loader onDone={handleLoaderDone} />
         <PageTransitionOverlay ref={transitionRef} />
         <div id="cursor-dot" />

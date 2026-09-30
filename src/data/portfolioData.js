@@ -234,11 +234,11 @@ export const PROJECTS = [
     result: "V2 finalisée : annuaire public, page de retrait, modération des avis, thèmes clair/sombre, PWA installable, actualisation admin automatique toutes les 30 secondes."
   },
   {
-    id: 24, title: 'R3NS3IGN3M3NT', sub: 'Registre de Visiteurs par QR Code', cat: 'en-ligne', img: cld('/assets/images/projects/r3ns3ngn3m3nt-preview.webp'), responsive: cld('/assets/images/projects/r3ns3ngn3m3nt-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600', tech: ['Next.js 14', 'Django REST Framework', 'PostgreSQL (Neon)', 'Dexie.js / IndexedDB'], url: 'https://renseignement.vercel.app/', desc: "SaaS de prise de renseignements par QR code pour bureaux, restaurants, hôtels et accès de salle : modèle kiosque 100% offline.", year: '2026',
-    problem: "Les bureaux, restaurants et hôtels géraient encore la prise de renseignements avec un cahier papier : lent à consolider, non confidentiel.",
-    solution: "Modèle kiosque : une tablette d'accueil garde tout en offline (Dexie/IndexedDB) et synchronise dès qu'elle retrouve internet ; 3 rôles (Patron, Gérant, Agent), formulaires adaptables par secteur, signature à l'écran.",
+    id: 24, title: 'REKOLLECTE', sub: 'Registre dAccueil Sans Contact', cat: 'en-ligne', img: cld('/assets/images/projects/r3ns3ngn3m3nt-preview.webp'), responsive: cld('/assets/images/projects/r3ns3ngn3m3nt-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600', tech: ['Next.js 14', 'Django REST Framework', 'PostgreSQL (Neon)', 'Dexie.js / IndexedDB'], url: 'https://rekollecte-ci.vercel.app/', desc: "SaaS de registre d'accueil sans contact par QR code pour bureaux, restaurants, hôtels et accès de salle : mode kiosque offline-first, formulaires adaptables par secteur, signature à l'écran.", year: '2026',
+    problem: "Les bureaux, restaurants et hôtels géraient encore l'accueil des visiteurs avec un cahier papier : lent à consolider, non confidentiel, impossible à analyser.",
+    solution: "Modèle kiosque : une tablette d'accueil garde tout en offline (Dexie/IndexedDB) et synchronise dès qu'elle retrouve internet ; 3 rôles (Patron, Gérant, Staff), plusieurs formulaires et points d'accueil avec QR dédiés, signature à l'écran.",
     features: ["Mode kiosque 100% offline (Dexie/IndexedDB)", "3 rôles : Patron, Gérant, Agent", "Formulaires adaptables par secteur d'activité", "Signature à l'écran", "Synchronisation automatique au retour du réseau"],
-    result: "Backend et frontend testés et déployés : landing plein écran, pages légales, PWA installable, mode sombre, onboarding en 3 étapes."
+    result: "V1.2 fonctionnelle et déployée : registre, kiosque offline, dashboard avec export CSV, PWA installable, mode sombre ; niveau 2 REKOLLECTE+ (clients, ressources, réservations, paiements, rappels) en recette."
   },
 ]
 // ─── Tarifs ─────────────────────────────────────────────────────

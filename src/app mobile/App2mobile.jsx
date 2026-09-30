@@ -1668,7 +1668,7 @@ function ProjectVideoMedia({ project }) {
   )
 }
 
-const RECENT_PROJECT_TITLES = ['Karnet', 'ProTech POS', 'Anyama Proxy', 'R3NS3IGN3M3NT']
+const RECENT_PROJECT_TITLES = ['Karnet', 'ProTech POS', 'Anyama Proxy', 'REKOLLECTE']
 
 const RECENT_PROJECTS = RECENT_PROJECT_TITLES
   .map(t => PROJECTS.find(p => p.title === t))

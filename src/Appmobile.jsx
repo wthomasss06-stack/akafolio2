@@ -1041,18 +1041,6 @@ const Navbar = ({ dark, onToggle }) => {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const { dateStr, timeStr } = useLiveClock();
-  const headerRef = useRef(null);
-
-  /* Header transparent garanti : setProperty(..., 'important') bat n'importe quelle
-     règle de feuille de style (y compris un .compiled.css ancien). */
-  useEffect(() => {
-    const el = headerRef.current;
-    if (!el) return;
-    const force = { background: 'transparent', 'background-color': 'transparent', 'background-image': 'none',
-      'backdrop-filter': 'none', '-webkit-backdrop-filter': 'none', 'border-bottom': 'none', 'box-shadow': 'none' };
-    Object.entries(force).forEach(([p, v]) => el.style.setProperty(p, v, 'important'));
-  }, [scrolled, dark, open]);
-
   useEffect(() => {
     const fn = () => {
       setScrolled(window.scrollY > 40);
@@ -1094,7 +1082,7 @@ const Navbar = ({ dark, onToggle }) => {
       {open && <div className="mob-overlay" onClick={() => setOpen(false)} />}
 
       {/* ── HEADER TOP BAR — logo gauche | date+heure centre | dispo droite ── */}
-      <header ref={headerRef} className={`nb-topbar ${scrolled ? 'nb-topbar--scrolled' : ''} ${dark ? 'nb-topbar--dark' : ''}`} style={{ background: 'transparent', backdropFilter: 'none', WebkitBackdropFilter: 'none', borderBottom: 'none' }}>
+      <header className={`nb-topbar ${scrolled ? 'nb-topbar--scrolled' : ''} ${dark ? 'nb-topbar--dark' : ''}`} style={{ background: 'transparent', backdropFilter: 'none', WebkitBackdropFilter: 'none', borderBottom: 'none' }}>
         {/* Gauche : logo + nom */}
         <div className="nb-topbar-left" onClick={() => go('home')} style={{ cursor: 'pointer' }}>
           <AkafolioLogo size={52} dark={dark} animate={false} />

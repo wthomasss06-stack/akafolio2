@@ -52,6 +52,7 @@ export function StaggeredMenu({
   onItemClick,
   onMenuOpen,
   onMenuClose,
+  tools = [],
 }) {
   const [open, setOpen]         = useState(false)
   const openRef                 = useRef(false)
@@ -323,6 +324,31 @@ export function StaggeredMenu({
               />
             ))}
           </ul>
+
+          {/* Outils (ex. Explorer, thème) — optionnel, utilisé par la version mobile */}
+          {tools.length > 0 && (
+            <div className="sm-panel-tools">
+              {tools.map(tool => (
+                <button
+                  key={tool.key}
+                  type="button"
+                  className="sm-panel-tool"
+                  aria-pressed={tool.pressed}
+                  onClick={() => {
+                    if (tool.closeMenu) {
+                      closeMenu()
+                      setTimeout(() => tool.onClick?.(), 340)
+                    } else {
+                      tool.onClick?.()
+                    }
+                  }}
+                >
+                  {tool.icon}
+                  <span>{tool.label}</span>
+                </button>
+              ))}
+            </div>
+          )}
 
         </div>
       </aside>

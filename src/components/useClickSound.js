@@ -119,7 +119,7 @@ const CLICK_SELECTORS = [
 /* ═══════════════════════════════════════════════════════════
    HOOK PRINCIPAL
 ═══════════════════════════════════════════════════════════ */
-export function useSoundSystem() {
+export function useSoundSystem({ hover = true } = {}) {
   const ctxRef   = useRef(null)
   const [muted, setMuted] = useState(() => {
     try { return localStorage.getItem('sound-muted') === 'true' } catch { return false }
@@ -195,6 +195,7 @@ export function useSoundSystem() {
 
   /* ── Global hover listener (délégation, throttled) ── */
   useEffect(() => {
+    if (!hover) return
     let lastHover = 0
     const onEnter = (e) => {
       if (mutedRef.current) return
@@ -210,7 +211,7 @@ export function useSoundSystem() {
     }
     document.addEventListener('mouseover', onEnter, { passive: true })
     return () => document.removeEventListener('mouseover', onEnter)
-  }, [getCtx])
+  }, [getCtx, hover])
 
   return { muted, toggleMute }
 }

@@ -8,7 +8,6 @@ import { useGooeyTransition } from './components/GooeyTransition.jsx';
 import MobileLoader from './components/MobileLoader.jsx';
 import { gsap } from 'gsap';
 import SoundToggle from './components/SoundToggle.jsx';
-import { useImmersiveSound } from './hooks/useImmersiveSound.js';
 import { PROJECTS, PRICING_TABS, FAQ_ITEMS, WRITING_POSTS, CONTACT, SERVICES, PROCESS_STEPS } from './data/portfolioData.js';
 import { cld } from './lib/cloudinary'
 
@@ -4198,12 +4197,9 @@ export default function App() {
     return next;
   });
   const dark = !light;
-  const { muted, toggleMute } = useSoundSystem();
+  /* Seuls les sons de clic restent actifs : ni piste d'ambiance, ni son de survol. */
+  const { muted, toggleMute } = useSoundSystem({ hover: false });
 
-  /* Son d'immersion — piste réelle en boucle, démarrée dès que le loader a
-     fini (loaded passe à true), coupée par le même mute/touche S que
-     les sons de clic ci-dessus. useClickSound.js non modifié. */
-  useImmersiveSound(muted, loaded);
   /* Loader dédié mobile : aucun papier brûlé. GooeyTransition.mobile
      couvre puis révèle le Hero déjà monté sous cet écran. */
   return (

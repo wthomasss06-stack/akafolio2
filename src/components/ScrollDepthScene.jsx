@@ -239,7 +239,8 @@ export default function ScrollDepthScene({ children, dark = true }) {
           position: 'fixed', inset: 0, zIndex: 1, pointerEvents: 'none',
           background: dark
             ? 'radial-gradient(ellipse at center, transparent 30%, rgba(10,10,10,0.75) 100%)'
-            : 'radial-gradient(ellipse at center, transparent 30%, rgba(255,255,255,0.75) 100%)',
+            /* Mode clair : voile blanc uniquement vers le bas — plus de bande blanche au-dessus du hero */
+            : 'radial-gradient(ellipse at 50% 0%, transparent 55%, rgba(255,255,255,0.75) 130%)',
         }}
       />
       <div ref={containerRef} style={{ position: 'relative', zIndex: 2 }}>

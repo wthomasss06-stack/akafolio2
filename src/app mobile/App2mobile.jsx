@@ -1200,30 +1200,26 @@ function Navbar({ theme, onToggleTheme, onToggleExplorer, isExplorerOpen }) {
   /* SM_ITEMS : transforme NAV_LINKS en format attendu par StaggeredMenu */
   const SM_ITEMS = navLinks.map(l => ({ label: l.label, id: l.id }))
 
-  /* ── Toggle thème clair / sombre ── */
-  const AnimatedThemeToggler = ({ theme: t, onClick }) => (
-    <button
-      className="nb-theme-btn att-btn"
-      onClick={onClick}
-      title="Basculer thème"
-      aria-label={t === 'light' ? 'Passer en mode sombre' : 'Passer en mode clair'}
-    >
-      <span className="att-track" data-theme={t}>
-        <span className="att-icon att-sun" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" width="15" height="15">
-            <circle cx="12" cy="12" r="4" />
-            <line x1="12" y1="2" x2="12" y2="4" /><line x1="12" y1="20" x2="12" y2="22" />
-            <line x1="2" y1="12" x2="4" y2="12" /><line x1="20" y1="12" x2="22" y2="12" />
-          </svg>
-        </span>
-        <span className="att-icon att-moon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" width="15" height="15">
-            <path d="M20 13.5A8.5 8.5 0 1 1 10.5 4a6.5 6.5 0 0 0 9.5 9.5z" />
-          </svg>
-        </span>
-      </span>
-    </button>
-  )
+  /* Explorer + thème : dans le menu (StaggeredMenu) sur mobile, plus dans la topbar */
+  const SM_TOOLS = [
+    {
+      key: 'explorer',
+      label: isExplorerOpen ? 'Fermer' : 'Explorer',
+      closeMenu: true,
+      pressed: isExplorerOpen,
+      onClick: onToggleExplorer,
+      icon: <AnimIcon type={isExplorerOpen ? 'x' : 'compass'} size={14} color="currentColor" />,
+    },
+    {
+      key: 'theme',
+      label: theme === 'light' ? 'Mode sombre' : 'Mode clair',
+      closeMenu: false,
+      onClick: onToggleTheme,
+      icon: theme === 'light'
+        ? <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M20 13.5A8.5 8.5 0 1 1 10.5 4a6.5 6.5 0 0 0 9.5 9.5z" /></svg>
+        : <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="4" /><line x1="12" y1="2" x2="12" y2="4" /><line x1="12" y1="20" x2="12" y2="22" /><line x1="2" y1="12" x2="4" y2="12" /><line x1="20" y1="12" x2="22" y2="12" /></svg>,
+    },
+  ]
 
   const logoBlock = (
     <>
@@ -1263,20 +1259,25 @@ function Navbar({ theme, onToggleTheme, onToggleExplorer, isExplorerOpen }) {
 
         {/* Droite */}
         <div className="nb-topbar-right">
-          <button type="button" className="nb-explore-btn" onClick={onToggleExplorer} aria-pressed={isExplorerOpen}>
-            <AnimIcon type={isExplorerOpen ? 'x' : 'compass'} size={13} color="currentColor" />
-            <HoverFadeText tag="span">{isExplorerOpen ? 'Fermer' : 'Explorer'}</HoverFadeText>
-          </button>
-          <AnimatedThemeToggler theme={theme} onClick={onToggleTheme} />
           <StaggeredMenu
             items={SM_ITEMS}
             socialItems={SM_SOCIALS}
             activeSection={activeSection}
             onItemClick={id => navTo(id)}
+            tools={SM_TOOLS}
           />
         </div>
 
             </header>
+
+      {/* Fermeture de l'Explorer : l'overlay (z-index 1400) recouvre la topbar,
+          donc un bouton flottant au-dessus permet d'en sortir sur mobile. */}
+      {isExplorerOpen && (
+        <button type="button" className="pe-close-fab" onClick={onToggleExplorer} aria-label="Fermer l'Explorer">
+          <AnimIcon type="x" size={14} color="currentColor" />
+          <span>Fermer</span>
+        </button>
+      )}
     </>
   )
 }

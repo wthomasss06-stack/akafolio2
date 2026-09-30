@@ -285,3 +285,22 @@
   .sm-panel-logo      { margin-bottom: 2rem; }
   .sm-toggle          { padding: 7px 13px 7px 11px; font-size: .58rem; }
 }
+
+/* ── Outils du panel (Explorer / thème) — version mobile ── */
+.sm-panel-tools {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  margin-top: 1.6rem; padding-top: 1.4rem;
+  border-top: 1px solid rgba(255,85,0,.35);
+}
+.sm-panel-tool {
+  flex: 1 1 140px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+  padding: 12px 14px; border-radius: 999px; cursor: pointer;
+  background: transparent; color: var(--text);
+  border: 2px solid var(--text); box-shadow: 3px 3px 0 var(--accent, #FF5500);
+  font-family: 'Space Mono', monospace; font-size: .68rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase; line-height: 1;
+  transition: transform .18s, box-shadow .18s, background .2s, color .2s;
+}
+.sm-panel-tool:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--accent, #FF5500); }
+.sm-panel-tool svg { flex-shrink: 0; }

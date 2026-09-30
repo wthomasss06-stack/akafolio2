@@ -4436,3 +4436,12 @@
 .hv4-photo-mob-inner .hv4-photo {
   filter: grayscale(0) contrast(1) brightness(1);
 }
+
+
+/* ── Hero mobile : aucune bande blanche derrière le header ──
+   Le header est transparent ; on garantit aussi que ni ses pseudo-éléments
+   ni le fond de page ne peuvent réapparaître en blanc au-dessus du hero. */
+.nb-topbar::before,
+.nb-topbar::after { content: none !important; background: none !important; }
+.hero.hv4 { margin-top: 0; padding-top: max(80px, calc(env(safe-area-inset-top, 0px) + 72px)); }
+.app--light .hero.hv4 { background: #050505; }

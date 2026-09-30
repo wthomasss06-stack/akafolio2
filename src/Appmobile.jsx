@@ -1748,16 +1748,8 @@ const FC_PROJECT_IDS = [21, 22, 23, 24];
 const FeaturedCreation = ({ dark }) => {
   const [ref, vis] = useInView(0.08);
   const [projIdx, setProjIdx] = useState(0);
-  const [mobileSlide, setMobileSlide] = useState(0);
   const [fading, setFading] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
-
-  // Auto-slide mobile : alterne responsive ↔ preview toutes les 3.5s
-  useEffect(() => {
-    setMobileSlide(0);
-    const t = setInterval(() => setMobileSlide(s => (s + 1) % 2), 3500);
-    return () => clearInterval(t);
-  }, [projIdx]);
 
   // Auto-switch projet toutes les 7s
   useEffect(() => {
@@ -1765,7 +1757,6 @@ const FeaturedCreation = ({ dark }) => {
       setFading(true);
       setTimeout(() => {
         setProjIdx(i => (i + 1) % FC_PROJECT_IDS.length);
-        setMobileSlide(0);
         setFading(false);
       }, 380);
     }, 7000);
@@ -1775,8 +1766,8 @@ const FeaturedCreation = ({ dark }) => {
   const proj = PROJECTS.find(p => p.id === FC_PROJECT_IDS[projIdx]);
   if (!proj) return null;
 
-  // Les deux images mobiles : version responsive (slide 0) puis preview (slide 1)
-  const mobileImgs = [proj.images?.[1] || proj.image, proj.image];
+  // Téléphone : image « <projet>-responsive » (data.responsive) ; le grand écran garde « <projet>-preview » (data.img)
+  const mobileImgs = [proj.responsive || proj.image];
   const barUrl = (proj.url && proj.url !== '#') ? proj.url.replace('https://', '').replace(/\/$/, '') : proj.title.toLowerCase().replace(/\s+/g, '') + '.vercel.app';
 
   return (
@@ -1804,9 +1795,9 @@ const FeaturedCreation = ({ dark }) => {
             <div className="cr-mobile-shell">
               <div className="cr-mobile-notch" />
               <div className="cr-mobile-screen">
-                <div className="cr-slide-track" style={{ transform: `translateY(-${mobileSlide * 50}%)`, transition: 'transform .6s cubic-bezier(.4,0,.2,1)', willChange: 'transform' }}>
+                <div className="cr-slide-track" style={{ height: '100%' }}>
                   {mobileImgs.map((src, i) => (
-                    <img key={src + i} src={src} alt={`${proj.title} mobile ${i + 1}`} className="cr-screen-img cr-slide-img" />
+                    <img key={src + i} src={src} alt={`${proj.title} mobile`} className="cr-screen-img cr-slide-img" style={{ height: '100%' }} />
                   ))}
                 </div>
               </div>
@@ -1818,7 +1809,7 @@ const FeaturedCreation = ({ dark }) => {
           {/* Dots — un par projet */}
           <div className="cr-dots">
             {FC_PROJECT_IDS.map((_, i) => (
-              <button key={i} className={`cr-dot-btn${projIdx === i ? ' cr-dot-btn--active' : ''}`} onClick={() => { setProjIdx(i); setMobileSlide(0); }} />
+              <button key={i} className={`cr-dot-btn${projIdx === i ? ' cr-dot-btn--active' : ''}`} onClick={() => setProjIdx(i)} />
             ))}
           </div>
 
@@ -3268,6 +3259,7 @@ const FanDeck = ({ items, dark }) => {
 /* ══ SPOTLIGHT PROJECTS ══ */
 const SpotlightProjects = ({ items, dark }) => {
   const [selected, setSelected] = useState(0);
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const [imgErr, setImgErr] = useState({});
   const thumbsRef = useRef(null);
 
@@ -3328,14 +3320,18 @@ const SpotlightProjects = ({ items, dark }) => {
             )}
           </div>
           <div className="sp-techs">{proj.tech.map(t => <span key={t} className="sp-tech">{t}</span>)}</div>
-          {proj.url && (
-            <div className="sp-actions">
+          <div className="sp-actions">
+            {proj.url && (
               <a href={proj.url} target={isExternal ? '_blank' : '_self'} rel="noreferrer"
                 className={`btn ${dark ? 'btn--neon' : 'btn--primary'} sp-cta mi-glint`}>
                 <LI name={isDemo ? 'play-circle' : 'external-link-alt'} color="#ff5500" />{isDemo ? 'Voir la démo' : 'Voir le site →'}
               </a>
-            </div>
-          )}
+            )}
+            <button type="button" onClick={() => setDetailsOpen(true)}
+              className={`btn ${dark ? 'btn--ghost-neon' : 'btn--ghost'} sp-cta`}>
+              <LI name="info-circle" color={dark ? "#fff" : "#1a1a1a"} /> Détails du projet
+            </button>
+          </div>
           {/* Navigation : boutons slide + dots */}
           <div className="sp-nav-row">
             <button
@@ -3376,6 +3372,7 @@ const SpotlightProjects = ({ items, dark }) => {
           ))}
         </div>
       </div>
+      <ProjectModal project={detailsOpen ? proj : null} dark={dark} onClose={() => setDetailsOpen(false)} />
     </div>
   );
 };

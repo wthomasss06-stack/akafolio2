@@ -560,12 +560,12 @@ const SERVICES_MOBILE_COPY = SERVICES.map(({ n, title, sub, desc, features }) =>
 // & suivi »). `tag`, `img` et `imgAlt` sont propres au portfolio : les images sont
 // celles déjà sur Cloudinary (les process_akatech_* de data.js n'y existent pas).
 const PROCESS_STEPS = [
-  { n: '01', title: 'Brief & découverte', tag: '1 à 2 jours', desc: 'Nous échangeons sur votre projet, vos objectifs et vos besoins. Premier échange gratuit et sans engagement.', img: cld('/assets/images/process/prise de contact.webp'), imgAlt: 'Brief et découverte' },
-  { n: '02', title: 'Devis & contrat', tag: '1 jour', desc: 'Nous définissons le périmètre, le prix et le délai, puis validons le projet ensemble.', img: cld('/assets/images/process/devis et condition.webp'), imgAlt: 'Devis et contrat' },
-  { n: '03', title: 'Acompte & contenus', tag: 'Feu vert', desc: "Vous versez 50 % d'acompte et transmettez les éléments nécessaires (logo, informations, visuels...). Le délai démarre lorsque l'acompte et les contenus sont reçus.", img: cld('/assets/images/process/acompte.webp'), imgAlt: 'Acompte et contenus' },
-  { n: '04', title: 'Conception & développement', tag: 'Délai annoncé', desc: 'Nous concevons et développons votre projet conformément au devis.', img: cld('/assets/images/process/creation du site.webp'), imgAlt: 'Conception et développement' },
-  { n: '05', title: 'Prévisualisation & validation', tag: '1 à 2 jours', desc: 'Vous recevez un lien de prévisualisation, testez le projet, et nous effectuons les corrections mineures incluses.', img: cld('/assets/images/process/livraison.webp'), imgAlt: 'Prévisualisation et validation' },
-  { n: '06', title: 'Livraison & suivi', tag: 'Projet livré', desc: 'Après paiement du solde, le projet est mis en ligne et les accès sont transmis. La période de garantie/support commence ensuite.', img: cld('/assets/images/process/mise en ligne.webp'), imgAlt: 'Livraison et suivi' },
+  { n: '01', title: 'Brief & découverte', tag: '1 à 2 jours', desc: 'Nous échangeons sur votre projet, vos objectifs et vos besoins. Premier échange gratuit et sans engagement.', img: cld('/assets/images/process/process_akatech_01_brief.webp'), imgAlt: 'Brief et découverte' },
+  { n: '02', title: 'Devis & contrat', tag: '1 jour', desc: 'Nous définissons le périmètre, le prix et le délai, puis validons le projet ensemble.', img: cld('/assets/images/process/process_akatech_02_devis.webp'), imgAlt: 'Devis et contrat' },
+  { n: '03', title: 'Acompte & contenus', tag: 'Feu vert', desc: "Vous versez 50 % d'acompte et transmettez les éléments nécessaires (logo, informations, visuels...). Le délai démarre lorsque l'acompte et les contenus sont reçus.", img: cld('/assets/images/process/process_akatech_03_acompte.webp'), imgAlt: 'Acompte et contenus' },
+  { n: '04', title: 'Conception & développement', tag: 'Délai annoncé', desc: 'Nous concevons et développons votre projet conformément au devis.', img: cld('/assets/images/process/process_akatech_04_conception.webp'), imgAlt: 'Conception et développement' },
+  { n: '05', title: 'Prévisualisation & validation', tag: '1 à 2 jours', desc: 'Vous recevez un lien de prévisualisation, testez le projet, et nous effectuons les corrections mineures incluses.', img: cld('/assets/images/process/process_akatech_05_validation.webp'), imgAlt: 'Prévisualisation et validation' },
+  { n: '06', title: 'Livraison & suivi', tag: 'Projet livré', desc: 'Après paiement du solde, le projet est mis en ligne et les accès sont transmis. La période de garantie/support commence ensuite.', img: cld('/assets/images/process/process_akatech_06_livraison.webp'), imgAlt: 'Livraison et suivi' },
 ]
 
 // Version App.jsx : 14 questions orientées process de commande.

@@ -107,7 +107,7 @@ function hashFile(filePath) {
 function readExistingManifest() {
   if (!fs.existsSync(manifestPath)) return {};
   const source = fs.readFileSync(manifestPath, 'utf8');
-  const match = source.match(/export const CLOUDINARY_VERSIONS = (\{[\s\S]*\})\s*$/);
+  const match = source.match(/export const CLOUDINARY_VERSIONS = (\{[\s\S]*?\})\s*(?=export const CLOUDINARY_PUBLIC_IDS|$)/);
   if (!match) return {};
   try {
     return Function(`"use strict"; return (${match[1]})`)();
@@ -117,12 +117,16 @@ function readExistingManifest() {
   }
 }
 
-function writeManifest(versions) {
+function writeManifest(versions, publicIds) {
   const entries = Object.keys(versions)
     .sort()
     .map(key => `  ${JSON.stringify(key)}: ${JSON.stringify(versions[key])},`)
     .join('\n');
-  const content = `// Fichier généré automatiquement par scripts/upload-cloudinary.cjs.\n// Ne pas modifier manuellement : relancer la synchronisation après chaque changement de média.\nexport const CLOUDINARY_VERSIONS = {\n${entries}\n}\n`;
+  const publicIdEntries = Object.keys(publicIds)
+    .sort()
+    .map(key => `  ${JSON.stringify(key)}: ${JSON.stringify(publicIds[key])},`)
+    .join('\n');
+  const content = `// Fichier généré automatiquement par scripts/upload-cloudinary.cjs.\n// Ne pas modifier manuellement : relancer la synchronisation après chaque changement de média.\nexport const CLOUDINARY_VERSIONS = {\n${entries}\n}\n\nexport const CLOUDINARY_PUBLIC_IDS = {\n${publicIdEntries}\n}\n`;
   fs.mkdirSync(path.dirname(manifestPath), { recursive: true });
   fs.writeFileSync(manifestPath, content, 'utf8');
 }
@@ -216,22 +220,60 @@ async function uploadFile(filePath, publicId, resourceType) {
 }
 
 function collectLocalAssets(files) {
-  const assets = [];
-  const seen = new Map();
-
-  for (const filePath of files) {
+  const candidates = files.map(filePath => {
     const relativePath = path.relative(imagesDir, filePath).replace(/\\/g, '/');
     const resourceType = resourceTypeFor(relativePath);
-    const publicId = publicIdFor(relativePath);
-    const key = resourceKey(resourceType, publicId);
-    if (seen.has(key)) {
-      throw new Error(`Deux fichiers locaux partagent le même public_id Cloudinary : ${seen.get(key)} et ${relativePath}. Renomme l’un des deux avant la synchronisation.`);
-    }
-    seen.set(key, relativePath);
-    assets.push({ filePath, relativePath, resourceType, publicId, key, localKey: localKey(relativePath) });
+    return {
+      filePath,
+      relativePath,
+      resourceType,
+      basePublicId: publicIdFor(relativePath),
+      localKey: localKey(relativePath),
+    };
+  });
+  const groups = new Map();
+
+  for (const candidate of candidates) {
+    const groupKey = resourceKey(candidate.resourceType, candidate.basePublicId);
+    const group = groups.get(groupKey) || [];
+    group.push(candidate);
+    groups.set(groupKey, group);
   }
 
-  return assets;
+  const occupied = new Set();
+  for (const [groupKey, group] of groups) {
+    if (group.length === 1) occupied.add(groupKey);
+  }
+
+  const assets = [];
+  const publicIds = {};
+  for (const group of groups.values()) {
+    for (const candidate of group) {
+      if (group.length === 1) {
+        assets.push({
+          ...candidate,
+          publicId: candidate.basePublicId,
+          key: resourceKey(candidate.resourceType, candidate.basePublicId),
+        });
+        continue;
+      }
+
+      const extension = path.extname(candidate.relativePath).slice(1).toLowerCase();
+      let publicId = `${candidate.basePublicId}--${extension}`;
+      let suffix = 2;
+      while (occupied.has(resourceKey(candidate.resourceType, publicId))) {
+        publicId = `${candidate.basePublicId}--${extension}-${suffix++}`;
+      }
+
+      const key = resourceKey(candidate.resourceType, publicId);
+      occupied.add(key);
+      publicIds[candidate.localKey] = publicId.slice(BASE_FOLDER.length + 1);
+      console.log(`ℹ️  ${candidate.relativePath} → ${publicId} (nom de fichier ambigu).`);
+      assets.push({ ...candidate, publicId, key });
+    }
+  }
+
+  return { assets, publicIds };
 }
 
 async function uploadAll() {
@@ -248,7 +290,7 @@ async function uploadAll() {
   const allFiles = getFilesRecursively(imagesDir);
   const files = allFiles.filter(file => MEDIA_EXTENSIONS.has(path.extname(file).toLowerCase())).sort();
   const skipped = allFiles.length - files.length;
-  const localAssets = collectLocalAssets(files);
+  const { assets: localAssets, publicIds } = collectLocalAssets(files);
 
   if (skipped > 0) console.log(`ℹ️  ${skipped} fichier(s) ignoré(s) (extension non média).`);
   console.log(`🔎 Comparaison de ${localAssets.length} média(s) avec Cloudinary (${cloudName})…`);
@@ -320,7 +362,7 @@ async function uploadAll() {
     }
   }
 
-  writeManifest(versions);
+  writeManifest(versions, publicIds);
   console.log(`\n🎉 Synchronisation terminée : ${successCount} upload(s), ${unchanged.length} inchangé(s) ignoré(s), ${failCount} échec(s).`);
   console.log(`📝 Registre de versions mis à jour : ${path.relative(process.cwd(), manifestPath)}`);
   if (failCount > 0) process.exitCode = 1;

@@ -3,7 +3,7 @@
 // La version Cloudinary est lue automatiquement dans cloudinaryVersions.js,
 // fichier généré par scripts/upload-cloudinary.cjs après chaque migration.
 
-import { CLOUDINARY_VERSIONS } from '../data/cloudinaryVersions.js'
+import { CLOUDINARY_PUBLIC_IDS, CLOUDINARY_VERSIONS } from '../data/cloudinaryVersions.js'
 
 const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dwuybrjxh'
 const BASE_FOLDER = process.env.NEXT_PUBLIC_CLOUDINARY_BASE_FOLDER || 'elvis-portfolio/images'
@@ -25,6 +25,9 @@ export function cld(localPath, options = {}) {
   const base = dotIndex !== -1 ? clean.slice(0, dotIndex) : clean
   const ext = dotIndex !== -1 ? clean.slice(dotIndex + 1).toLowerCase() : 'jpg'
   const resourceType = VIDEO_EXTENSIONS.has(ext) ? 'video' : 'image'
+  const publicId = CLOUDINARY_PUBLIC_IDS[normalizedPath]
+    ? `${BASE_FOLDER}/${CLOUDINARY_PUBLIC_IDS[normalizedPath]}`
+    : `${BASE_FOLDER}/${base}`
 
   const transforms = ['f_auto', 'q_auto']
   if (options.width) transforms.push(`w_${options.width}`)
@@ -32,5 +35,5 @@ export function cld(localPath, options = {}) {
   const versionValue = options.version ?? CLOUDINARY_VERSIONS[normalizedPath]
   const version = versionValue == null ? '' : `v${String(versionValue).replace(/^v/i, '')}/`
 
-  return `https://res.cloudinary.com/${CLOUD_NAME}/${resourceType}/upload/${transforms.join(',')}/${version}${BASE_FOLDER}/${base}.${ext}`
+  return `https://res.cloudinary.com/${CLOUD_NAME}/${resourceType}/upload/${transforms.join(',')}/${version}${publicId}.${ext}`
 }

@@ -16,6 +16,27 @@ if (fs.existsSync(envPath)) {
   });
 }
 
+const args = new Set(process.argv.slice(2));
+const dryRun = args.has('--dry-run');
+const force = args.has('--force');
+const showHelp = args.has('--help') || args.has('-h');
+
+if (showHelp) {
+  console.log(`Synchronisation différentielle des médias Cloudinary
+
+Utilisation :
+  node scripts/upload-cloudinary.cjs [--dry-run] [--force]
+  npm run cloudinary:sync -- [--dry-run] [--force]
+
+Options :
+  --dry-run  Compare local/Cloudinary et affiche le plan, sans upload ni écriture du manifeste.
+  --force    Ré-uploade tous les fichiers locaux, même s'ils sont identiques.
+  --help     Affiche cette aide.
+
+Le script ne supprime jamais automatiquement les assets présents uniquement sur Cloudinary.`);
+  process.exit(0);
+}
+
 const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
 const apiKey = process.env.CLOUDINARY_API_KEY;
 const apiSecret = process.env.CLOUDINARY_API_SECRET;
@@ -32,7 +53,8 @@ const imagesDir = path.resolve(process.env.CLOUDINARY_SOURCE_DIR || defaultImage
 const manifestPath = path.join(__dirname, '..', 'src', 'data', 'cloudinaryVersions.js');
 const MEDIA_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg', '.avif', '.webm', '.mp4', '.mov']);
 const VIDEO_EXTENSIONS = new Set(['.webm', '.mp4', '.mov']);
-const dryRun = process.argv.includes('--dry-run');
+const MAX_RESULTS = 500;
+const ADMIN_AUTH = `Basic ${Buffer.from(`${apiKey}:${apiSecret}`).toString('base64')}`;
 
 function getFilesRecursively(dir) {
   const results = [];
@@ -40,7 +62,7 @@ function getFilesRecursively(dir) {
     const filePath = path.join(dir, file);
     const stat = fs.statSync(filePath);
     if (stat.isDirectory()) results.push(...getFilesRecursively(filePath));
-    else results.push(filePath);
+    else if (stat.isFile()) results.push(filePath);
   }
   return results;
 }
@@ -55,6 +77,33 @@ function localKey(relativePath) {
   return `/assets/images/${relativePath.replace(/\\/g, '/')}`;
 }
 
+function resourceTypeFor(relativePath) {
+  return VIDEO_EXTENSIONS.has(path.extname(relativePath).toLowerCase()) ? 'video' : 'image';
+}
+
+function publicIdFor(relativePath) {
+  const ext = path.extname(relativePath);
+  return `${BASE_FOLDER}/${relativePath.slice(0, relativePath.length - ext.length).replace(/\\/g, '/')}`;
+}
+
+function resourceKey(resourceType, publicId) {
+  return `${resourceType}:${publicId}`;
+}
+
+function normalizeEtag(etag) {
+  return typeof etag === 'string' ? etag.replace(/^\"|\"$/g, '').toLowerCase() : '';
+}
+
+function hashFile(filePath) {
+  return new Promise((resolve, reject) => {
+    const hash = crypto.createHash('md5');
+    const stream = fs.createReadStream(filePath);
+    stream.on('error', reject);
+    stream.on('data', chunk => hash.update(chunk));
+    stream.on('end', () => resolve(hash.digest('hex')));
+  });
+}
+
 function readExistingManifest() {
   if (!fs.existsSync(manifestPath)) return {};
   const source = fs.readFileSync(manifestPath, 'utf8');
@@ -63,7 +112,7 @@ function readExistingManifest() {
   try {
     return Function(`"use strict"; return (${match[1]})`)();
   } catch {
-    console.warn('⚠️  Manifest Cloudinary illisible : il sera régénéré avec les nouveaux uploads.');
+    console.warn('⚠️  Manifest Cloudinary illisible : il sera régénéré avec les versions confirmées.');
     return {};
   }
 }
@@ -73,19 +122,70 @@ function writeManifest(versions) {
     .sort()
     .map(key => `  ${JSON.stringify(key)}: ${JSON.stringify(versions[key])},`)
     .join('\n');
-  const content = `// Fichier généré automatiquement par scripts/upload-cloudinary.cjs.\n// Ne pas modifier manuellement : relancer la migration après chaque nouvel upload.\nexport const CLOUDINARY_VERSIONS = {\n${entries}\n}\n`;
+  const content = `// Fichier généré automatiquement par scripts/upload-cloudinary.cjs.\n// Ne pas modifier manuellement : relancer la synchronisation après chaque changement de média.\nexport const CLOUDINARY_VERSIONS = {\n${entries}\n}\n`;
   fs.mkdirSync(path.dirname(manifestPath), { recursive: true });
   fs.writeFileSync(manifestPath, content, 'utf8');
 }
 
-async function uploadFile(filePath, relativePath) {
-  const ext = path.extname(relativePath).toLowerCase();
-  const relativePathNoExt = relativePath.slice(0, relativePath.length - ext.length);
-  const publicId = `${BASE_FOLDER}/${relativePathNoExt}`;
-  const resourceType = VIDEO_EXTENSIONS.has(ext) ? 'video' : 'image';
+async function readJsonResponse(response, operation) {
+  const text = await response.text();
+  let data;
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    throw new Error(`${operation} a retourné une réponse non JSON (HTTP ${response.status}). Vérifie les identifiants Cloudinary.`);
+  }
+  if (!response.ok) {
+    const message = data.error?.message || JSON.stringify(data);
+    const hint = response.status === 420 ? ' Limite de requêtes Admin API atteinte ; réessaie après son renouvellement.' : '';
+    throw new Error(`${operation} a échoué (HTTP ${response.status}) : ${message}.${hint}`);
+  }
+  return data;
+}
 
-  // overwrite + invalidate garantissent qu’une nouvelle migration remplace le fichier
-  // et purge l’ancienne URL CDN du même public_id.
+async function fetchCloudinaryInventory() {
+  const expression = `public_id:${BASE_FOLDER}/* AND type=upload`;
+  const resources = [];
+  const seenCursors = new Set();
+  let nextCursor;
+
+  do {
+    const url = `https://api.cloudinary.com/v1_1/${encodeURIComponent(cloudName)}/resources/search`;
+    const body = { expression, max_results: MAX_RESULTS };
+    if (nextCursor) body.next_cursor = nextCursor;
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Authorization: ADMIN_AUTH,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(60000),
+    });
+    const data = await readJsonResponse(response, 'Lecture de l’inventaire Cloudinary');
+    const page = Array.isArray(data.resources) ? data.resources : [];
+    resources.push(...page);
+
+    nextCursor = data.next_cursor || undefined;
+    if (nextCursor && seenCursors.has(nextCursor)) {
+      throw new Error('Cloudinary a retourné un curseur de pagination déjà utilisé ; synchronisation arrêtée par sécurité.');
+    }
+    if (nextCursor) seenCursors.add(nextCursor);
+    if (!nextCursor && Number.isFinite(data.total_count) && resources.length < data.total_count) {
+      throw new Error(`Inventaire Cloudinary incomplet : ${resources.length}/${data.total_count} ressources lues, sans curseur de suite.`);
+    }
+  } while (nextCursor);
+
+  const folderPrefix = `${BASE_FOLDER}/`;
+  return resources.filter(resource =>
+    resource?.public_id?.startsWith(folderPrefix) &&
+    ['image', 'video'].includes(resource.resource_type) &&
+    resource.type === 'upload'
+  );
+}
+
+async function uploadFile(filePath, publicId, resourceType) {
   const timestamp = Math.floor(Date.now() / 1000);
   const paramsToSign = {
     invalidate: 'true',
@@ -104,12 +204,34 @@ async function uploadFile(filePath, relativePath) {
   formData.append('invalidate', 'true');
   formData.append('signature', signature);
 
-  const url = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
-  const response = await fetch(url, { method: 'POST', body: formData });
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.error?.message || JSON.stringify(data));
+  const url = `https://api.cloudinary.com/v1_1/${encodeURIComponent(cloudName)}/${resourceType}/upload`;
+  const response = await fetch(url, {
+    method: 'POST',
+    body: formData,
+    signal: AbortSignal.timeout(10 * 60 * 1000),
+  });
+  const data = await readJsonResponse(response, `Upload de ${path.basename(filePath)}`);
   if (!data.version) throw new Error('Cloudinary n’a pas retourné de version pour cet asset.');
   return data;
+}
+
+function collectLocalAssets(files) {
+  const assets = [];
+  const seen = new Map();
+
+  for (const filePath of files) {
+    const relativePath = path.relative(imagesDir, filePath).replace(/\\/g, '/');
+    const resourceType = resourceTypeFor(relativePath);
+    const publicId = publicIdFor(relativePath);
+    const key = resourceKey(resourceType, publicId);
+    if (seen.has(key)) {
+      throw new Error(`Deux fichiers locaux partagent le même public_id Cloudinary : ${seen.get(key)} et ${relativePath}. Renomme l’un des deux avant la synchronisation.`);
+    }
+    seen.set(key, relativePath);
+    assets.push({ filePath, relativePath, resourceType, publicId, key, localKey: localKey(relativePath) });
+  }
+
+  return assets;
 }
 
 async function uploadAll() {
@@ -119,50 +241,92 @@ async function uploadAll() {
     process.exitCode = 1;
     return;
   }
+  if (/\s/.test(BASE_FOLDER)) {
+    throw new Error('CLOUDINARY_BASE_FOLDER ne doit pas contenir d’espaces pour la recherche préfixée Cloudinary.');
+  }
 
   const allFiles = getFilesRecursively(imagesDir);
-  const files = allFiles.filter(file => MEDIA_EXTENSIONS.has(path.extname(file).toLowerCase()));
+  const files = allFiles.filter(file => MEDIA_EXTENSIONS.has(path.extname(file).toLowerCase())).sort();
   const skipped = allFiles.length - files.length;
-  const versions = readExistingManifest();
+  const localAssets = collectLocalAssets(files);
 
-  if (skipped > 0) console.log(`ℹ️  ${skipped} fichier(s) ignoré(s) (extension non-média).\n`);
-  if (dryRun) {
-    console.log(`🔎 Simulation : ${files.length} fichier(s) seraient écrasés dans ${BASE_FOLDER}.`);
-    files.forEach(filePath => {
-      const relativePath = path.relative(imagesDir, filePath).replace(/\\/g, '/');
-      console.log(`  • ${relativePath} → ${BASE_FOLDER}/${relativePath.replace(/\.[^.]+$/, '')}`);
+  if (skipped > 0) console.log(`ℹ️  ${skipped} fichier(s) ignoré(s) (extension non média).`);
+  console.log(`🔎 Comparaison de ${localAssets.length} média(s) avec Cloudinary (${cloudName})…`);
+  console.log(`   Dossier : ${BASE_FOLDER}`);
+  console.log(`   Mode : ${dryRun ? 'simulation' : 'synchronisation'}${force ? ' forcée' : ''}`);
+
+  // Si l’inventaire distant échoue, on s’arrête plutôt que de ré-uploader tout le dossier à l’aveugle.
+  const remoteResources = await fetchCloudinaryInventory();
+  const remoteByKey = new Map(remoteResources.map(resource => [resourceKey(resource.resource_type, resource.public_id), resource]));
+  const localKeys = new Set(localAssets.map(asset => asset.key));
+  const remoteOnlyCount = [...remoteByKey.keys()].filter(key => !localKeys.has(key)).length;
+  const versions = readExistingManifest();
+  const plan = [];
+
+  for (const asset of localAssets) {
+    const remote = remoteByKey.get(asset.key);
+    const stat = fs.statSync(asset.filePath);
+    const localEtag = await hashFile(asset.filePath);
+    const sameSize = remote && Number(remote.bytes) === stat.size;
+    const sameContent = remote && normalizeEtag(remote.etag) === localEtag && sameSize;
+
+    if (remote && sameContent && !force) {
+      plan.push({ ...asset, action: 'unchanged', remote, localEtag, size: stat.size });
+      continue;
+    }
+    plan.push({
+      ...asset,
+      action: remote ? (force ? 'forced' : 'modified') : 'new',
+      remote,
+      localEtag,
+      size: stat.size,
     });
-    console.log('✅ Dry-run terminé : aucun upload et aucun fichier généré.');
+  }
+
+  const unchanged = plan.filter(item => item.action === 'unchanged');
+  const uploads = plan.filter(item => item.action !== 'unchanged');
+  const newCount = uploads.filter(item => item.action === 'new').length;
+  const modifiedCount = uploads.filter(item => item.action === 'modified').length;
+  const forcedCount = uploads.filter(item => item.action === 'forced').length;
+
+  console.log(`\n📋 Plan : ${unchanged.length} inchangé(s), ${newCount} nouveau(x), ${modifiedCount} modifié(s)${forcedCount ? `, ${forcedCount} forcé(s)` : ''}.`);
+  if (remoteOnlyCount > 0) console.log(`   ℹ️  ${remoteOnlyCount} asset(s) Cloudinary sans fichier local : conservés en ligne, jamais supprimés automatiquement.`);
+
+  if (dryRun) {
+    unchanged.forEach(item => console.log(`  = ${item.relativePath} — inchangé, ignoré`));
+    uploads.forEach(item => console.log(`  ↑ ${item.relativePath} — ${item.action === 'new' ? 'nouveau' : item.action === 'modified' ? 'empreinte ou taille différente' : 'option --force'}`));
+    console.log('\n✅ Simulation terminée : aucun upload et aucun manifeste modifié.');
     return;
   }
-  console.log(`🚀 Migration réexécutable de ${files.length} fichiers vers Cloudinary (${cloudName})`);
-  console.log(`   Dossier : ${BASE_FOLDER}`);
-  console.log('   overwrite=true · invalidate=true · registre de versions automatique\n');
 
   let successCount = 0;
   let failCount = 0;
 
-  for (const filePath of files) {
-    const relativePath = path.relative(imagesDir, filePath).replace(/\\/g, '/');
+  // Les ressources identiques reprennent la version actuellement confirmée par Cloudinary.
+  unchanged.forEach(item => {
+    if (item.remote.version) versions[item.localKey] = item.remote.version;
+  });
+
+  for (const item of uploads) {
     try {
-      console.log(`⏳ Uploading [${relativePath}]...`);
-      const result = await uploadFile(filePath, relativePath);
-      versions[localKey(relativePath)] = result.version;
+      console.log(`⏳ Upload [${item.relativePath}] — ${item.action}…`);
+      const result = await uploadFile(item.filePath, item.publicId, item.resourceType);
+      versions[item.localKey] = result.version;
       console.log(`  ✅ v${result.version} — ${result.secure_url}`);
       successCount++;
     } catch (error) {
-      console.error(`  ❌ Échec pour ${relativePath}: ${error.message}`);
+      console.error(`  ❌ Échec pour ${item.relativePath}: ${error.message}`);
       failCount++;
     }
   }
 
   writeManifest(versions);
-  console.log(`\n🎉 Migration terminée ! Succès: ${successCount}, Échecs: ${failCount}`);
-  console.log(`📝 Registre mis à jour : ${path.relative(process.cwd(), manifestPath)}`);
+  console.log(`\n🎉 Synchronisation terminée : ${successCount} upload(s), ${unchanged.length} inchangé(s) ignoré(s), ${failCount} échec(s).`);
+  console.log(`📝 Registre de versions mis à jour : ${path.relative(process.cwd(), manifestPath)}`);
   if (failCount > 0) process.exitCode = 1;
 }
 
 uploadAll().catch(error => {
-  console.error(`❌ Migration interrompue : ${error.message}`);
+  console.error(`❌ Synchronisation Cloudinary interrompue : ${error.message}`);
   process.exitCode = 1;
 });

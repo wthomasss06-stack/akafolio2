@@ -9,7 +9,8 @@
     "prebuild": "node scripts/compile-mode-styles.mjs",
     "build": "next build",
     "start": "next start",
-    "preview": "next start"
+    "preview": "next start",
+    "cloudinary:sync": "node scripts/upload-cloudinary.cjs"
   },
   "dependencies": {
     "@fontsource/bitcount-prop-single": "^5.3.0",

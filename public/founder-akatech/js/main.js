@@ -71,9 +71,10 @@ function initTheme() {
 
 /* ───────────── Barre de navigation + menu mobile ───────────── */
 function renderBar() {
-  const links = D.NAV.map((n) => `<a href="#${n.id}" data-go="${n.id}">${esc(n.label)}</a>`).join('')
+  const navItems = D.NAV.filter((n) => n.id !== 'tarifs')
+  const links = navItems.map((n) => `<a href="#${n.id}" data-go="${n.id}">${esc(n.label)}</a>`).join('')
   $('#bar').innerHTML = `
-    <a class="brand" href="#accueil" data-go="accueil" aria-label="${esc(D.CONTACT.name)} — accueil"><img src="/assets/images/logo-akatech.webp" alt="" aria-hidden="true">${esc(D.CONTACT.name)}<i>.</i></a>
+    <a class="brand" href="#accueil" data-go="accueil" aria-label="AKATech — accueil"><img src="/assets/images/logo-akatech.webp" alt="" aria-hidden="true"><span>AKATech</span></a>
     <nav class="nav" aria-label="${esc(D.UI.navLabel)}">${links}</nav>
     <div class="bar-right">
       ${renderToggle()}
@@ -82,7 +83,7 @@ function renderBar() {
     </div>`
   const menu = document.createElement('div')
   menu.className = 'menu'; menu.id = 'menu'
-  menu.innerHTML = D.NAV.map((n) => `<a href="#${n.id}" data-go="${n.id}">${esc(n.label)}</a>`).join('') +
+  menu.innerHTML = navItems.map((n) => `<a href="#${n.id}" data-go="${n.id}">${esc(n.label)}</a>`).join('') +
     `<a class="btn" href="#${D.NAV_CTA.target}" data-go="${D.NAV_CTA.target}">${esc(D.NAV_CTA.label)}</a>`
   document.body.appendChild(menu)
   const burger = $('.burger')
@@ -133,33 +134,17 @@ const secHead = (key, n) => {
 function projectSlug(p) { return String(p.slug || p.title).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g) }
 function renderProjects() {
   const card = (p, i) => {
-    const rub = D.PROJECT_RUBRIQUES[p.id]
     const slug = projectSlug(p)
-    const wa = waUrl(D.UI.waProject(p.title, rub))
-    return `<article class="pc" data-i="${i}">
-      <div class="pc-media">${img(p.img, `${D.UI.projectAlt} ${p.title}`, { w: 900 })}</div>
-      <div class="pc-info">
-        <div class="pc-head">
-          <div class="pc-top"><span class="sticker">${esc(rub)}</span><span>[ ${num2(i + 1)} ] · ${esc(p.year)}</span></div>
-          <h3 class="pc-title">${esc(p.title)}</h3>
-          <p class="pc-sub">${esc(p.sub)}</p>
-          <div class="pc-actions"><a class="btn btn--sm" href="/founder-akatech/projets/${esc(slug)}">Détails ${ICON.arrow}</a></div>
-        </div>
-        <div class="pc-story">
-          <div><b>${esc(D.UI.problem)}</b><p>${esc(p.problem)}</p></div>
-          <div><b>${esc(D.UI.solution)}</b><p>${esc(p.solution)}</p></div>
-        </div>
-        <div class="chips">${(p.tech || []).slice(0, 5).map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</div>
-      </div>
-    </article>`
+    return `<a class="pc" data-i="${i}" href="/founder-akatech/projets/${esc(slug)}" aria-label="${esc(D.UI.viewProject)} : ${esc(p.title)}">
+      <div class="pc-media">${img(p.img, `${D.UI.projectAlt} ${p.title}`, { w: 1400 })}</div>
+      <div class="pc-info"><h3 class="pc-title">${esc(p.title)}</h3></div>
+    </a>`
   }
   $('#projets').innerHTML = `
     <div class="wrap">${secHead('projets', 1)}</div>
     <div class="ps" id="ps">
       <div class="ps-stage">
-        <canvas class="ps-gl" aria-hidden="true"></canvas>
-        <div class="ps-overlay" aria-hidden="true"><p class="ps-active-title">${esc(D.PROJECTS[0]?.title || '')}</p><span class="ps-active-count">01 / ${num2(D.PROJECTS.length)}</span></div>
-        <div class="ps-hud" aria-hidden="true"><span class="ps-count">01 / ${num2(D.PROJECTS.length)}</span><span class="ps-bar"><i></i></span><span class="ps-hint">${esc(D.UI.scrollHint)}</span></div>
+        <canvas class="ps-gl" role="link" tabindex="0" aria-label="${esc(D.UI.viewProject)} : ${esc(D.PROJECTS[0]?.title || '')}"></canvas>
       </div>
       <div class="ps-track">${D.PROJECTS.map(card).join('')}</div>
     </div>`
@@ -391,7 +376,7 @@ function initReveal() {
 /* ───────────── Démarrage ───────────── */
 { const sk = $('.skip'); if (sk) sk.textContent = D.UI.skip }
 renderBar(); initTheme()
-renderHero(); renderProjects(); renderServices(); renderPricing(); renderProcess()
+renderHero(); renderProjects(); renderServices(); renderProcess()
 renderReviews(); renderAbout(); renderFaq(); renderContact(); renderFooter()
 let detailTitle = ''
 const detailMatch = location.pathname.match(/^\/founder-akatech\/projets\/([^/]+)\/?$/)

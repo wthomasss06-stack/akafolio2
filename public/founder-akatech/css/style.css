@@ -502,3 +502,31 @@ section { position: relative; }
 .svc-float b { display:grid; height:100%; place-items:center; font:italic 900 8rem/1 var(--f-display); color:var(--on-accent); }
 @media(max-width:900px) { .svc-row { grid-template-columns:3.2rem minmax(0,1fr); gap:1rem; } .svc-thumb { display:block; grid-column:2; max-height:0; overflow:hidden; border:0 solid var(--line-strong); transition:max-height .5s cubic-bezier(.22,1,.36,1); } .svc-thumb img { width:100%; aspect-ratio:16/9; object-fit:cover; } .svc-row.open .svc-thumb { max-height:420px; border-width:3px; } }
 @media(hover:none) { .svc-row:hover { padding-left:0; color:var(--text); } .svc-float { display:none; } }
+
+/* Founder AKATech — projets centrés, images plus grandes, nom seul sous la parallaxe. */
+.projects .sec-head { align-items:center; text-align:center; }
+.projects .sec-title { max-width:none; }
+.projects .sec-intro { margin-inline:auto; }
+.ps-track { justify-content:flex-start; scroll-padding-inline:var(--pad); }
+.pc { width:min(94vw, 1000px); align-items:center; gap:clamp(.8rem, 2vw, 1.4rem); scroll-snap-align:center; color:inherit; text-decoration:none; }
+.pc-media { width:100%; aspect-ratio:16 / 9; }
+.pc-info { width:100%; align-items:center; text-align:center; }
+.pc-title { font-size:clamp(2.8rem, 7vw, 6.6rem); text-align:center; text-wrap:balance; }
+.ps-gl { cursor:grab; }
+.ps--gl .ps-stage { min-height:0; }
+.ps--gl .ps-track { display:grid; place-items:center; grid-template-columns:minmax(0,1fr); padding:0 var(--pad); min-height:clamp(8rem, 19vh, 12rem); border:0; }
+.ps--gl .pc { grid-area:1 / 1; width:100%; min-height:6rem; display:flex; justify-content:center; opacity:0; visibility:hidden; transition:opacity .25s, visibility .25s; }
+.ps--gl .pc.is-on { opacity:1; visibility:visible; }
+.ps--gl .pc-media { display:none; }
+.ps--gl .pc-info { display:flex; flex-direction:column; justify-content:center; align-items:center; gap:0; }
+.ps--gl .pc-title { font-size:clamp(2.8rem, 7vw, 6.2rem); }
+.ps--gl .ps-hud, .ps-hud { display:none !important; }
+.ps--gl .ps-gl { cursor:grab; }
+.ps--gl .ps-gl:active { cursor:grabbing; }
+.pc:focus-visible { outline:3px solid var(--accent); outline-offset:8px; }
+@media(max-width:640px) {
+  .pc { width:94vw; }
+  .pc-media { aspect-ratio:4 / 3; }
+  .ps--gl .ps-track { min-height:clamp(6.5rem, 15vh, 9rem); }
+  .ps--gl .pc-title { font-size:clamp(2.5rem, 10vw, 4rem); }
+}

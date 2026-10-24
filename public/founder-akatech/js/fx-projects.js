@@ -1,17 +1,16 @@
-// js/fx-projects.js — Projets : slider 3D horizontal infini (modèle : paralaxe-horizontal-images-agrandies.html).
+// js/fx-projects.js — Slider horizontal 3D borné : premier projet → dernier projet.
 //
 // La section est épinglée : le défilement vertical de la page fait avancer les 24 projets, la souris ou le doigt
-// les fait glisser (glisser-déposer + inertie, ou trackpad horizontal). Les images sont dessinées en WebGL ;
-// plus ça va vite, plus elles se courbent (déformation des sommets). Sous le slider, le projet au centre est
-// décrit en clair : le problème de départ et la solution livrée (cartes .pc, une seule visible à la fois).
+// les fait glisser (glisser-déposer + inertie, ou trackpad horizontal). Les images sont cliquables vers leur slug,
+// dessinées en WebGL et se courbent avec la vitesse. Le nom du projet actif reste centré sous les images.
 //
 // Repli : sans WebGL, petit écran, « mouvement réduit » ou double-clic (file:// : images locales interdites en
 // texture) → les mêmes cartes en défilement horizontal natif (classe .ps--static). Aucune perte de contenu.
 (() => {
 'use strict'
 const CONFIG = {
-  minHeight: 1.75, maxHeight: 2.2, aspectRatio: 1.75, gap: 0.14,   // taille et espacement des plans (unités 3D)
-  cameraZ: 4.4,                // plus petit = images plus grandes
+  minHeight: 2.35, maxHeight: 2.8, aspectRatio: 1.75, gap: 0.16,   // plans agrandis, espacés régulièrement
+  cameraZ: 3.8,                // caméra plus proche pour des images plus grandes
   smoothing: 0.07,             // inertie du slider
   distortionStrength: 2.2, distortionSmoothing: 0.1,
   dragSpeed: 0.012, momentumFriction: 0.95,
@@ -53,8 +52,6 @@ function start(root, { D, $, $$ }, makeStatic) {
   gsap.registerPlugin(ScrollTrigger)
 
   const canvas = $('.ps-gl', root), stage = $('.ps-stage', root)
-  const bar = $('.ps-bar i', root), count = $('.ps-count', root), title = $('.ps-active-title', root), overlayCount = $('.ps-active-count', root)
-
   let renderer
   try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' }) } catch (e) { console.warn('[projets] WebGL indisponible, activation du carrousel de secours.', e); return makeStatic() }
   root.classList.add('ps--gl')
@@ -113,9 +110,24 @@ function start(root, { D, $, $$ }, makeStatic) {
 
   /* Entrées : défilement vertical (épinglé) + glisser / inertie / trackpad horizontal. */
   let pinned = 0, drag = 0, momentum = 0, dragging = false, lastX = 0, lastDX = 0
+  let pointerStartX = 0, pointerStartY = 0, pointerMoved = false
   let pos = 0, last = 0, distAmt = 0, distTarget = 0, dir = 0, dirTarget = 0, peak = 0, active = -1, visible = false
   const vel = [0, 0, 0, 0, 0]
   const burst = (a) => { distTarget = Math.min(1, distTarget + a) }
+  const goToProject = (index) => { if (cards[index]?.href) window.location.assign(cards[index].href) }
+  const indexAtPointer = (clientX, clientY) => {
+    const rect = canvas.getBoundingClientRect()
+    if (clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom) return -1
+    const ndcX = ((clientX - rect.left) / rect.width) * 2 - 1
+    const worldX = ndcX * CONFIG.cameraZ * Math.tan(Math.PI / 8) * (rect.width / rect.height)
+    let hit = -1, nearest = Infinity
+    meshes.forEach((mesh, i) => {
+      const distance = Math.abs(mesh.position.x - worldX)
+      const halfWidth = widths[i] * Math.abs(mesh.scale.x) / 2
+      if (distance <= halfWidth && distance < nearest) { hit = i; nearest = distance }
+    })
+    return hit
+  }
 
   ScrollTrigger.create({
     trigger: root, start: 'top top', end: () => '+=' + Math.round(n * innerHeight * CONFIG.perSlide),
@@ -126,18 +138,27 @@ function start(root, { D, $, $$ }, makeStatic) {
 
   canvas.addEventListener('pointerdown', (e) => {
     dragging = true; lastX = e.clientX; lastDX = 0; momentum = 0
+    pointerStartX = e.clientX; pointerStartY = e.clientY; pointerMoved = false
     canvas.setPointerCapture(e.pointerId); canvas.style.cursor = 'grabbing'
   })
   canvas.addEventListener('pointermove', (e) => {
     if (!dragging) return
+    if (Math.hypot(e.clientX - pointerStartX, e.clientY - pointerStartY) > 8) pointerMoved = true
     lastDX = e.clientX - lastX; lastX = e.clientX
     drag = clamp(drag - lastDX * CONFIG.dragSpeed, -pinned, span - pinned); burst(Math.abs(lastDX) * 0.02)
   })
-  const release = () => {
+  const release = (e, allowClick) => {
     if (!dragging) return
-    dragging = false; canvas.style.cursor = 'grab'; momentum = clamp(-lastDX * CONFIG.dragSpeed, -0.08, 0.08)
+    const hit = allowClick && !pointerMoved ? indexAtPointer(e.clientX, e.clientY) : -1
+    dragging = false; canvas.style.cursor = 'grab'
+    momentum = pointerMoved ? clamp(-lastDX * CONFIG.dragSpeed, -0.08, 0.08) : 0
+    if (hit >= 0) goToProject(hit)
   }
-  canvas.addEventListener('pointerup', release); canvas.addEventListener('pointercancel', release)
+  canvas.addEventListener('pointerup', (e) => release(e, true))
+  canvas.addEventListener('pointercancel', (e) => release(e, false))
+  canvas.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goToProject(Math.max(active, 0)) }
+  })
   root.addEventListener('wheel', (e) => {
     if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return   // vertical : la page défile (et le slider avec)
     e.preventDefault(); drag = clamp(drag + e.deltaX * 0.01, -pinned, span - pinned); burst(Math.abs(e.deltaX) * 0.001)
@@ -180,12 +201,8 @@ function start(root, { D, $, $$ }, makeStatic) {
     if (bi !== active) {
       active = bi
       cards.forEach((c, i) => c.classList.toggle('is-on', i === bi))
-      const label = `${pad(bi + 1)} / ${pad(n)}`
-      count.textContent = label
-      if (overlayCount) overlayCount.textContent = label
-      if (title) title.textContent = D.PROJECTS[bi]?.title || ''
+      canvas.setAttribute('aria-label', `${D.UI.viewProject} : ${D.PROJECTS[bi]?.title || ''}`)
     }
-    bar.style.transform = `scaleX(${clamp(pinned / span, 0, 1)})`
     renderer.render(scene, camera)
   }
   requestAnimationFrame(frame)

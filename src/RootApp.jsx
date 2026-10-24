@@ -40,18 +40,19 @@ import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 
 // ── Les quatre portfolios — chargés à la demande, un seul monté à la fois.
+const FounderAkatechApp = dynamic(() => import('./components/FounderAkatechPortfolio.jsx'), { ssr: false, loading: () => <RootLoader /> })
 const AkatechApp = dynamic(() => import('./akatech/AKATECH.jsx'), { ssr: false, loading: () => <RootLoader /> })
 const DesktopApp = dynamic(() => import('./Appdesktop.jsx'), { ssr: false, loading: () => <RootLoader /> })
 const MobileApp  = dynamic(() => import('./Appmobile.jsx'), { ssr: false, loading: () => <RootLoader /> })
 const MobileApp2 = dynamic(() => import('./app mobile/App2mobile.jsx'), { ssr: false, loading: () => <RootLoader /> })
 const Win95App   = dynamic(() => import('./Win95Portfolio.jsx'), { ssr: false, loading: () => <RootLoader /> })
 
-const MODE_KEY           = 'akafolio-mode-v2'
-const VALID_MODES        = ['akatech', 'app', 'appmobile', 'appmobile2', 'win95']
+const MODE_KEY           = 'akafolio-mode-v3'
+const VALID_MODES        = ['founder-akatech', 'akatech', 'app', 'appmobile', 'appmobile2', 'win95']
 const DESKTOP_ONLY_MODES = ['app']
 const MOBILE_ONLY_MODES  = ['appmobile', 'appmobile2']
-const DESKTOP_CYCLE = ['app', 'win95', 'akatech']
-const MOBILE_CYCLE  = ['appmobile', 'appmobile2', 'win95', 'akatech']
+const DESKTOP_CYCLE = ['founder-akatech', 'app', 'win95', 'akatech']
+const MOBILE_CYCLE  = ['founder-akatech', 'appmobile', 'appmobile2', 'win95', 'akatech']
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(
@@ -127,6 +128,7 @@ const switcherStyle = {
 }
 
 const MODE_LABELS = {
+  'founder-akatech': { label: 'Founder', short: 'Founder AKATech', title: 'Passer au mode Moderne', accent: '#ff5500' },
   akatech:   { label: 'AKATech', short: 'AKATech', title: 'Passer au portfolio AKATech', accent: '#ff5500' },
   app:       { label: 'Moderne', short: 'App', title: 'Passer au mode AKATech', accent: '#f5f2ed' },
   appmobile: { label: 'Mobile', short: 'Appmobile', title: 'Passer à App2mobile', accent: '#55c7ff' },
@@ -206,7 +208,7 @@ export default function RootApp() {
   const [mode, setMode] = useState(() => {
     const saved = readSavedMode()
     if (saved) return saved
-    return isMobile ? 'appmobile' : 'app'
+    return 'founder-akatech'
   })
 
   useEffect(() => {
@@ -260,6 +262,7 @@ export default function RootApp() {
       <link rel="stylesheet" href="/styles/stylemobile.compiled.css" disabled={mode !== 'appmobile'} />
       <link rel="stylesheet" href="/styles/style2mobile.compiled.css" disabled={mode !== 'appmobile2'} />
 
+      {mode === 'founder-akatech' && <FounderAkatechApp />}
       {mode === 'appmobile'  && <MobileApp />}
       {mode === 'appmobile2' && <MobileApp2 />}
       {mode === 'win95'      && <div style={{ height: '100%' }}><Win95App /></div>}

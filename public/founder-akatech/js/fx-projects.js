@@ -88,7 +88,8 @@ function start(root, { D, $, $$ }, makeStatic) {
     loadImage(mediaSources(p.img, 1000).filter(Boolean)).then((im) => {
       const tex = new THREE.Texture(im)
       tex.needsUpdate = true; tex.generateMipmaps = false; tex.minFilter = THREE.LinearFilter
-      mat.map = tex; mat.color.set(0xffffff); mat.needsUpdate = true
+      mesh.userData.imgTex = tex
+      if (!mesh.userData.videoOn) { mat.map = tex; mat.color.set(0xffffff); mat.needsUpdate = true } else mat.color.set(0xffffff)
       const ratio = (im.naturalWidth / im.naturalHeight) / (w / h)
       if (ratio > 1) mesh.scale.y = 1 / ratio; else mesh.scale.x = ratio
     }).catch(() => { /* image introuvable : le plan reste gris */ })
@@ -113,6 +114,38 @@ function start(root, { D, $, $$ }, makeStatic) {
   let pointerStartX = 0, pointerStartY = 0, pointerMoved = false
   let pos = 0, last = 0, distAmt = 0, distTarget = 0, dir = 0, dirTarget = 0, peak = 0, active = -1, visible = false
   const vel = [0, 0, 0, 0, 0]
+
+  /* Vidéo : seule la slide active joue son .webm (une lecture à la fois), si le fichier est sur Cloudinary ;
+     sinon, ou si la vidéo échoue, l'image reste affichée. Jamais de vidéo en repli statique / mobile. */
+  const { hasVideo, videoSources, localOf } = window.PF_CLOUD
+  const videoPathOf = (p) => { const m = /\/assets\/images\/projects\/([^/]+)\.(?:webp|png|jpe?g)$/i.exec(localOf(p.img) || ''); return m ? `/assets/images/projects/${m[1]}.webm` : '' }
+  const vstate = meshes.map(() => null)
+  const showImage = (i) => {
+    const m = meshes[i]; m.userData.videoOn = false
+    if (m.userData.imgTex) { m.material.map = m.userData.imgTex; m.material.needsUpdate = true }
+  }
+  const stopVideo = (i) => { if (i < 0) return; vstate[i]?.video.pause(); showImage(i) }
+  const startVideo = (i) => {
+    if (i < 0) return
+    const path = videoPathOf(D.PROJECTS[i]); if (!path || !hasVideo(path)) return
+    let st = vstate[i]
+    if (st?.failed) return
+    if (!st) {
+      const video = document.createElement('video')
+      video.muted = true; video.loop = true; video.playsInline = true; video.preload = 'auto'; video.crossOrigin = 'anonymous'
+      st = vstate[i] = { video, tex: null, failed: false, srcs: [...videoSources(path)] }
+      video.addEventListener('error', () => {
+        if (st.srcs.length) { video.src = st.srcs.shift(); video.load(); return }
+        st.failed = true; stopVideo(i)
+      })
+      video.src = st.srcs.shift()
+    }
+    st.video.play().then(() => {
+      if (active !== i || st.failed) return
+      if (!st.tex) { st.tex = new THREE.VideoTexture(st.video); st.tex.generateMipmaps = false; st.tex.minFilter = THREE.LinearFilter }
+      const m = meshes[i]; m.userData.videoOn = true; m.material.map = st.tex; m.material.color.set(0xffffff); m.material.needsUpdate = true
+    }).catch(() => {})
+  }
   const burst = (a) => { distTarget = Math.min(1, distTarget + a) }
   const goToProject = (index) => { if (cards[index]?.href) window.location.assign(cards[index].href) }
   const indexAtPointer = (clientX, clientY) => {
@@ -134,7 +167,10 @@ function start(root, { D, $, $$ }, makeStatic) {
     pin: true, anticipatePin: 1, invalidateOnRefresh: true,
     onUpdate: (self) => { pinned = self.progress * span },
   })
-  new IntersectionObserver(([e]) => { visible = e.isIntersecting }, { rootMargin: '100px' }).observe(root)
+  new IntersectionObserver(([e]) => {
+    visible = e.isIntersecting
+    if (visible) startVideo(active); else vstate[active]?.video.pause()
+  }, { rootMargin: '100px' }).observe(root)
 
   canvas.addEventListener('pointerdown', (e) => {
     dragging = true; lastX = e.clientX; lastDX = 0; momentum = 0
@@ -199,7 +235,9 @@ function start(root, { D, $, $$ }, makeStatic) {
     })
 
     if (bi !== active) {
+      stopVideo(active)
       active = bi
+      startVideo(bi)
       cards.forEach((c, i) => c.classList.toggle('is-on', i === bi))
       canvas.setAttribute('aria-label', `${D.UI.viewProject} : ${D.PROJECTS[bi]?.title || ''}`)
     }

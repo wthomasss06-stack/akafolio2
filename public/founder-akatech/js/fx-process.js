@@ -40,12 +40,10 @@ function initProcess({ $, $$, finePointer, reduce }) {
 
   rows.forEach((row) => {
     row.addEventListener('mouseenter', () => {
-      const im = $('.proc-thumb img', row)
-      const ok = im && im.complete && im.naturalWidth > 0 && !im.classList.contains('img-fail')
-      // image du process si elle est disponible, sinon le numéro de l'étape (jamais une case vide)
-      float.style.backgroundImage = ok ? `url("${im.currentSrc || im.src}")` : 'none'
-      float.innerHTML = ok ? '' : `<b>${row.dataset.n}</b>`
-      float.classList.toggle('has-img', !!ok)       // niveaux de gris seulement quand c'est une photo
+      const image = row.dataset.img
+      float.style.backgroundImage = image ? `url("${image}")` : 'none'
+      float.innerHTML = image ? '' : `<b>${row.dataset.n}</b>`
+      float.classList.toggle('has-img', !!image)
       show(true)
     })
     row.addEventListener('mouseleave', () => show(false))
@@ -88,11 +86,10 @@ function initServices({ $, $$, finePointer, reduce }) {
   }
   rows.forEach((row) => {
     row.addEventListener('mouseenter', () => {
-      const im = $('.svc-thumb img', row)
-      const ok = im && im.complete && im.naturalWidth > 0 && !im.classList.contains('img-fail')
-      float.style.backgroundImage = ok ? `url("${im.currentSrc || im.src}")` : 'none'
-      float.innerHTML = ok ? '' : `<b>${row.dataset.n}</b>`
-      float.classList.toggle('has-img', !!ok); show(true)
+      const image = row.dataset.img
+      float.style.backgroundImage = image ? `url("${image}")` : 'none'
+      float.innerHTML = image ? '' : `<b>${row.dataset.n}</b>`
+      float.classList.toggle('has-img', !!image); show(true)
     })
     row.addEventListener('mouseleave', () => show(false))
   })

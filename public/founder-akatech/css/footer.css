@@ -1,0 +1,48 @@
+/* css/footer.css — footer plein écran (js/fx-footer.js). Toujours sombre, quel que soit le thème. */
+.foot { padding: 0; background: #0b0a09; color: #fff; z-index: 1; }
+.ft-curtain { position: relative; z-index: 2; background: var(--bg); }
+.ft-zone { position: relative; min-height: 100vh; min-height: 100svh; display: flex; background: #1a1208; overflow: hidden; color: #fff; font-family: var(--f-mono); }
+.ft-beams { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: .9; }
+.ft-band { position: relative; z-index: 1; width: 100%; display: flex; align-items: center; border-top: 3px solid var(--line-strong); }
+.ft-inner { width: 100%; max-width: 1380px; margin: 0 auto; padding: 3.4rem 6vw 2rem; perspective: 1000px; }
+.fts-card { transform-style: preserve-3d; will-change: transform; }
+
+.fts-grid { display: grid; gap: .4rem; text-transform: uppercase; letter-spacing: -.03em; line-height: 1; user-select: none; }
+.fts-row { display: flex; align-items: center; justify-content: space-between; width: 100%; font: italic 900 clamp(2.2rem, 6.5vw, 6.5rem)/1 var(--f-display); }
+.fts-row--name { font-size: clamp(3.2rem, 10vw, 9rem); }
+.fts-row--small { font: 600 clamp(.9rem, 1.8vw, 1.5rem)/1.2 var(--f-mono); letter-spacing: .01em; margin-top: 1rem; text-transform: none; flex-wrap: wrap; gap: .6rem 2rem; }
+.fts-row > .fts-item:first-child { margin-right: auto; }
+.fts-row > .fts-item:last-child { margin-left: auto; }
+.fts-row--logo > .fts-item:first-child, .fts-row--logo > .fts-item:last-child { flex: 0 0 auto; }
+.fts-row--logo > .fts-logo-wrap { flex: 1; justify-content: center; }
+
+.fts-word { display: inline-flex; align-items: center; will-change: opacity, filter, transform; cursor: pointer; color: inherit; text-decoration: none; }
+.fts-word--bright { color: #fff; }
+.fts-word--muted { color: rgba(255, 255, 255, .45); }
+.fts-word--link { color: rgba(255, 120, 50, .92); font-weight: 600; letter-spacing: .02em; }
+.fts-word--link:hover { color: #ff5500; }
+.fts-char { display: inline-block; white-space: pre; will-change: transform; }
+.fts-logo-wrap { display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.fts-logo { width: clamp(60px, 8vw, 110px); height: clamp(60px, 8vw, 110px); object-fit: contain; opacity: .92; transition: opacity .3s; }
+.fts-logo-wrap:hover .fts-logo { opacity: 1; }
+
+.fts-footer-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem 2rem; flex-wrap: wrap; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255, 85, 0, .25); }
+.ft-nav, .ft-social { display: flex; flex-wrap: wrap; gap: .5rem 1.4rem; }
+.ft-nav a, .ft-social a { font-weight: 700; font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: rgba(255, 255, 255, .72); }
+.ft-nav a:hover, .ft-social a:hover { color: #ff5500; }
+.ft-copy { font-size: .68rem; color: rgba(255, 255, 255, .6); letter-spacing: .02em; }
+
+/* Barre du haut : elle s'efface dans la zone du footer */
+.bar { transition: opacity .35s ease, transform .4s cubic-bezier(.22, 1, .36, 1); }
+.bar.is-away { opacity: 0; pointer-events: none; }
+
+@media (max-width: 768px) {
+  .ft-zone { min-height: 0; }
+  .ft-band { border-top-width: 2px; }
+  .ft-inner { padding: 2.6rem 6vw 5.5rem; }
+  .fts-row { flex-wrap: wrap; gap: .6rem; justify-content: flex-start; }
+  .fts-row--name { font-size: clamp(2.6rem, 15vw, 4.4rem); }
+  .fts-row:not(.fts-row--name):not(.fts-row--small) { font-size: clamp(1.9rem, 10vw, 3rem); }
+  .fts-footer-bar { flex-direction: column; align-items: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) { .ft-beams { opacity: .5; } }

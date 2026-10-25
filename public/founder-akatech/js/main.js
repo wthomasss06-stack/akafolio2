@@ -28,14 +28,19 @@ const ICON = {
 
 /** <img> avec CDN d'abord puis dossier local ; `cors` pour les images utilisées comme textures WebGL. */
 function img(value, alt, { w, cls = '', eager = false, cors = false } = {}) {
-  const [src, fb] = mediaSources(value, w)
+  const [src, ...fbs] = mediaSources(value, w)
+  const fb = fbs.filter(Boolean).join('|')
   return `<img src="${esc(src)}"${fb ? ` data-fb="${esc(fb)}"` : ''} alt="${esc(alt)}"${cls ? ` class="${cls}"` : ''} loading="${eager ? 'eager' : 'lazy'}" decoding="async"${cors && !isFile ? ' crossorigin="anonymous"' : ''}>`
 }
-// Repli automatique : si l'image CDN échoue → fichier local ; si le local échoue aussi → on masque.
+// Repli automatique : CDN nouveau dossier → CDN ancien dossier → fichier local ; si tout échoue, on masque.
 document.addEventListener('error', (e) => {
   const t = e.target
   if (!(t instanceof HTMLImageElement)) return
-  if (t.dataset.fb) { const fb = t.dataset.fb; delete t.dataset.fb; t.src = fb } else t.classList.add('img-fail')
+  if (t.dataset.fb) {
+    const [next, ...rest] = t.dataset.fb.split('|')
+    if (rest.length) t.dataset.fb = rest.join('|'); else delete t.dataset.fb
+    t.src = next
+  } else t.classList.add('img-fail')
 }, true)
 
 const planNum = (price) => (String(price).match(/[\d][\d\s\u00a0]*/g) || []).map((n) => parseInt(n.replace(/\D/g, ''), 10))
@@ -74,7 +79,7 @@ function renderBar() {
   const navItems = D.NAV.filter((n) => n.id !== 'tarifs')
   const links = navItems.map((n) => `<a href="#${n.id}" data-go="${n.id}">${esc(n.label)}</a>`).join('')
   $('#bar').innerHTML = `
-    <a class="brand" href="#accueil" data-go="accueil" aria-label="AKATech — accueil"><img src="/assets/images/logo-akatech.webp" alt="" aria-hidden="true"><span>AKATech</span></a>
+    <a class="brand" href="#accueil" data-go="accueil" aria-label="AKATech — accueil"><img src="/assets/images/logo-akatech.webp" alt="" aria-hidden="true"></a>
     <nav class="nav" aria-label="${esc(D.UI.navLabel)}">${links}</nav>
     <div class="bar-right">
       ${renderToggle()}
@@ -103,10 +108,8 @@ function renderHero() {
   const tick = [...skills, ...D.SERVICES.map((s) => s.title)].map((t) => `<span>${esc(t)}</span>`).join('')
   $('#accueil').innerHTML = `
     <div class="wrap">
-      <div class="hero-badge"><i></i>${esc(H.badge)}</div>
       <div class="hero-title">
         <h1 aria-label="${esc(H.lines.join(' '))} — ${esc(H.role)}">${H.lines.map((l) => `<span class="hero-line bl wake" aria-hidden="true">${esc(l)}</span>`).join('')}</h1>
-        <span class="sticker hero-sticker">${esc(D.UI.stickerFrom)} ${minPrice('vitrine')}</span>
       </div>
       <p class="hero-role bl wake">${esc(H.role)}</p>
       <p class="hero-focus">${esc(H.focus)}</p>
@@ -157,7 +160,7 @@ function renderServices() {
       <article class="svc-row" role="button" tabindex="0" data-n="${esc(s.n)}" aria-expanded="false">
         <span class="svc-n">[ ${esc(s.n)} ]</span>
         <div class="svc-main"><h3 class="svc-title">${esc(s.title)}</h3><p class="svc-sub">${esc(s.sub)}</p><p class="svc-desc">${esc(s.desc)}</p><ul class="svc-feat">${s.features.map((f) => `<li>${esc(f)}</li>`).join('')}</ul><a class="btn btn--sm svc-cta" href="${esc(waUrl(D.UI.waService(s.title)))}" target="_blank" rel="noopener">${esc(D.UI.requestQuote)} ${ICON.arrow}</a></div>
-        <div class="svc-thumb">${img(s.img, `${D.UI.projectAlt} — ${s.title}`, { w: 900 })}</div>
+        <div class="svc-thumb">${img(s.img, `${D.UI.projectAlt} — ${s.title}`, { w: 900, eager: true })}</div>
       </article>`).join('')}
     </div></div>`
 }
@@ -209,7 +212,7 @@ function renderProcess() {
         <span class="proc-n">[ ${esc(s.n)} ]</span>
         <h3 class="proc-title">${esc(s.title)}</h3>
         <div class="proc-info"><span class="proc-tag">${esc(s.tag)}</span><p class="proc-desc">${esc(s.desc)}</p></div>
-        <div class="proc-thumb">${img(s.img, s.imgAlt || s.title, { w: 800 })}</div>
+        <div class="proc-thumb">${img(s.img, s.imgAlt || s.title, { w: 800, eager: true })}</div>
       </li>`).join('')}</ol></div>`
 }
 
@@ -274,27 +277,9 @@ function renderContact() {
   })
 }
 
-/* ───────────── Footer : logo Elvis partagé avec les autres modes ───────────── */
+/* ───────────── Footer plein écran (même expérience qu'Appdesktop — js/fx-footer.js) ───────────── */
 function renderFooter() {
-  const Fo = D.FOOTER, C = D.CONTACT
-  $('#footer').innerHTML = `<div class="foot-in">
-    <div class="foot-col" style="flex:2">
-      <div class="foot-logo"><img src="/assets/images/logo-akatech.webp" alt="Logo AKATech — M'Bollo Aka" loading="lazy"></div>
-      <div class="tiny">(${esc(Fo.edition)})</div>
-    </div>
-    <div class="foot-col" style="flex:2;padding-top:10px">
-      <div class="tiny normal">${esc(Fo.legal)}<br>${esc(C.location)}<br>${esc(C.email)}</div>
-      <div class="foot-links">
-        <a href="${esc(C.whatsappUrl)}" target="_blank" rel="noopener">WhatsApp</a>
-        <a href="${esc(C.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>
-        <a href="${esc(C.github)}" target="_blank" rel="noopener">GitHub</a>
-        <a href="${esc(C.facebook)}" target="_blank" rel="noopener">Facebook</a>
-        <a href="${esc(C.agencyUrl)}" target="_blank" rel="noopener">${esc(C.agency)}</a>
-      </div>
-      <div class="tiny" style="margin-top:40px">${esc(Fo.rights)}</div>
-    </div>
-    <div class="foot-col" style="flex:1;text-align:right;padding-top:10px"><div class="tiny">${esc(Fo.version)}</div></div>
-  </div>`
+  window.PF_FX.buildFooter({ D, esc })
   const cta = document.createElement('div')
   cta.className = 'sticky-cta'
   cta.innerHTML = `<a class="btn" href="${esc(waUrl(D.CONTACT_FORM.waIntro))}" target="_blank" rel="noopener">${ICON.wa} ${esc(D.NAV_CTA.label)}</a>`
@@ -350,7 +335,8 @@ function initScroll() {
     }
   }
   const goTo = (id) => {
-    const el = document.getElementById(id); if (!el) return
+    const el = document.getElementById(id)
+    if (!el) { location.assign(`/founder-akatech/index.html${id === 'accueil' ? '' : '#' + id}`); return } // depuis la page d'un projet
     const y = id === 'accueil' ? 0 : el.getBoundingClientRect().top + scrollY - 70
     if (lenis) lenis.scrollTo(y, { duration: 1.4 }); else scrollTo({ top: y, behavior: reduce ? 'auto' : 'smooth' })
     history.replaceState(null, '', id === 'accueil' ? location.pathname : `#${id}`)
@@ -384,10 +370,8 @@ if (detailMatch) {
   const slug = decodeURIComponent(detailMatch[1])
   const p = D.PROJECTS.find((item) => projectSlug(item) === slug)
   if (p) {
-    const rub = D.PROJECT_RUBRIQUES[p.id] || p.sub
-    const wa = waUrl(D.UI.waProject(p.title, rub))
     detailTitle = `${p.title} — Portfolio M'Bollo Aka`
-    $('#main').innerHTML = `<section class="project-detail"><div class="wrap"><a class="project-back" href="/founder-akatech/index.html#projets">← Tous les projets</a><div class="project-detail__eyebrow">${esc(rub)} [ ${num2(p.id)} ] · ${esc(p.year)}</div><h1 class="project-detail__title">${esc(p.title)}</h1><p class="project-detail__sub">${esc(p.sub)}</p><div class="project-detail__visual">${img(p.img, `${D.UI.projectAlt} ${p.title}`, { w: 1400, eager: true })}</div><div class="project-detail__links">${projectLive(p) ? `<a class="btn" href="${esc(p.url)}" target="_blank" rel="noopener">${esc(D.UI.viewProject)} ${ICON.arrow}</a>` : ''}<a class="btn btn--ghost" href="${esc(wa)}" target="_blank" rel="noopener">${esc(D.UI.similarProject)} ${ICON.wa}</a></div><div class="project-detail__story"><article><span>01 / ${esc(D.UI.problem)}</span><p>${esc(p.problem || p.desc || '')}</p></article><article><span>02 / ${esc(D.UI.solution)}</span><p>${esc(p.solution || p.desc || '')}</p></article></div><div class="project-detail__tech"><h2>Technologies</h2><div class="chips">${(p.tech || []).map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</div></div></div></section>`
+    window.PF_PAGE.renderProject(p, { D, $, $$, esc, img, waUrl, ICON, num2, projectSlug, projectLive, reduce, finePointer })
     document.body.classList.add('is-project-detail')
   } else { location.replace('/founder-akatech/index.html#projets') }
 }
@@ -397,7 +381,9 @@ const ctx = { D, reduce, finePointer, lenis, $, $$, esc }
 // Effets visuels : lancés après le premier affichage (polices chargées), sans bloquer la page.
 const fx = async () => {
   try { await document.fonts?.ready } catch (e) { /* sans importance */ }
-  FX.initSpotlight(ctx); FX.initProcess(ctx); FX.initServices(ctx); FX.initProjects(ctx)
+  for (const name of ['initSpotlight', 'initProcess', 'initServices', 'initProjects', 'initFooter']) {
+    try { FX[name]?.(ctx) } catch (err) { console.warn(`[fx] ${name}`, err) }   // chaque effet est isolé : une erreur n'arrête pas les autres
+  }
 }
 fx().catch((err) => console.error('[fx]', err))
 })()

@@ -252,6 +252,22 @@ const PROJECTS = [
     result: "V1.2 fonctionnelle et déployée : registre, kiosque offline, dashboard avec export CSV, PWA installable, mode sombre ; niveau 2 REKOLLECTE+ (clients, ressources, réservations, paiements, rappels) en recette."
   },
 ]
+
+const PROJECT_PREVIEW_VIDEOS = new Set([
+  'elvismarket-preview', 'jean-edy-preview', 'kokoeat-preview',
+  'laverie-preview', 'linkedin-banner-preview', 'livreurtrack-preview',
+  'mk-preview', 'moncashjour-preview', 'monmarket-preview',
+  'newhorizon-preview', 'nexura-preview', 'tati-preview',
+  'techflow-preview', 'terrasafe-preview', 'universitelesanges-preview',
+])
+PROJECTS.forEach(project => {
+  const imagePath = project.img
+  const stem = imagePath.slice(imagePath.lastIndexOf('/') + 1).replace(/\.[^.]+$/, '')
+  if (PROJECT_PREVIEW_VIDEOS.has(stem)) {
+    project.hoverVideo = `/assets/images/projects/${stem}.webm`
+  }
+})
+
 // ─── Tarifs ─────────────────────────────────────────────────────
 // Aligné sur data.js (PRICING, site AKATech, 2026-09-16) : mêmes 4 onglets
 // (vitrine, ecommerce, saas, gbp), paliers, prix, délais et contenus.

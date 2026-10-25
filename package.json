@@ -4,13 +4,13 @@
   "version": "2.0.0",
   "type": "module",
   "scripts": {
-    "predev": "node scripts/compile-mode-styles.mjs",
+    "predev": "node scripts/compile-mode-styles.mjs && node scripts/sync-founder-versions.mjs",
     "dev": "next dev",
-    "prebuild": "node scripts/compile-mode-styles.mjs",
+    "prebuild": "node scripts/compile-mode-styles.mjs && node scripts/sync-founder-versions.mjs",
     "build": "next build",
     "start": "next start",
     "preview": "next start",
-    "cloudinary:sync": "node scripts/upload-cloudinary.cjs"
+    "cloudinary:sync": "node scripts/upload-cloudinary.cjs && node scripts/sync-founder-versions.mjs"
   },
   "dependencies": {
     "@fontsource/bitcount-prop-single": "^5.3.0",

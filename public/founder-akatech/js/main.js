@@ -280,10 +280,49 @@ function renderContact() {
 /* ───────────── Footer plein écran (même expérience qu'Appdesktop — js/fx-footer.js) ───────────── */
 function renderFooter() {
   window.PF_FX.buildFooter({ D, esc })
-  const cta = document.createElement('div')
-  cta.className = 'sticky-cta'
-  cta.innerHTML = `<a class="btn" href="${esc(waUrl(D.CONTACT_FORM.waIntro))}" target="_blank" rel="noopener">${ICON.wa} ${esc(D.NAV_CTA.label)}</a>`
-  document.body.appendChild(cta)
+}
+
+
+/* ───────────── Avis : sur mobile, un avis à la fois, défilement automatique toutes les 4 s ───────────── */
+function initReviews() {
+  const grid = $('#avis .rev-grid'); if (!grid) return
+  const mq = matchMedia('(max-width: 900px)')
+  const slides = [...grid.children]
+  if (slides.length < 2) return
+  const dots = document.createElement('div')
+  dots.className = 'rev-dots'
+  dots.innerHTML = slides.map((_, i) => `<button type="button" aria-label="Avis ${i + 1}"></button>`).join('')
+  grid.after(dots)
+  const buttons = [...dots.children]
+  let idx = 0, timer = 0, resumeAt = 0, inView = false
+  const mark = () => buttons.forEach((b, i) => b.setAttribute('aria-current', String(i === idx)))
+  const go = (i, smooth = true) => {
+    idx = (i + slides.length) % slides.length
+    const el = slides[idx]
+    grid.scrollTo({ left: el.offsetLeft - (grid.clientWidth - el.clientWidth) / 2, behavior: smooth && !reduce ? 'smooth' : 'auto' })
+    mark()
+  }
+  // Un glissement du doigt met l'index à jour, et relance le minuteur après une pause
+  let scrollEnd = 0
+  grid.addEventListener('scroll', () => {
+    clearTimeout(scrollEnd)
+    scrollEnd = setTimeout(() => {
+      const mid = grid.scrollLeft + grid.clientWidth / 2
+      let best = 0, gap = Infinity
+      slides.forEach((el, i) => { const d = Math.abs(el.offsetLeft + el.clientWidth / 2 - mid); if (d < gap) { gap = d; best = i } })
+      if (best !== idx) { idx = best; mark() }
+    }, 90)
+  }, { passive: true })
+  const touched = () => { resumeAt = Date.now() + 4000 }
+  grid.addEventListener('pointerdown', touched, { passive: true })
+  grid.addEventListener('touchstart', touched, { passive: true })
+  buttons.forEach((b, i) => b.addEventListener('click', () => { touched(); go(i) }))
+  const tick = () => { if (mq.matches && inView && !document.hidden && Date.now() >= resumeAt) go(idx + 1) }
+  new IntersectionObserver(([e]) => { inView = e.isIntersecting }, { threshold: .35 }).observe(grid)
+  timer = setInterval(tick, 4000)
+  mark()
+  mq.addEventListener?.('change', () => { if (!mq.matches) grid.scrollTo({ left: 0, behavior: 'auto' }) })
+  return () => clearInterval(timer)
 }
 
 /* ───────────── SEO : titre, description, réseaux sociaux, JSON-LD ───────────── */
@@ -375,7 +414,7 @@ if (detailMatch) {
     document.body.classList.add('is-project-detail')
   } else { location.replace('/founder-akatech/index.html#projets') }
 }
-applySeo(); if (detailTitle) document.title = detailTitle; initScroll(); initReveal()
+applySeo(); if (detailTitle) document.title = detailTitle; initScroll(); initReveal(); initReviews()
 
 const ctx = { D, reduce, finePointer, lenis, $, $$, esc }
 // Effets visuels : lancés après le premier affichage (polices chargées), sans bloquer la page.

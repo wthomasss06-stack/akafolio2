@@ -374,8 +374,6 @@ section { position: relative; }
 .foot-links a:hover { text-decoration: underline; }
 .foot-links a:focus-visible { outline-color: var(--on-accent); }
 
-.sticky-cta { position: fixed; left: 1rem; right: 1rem; bottom: calc(1rem + env(safe-area-inset-bottom, 0px)); z-index: 90; display: none; }
-.sticky-cta .btn { width: 100%; }
 
 /* Apparition douce des blocs (jamais sur les titres .bl) */
 .rv { opacity: 0; transform: translateY(26px); transition: opacity .7s cubic-bezier(.22, 1, .36, 1), transform .7s cubic-bezier(.22, 1, .36, 1); }
@@ -406,8 +404,6 @@ section { position: relative; }
   .proc-thumb img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
   .proc-row.open .proc-thumb { max-height: 420px; border-width: 3px; }
   .foot-in { flex-direction: column; }
-  .sticky-cta { display: block; }
-  body { padding-bottom: 5.5rem; }
 }
 @media (max-width: 640px) {
   .svc-grid, .plans, .rev-grid { grid-template-columns: minmax(0, 1fr); }
@@ -536,3 +532,23 @@ section { position: relative; }
   .proc-title { font-size: clamp(1.6rem, 6.6vw, 2.6rem); overflow-wrap: anywhere; }
   .svc-row .svc-title { overflow-wrap: anywhere; }
 }
+
+/* ───── Mobile (≤ 900 px) ───── */
+@media (max-width: 900px) {
+  /* Plus de pile d'images qui défile en arrière-plan (hero ; page projet incluse) */
+  .spot { display: none; }
+  /* Section projets : la fiche tient sous le slider WebGL (le récit complet est sur la page du projet) */
+  .ps--gl .pc-info { grid-template-columns: minmax(0, 1fr); gap: .5rem; }
+  .ps--gl .pc-story { display: none; }
+  .ps--gl .pc-title { font-size: clamp(1.7rem, 8vw, 2.4rem); }
+  .ps--gl .pc-actions { margin-top: 0; }
+  /* Avis : un seul avis visible, défilement automatique toutes les 4 s (js/main.js > initReviews) */
+  .rev-grid { position: relative; display: flex; gap: 1rem; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none;
+    margin-inline: calc(var(--pad) * -1); padding: .6rem var(--pad) 1.4rem; }
+  .rev-grid::-webkit-scrollbar { display: none; }
+  .rev-grid .rev { flex: 0 0 86%; grid-column: auto; scroll-snap-align: center; opacity: 1 !important; transform: none !important; }
+  .rev-dots { display: flex; justify-content: center; gap: .5rem; margin-top: .2rem; }
+  .rev-dots button { width: 10px; height: 10px; padding: 0; border: 2px solid var(--line-strong); border-radius: 50%; background: transparent; cursor: pointer; transition: background .25s, transform .25s; }
+  .rev-dots button[aria-current='true'] { background: var(--accent); transform: scale(1.25); }
+}
+@media (min-width: 901px) { .rev-dots { display: none; } }

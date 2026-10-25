@@ -23,14 +23,16 @@ function initSpotlight({ D, reduce, finePointer, $, $$ }) {
   const root = $('#spot')
   const images = D.SPOTLIGHT_IMAGES
   if (!root || !images.length) return
+  // Mobile : pas de pile d'images en arrière-plan (hero ni page projet) — masquée en CSS, jamais construite
+  if (matchMedia('(max-width: 900px)').matches) { root.remove(); return }
 
   const small = innerWidth < 768
   const tile = small ? 130 : 180
   const gap = 16
   root.style.setProperty('--tile', `${tile}px`)
   const html = images.map((src) => {
-    const [cdn, local] = mediaSources(src, 420)
-    return `<div class="spot-tile"><img src="${cdn}"${local ? ` data-fb="${local}"` : ''} alt="" loading="lazy" decoding="async"></div>`
+    const [cdn, ...fallbacks] = mediaSources(src, 420)   // CDN nouveau dossier → CDN ancien dossier → local
+    return `<div class="spot-tile"><img src="${cdn}"${fallbacks.length ? ` data-fb="${fallbacks.join('|')}"` : ''} alt="" loading="lazy" decoding="async"></div>`
   }).join('')
   const setW = images.length * (tile + gap)
   root.innerHTML = `<div class="spot-track">${html}${html}</div>`

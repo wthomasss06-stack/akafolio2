@@ -84,5 +84,3 @@ html[data-theme='light'] .dv-frame { filter: drop-shadow(0 22px 26px rgba(0, 0, 
 }
 @media (prefers-reduced-motion: reduce) { .dv-slot { animation: none; } .dv-stage { transition: none; } }
 
-/* La bande d'images du hero d'accueil n'a rien à faire derrière la page d'un projet */
-body.is-project-detail .spot { display: none; }

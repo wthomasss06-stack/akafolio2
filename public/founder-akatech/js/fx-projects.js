@@ -68,8 +68,16 @@ function start(root, { D, $, $$ }, makeStatic) {
   if ('ResizeObserver' in window) new ResizeObserver(resize).observe(stage)
 
   /* Plans : hauteurs variées (mais stables), posés les uns à côté des autres sur une boucle. */
-  const heights = cards.map((_, i) => CONFIG.minHeight + (((i * 7) % 10) / 9) * (CONFIG.maxHeight - CONFIG.minHeight))
-  const widths = heights.map((h) => h * CONFIG.aspectRatio)
+  // Mobile : mêmes plans WebGL et même parallaxe qu'au PC, mais à l'échelle de l'écran — chaque plan est une boîte
+  // (≈ 78 % de la largeur visible × 74 % de la hauteur) dans laquelle l'image « responsive » est ajustée sans
+  // recadrage, au lieu de plans de 4 à 5 unités de large dont on ne voyait qu'une tranche.
+  const mobile = matchMedia('(max-width: 900px)').matches
+  const visibleH = 2 * CONFIG.cameraZ * Math.tan(Math.PI / 8)
+  const visibleW = visibleH * Math.max(0.35, stage.clientWidth / Math.max(1, stage.clientHeight))
+  const heights = mobile
+    ? cards.map(() => visibleH * 0.74)
+    : cards.map((_, i) => CONFIG.minHeight + (((i * 7) % 10) / 9) * (CONFIG.maxHeight - CONFIG.minHeight))
+  const widths = mobile ? cards.map(() => visibleW * 0.78) : heights.map((h) => h * CONFIG.aspectRatio)
   const offsets = []
   let stack = 0
   widths.forEach((w, i) => {
@@ -85,7 +93,7 @@ function start(root, { D, $, $$ }, makeStatic) {
     const mesh = new THREE.Mesh(geo, mat)
     mesh.userData.orig = [...geo.attributes.position.array]
     const p = D.PROJECTS[i]
-    loadImage(mediaSources(p.img, 1000).filter(Boolean)).then((im) => {
+    loadImage(mediaSources(mobile ? (p.responsive || p.img) : p.img, mobile ? 800 : 1000).filter(Boolean)).then((im) => {
       const tex = new THREE.Texture(im)
       tex.needsUpdate = true; tex.generateMipmaps = false; tex.minFilter = THREE.LinearFilter
       mesh.userData.imgTex = tex
@@ -126,7 +134,7 @@ function start(root, { D, $, $$ }, makeStatic) {
   }
   const stopVideo = (i) => { if (i < 0) return; vstate[i]?.video.pause(); showImage(i) }
   const startVideo = (i) => {
-    if (i < 0) return
+    if (i < 0 || mobile) return   // jamais de vidéo sur mobile
     const path = videoPathOf(D.PROJECTS[i]); if (!path || !hasVideo(path)) return
     let st = vstate[i]
     if (st?.failed) return

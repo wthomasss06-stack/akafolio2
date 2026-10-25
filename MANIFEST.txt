@@ -1,11 +1,13 @@
 Portfolio founder-akatech — ZIP différentiel (à dézipper à la racine de elvis-portfolio-nextjs, en écrasant)
+Cumulatif : il contient aussi les correctifs de la version précédente.
 
-MODIFIÉS (7)
+MODIFIÉS (8)
   ~ package.json
   ~ public/founder-akatech/index.html
   ~ public/founder-akatech/css/style.css
   ~ public/founder-akatech/js/main.js
   ~ public/founder-akatech/js/fx-projects.js
+  ~ public/founder-akatech/js/fx-spotlight.js
   ~ public/founder-akatech/lib/cloudinary.js
   ~ public/founder-akatech/lib/cloudinaryVersions.js
 
@@ -30,23 +32,21 @@ LOGOS DE TECHNOS AJOUTÉS (11) — devicon/ et simple-icons/ dans public/assets/
   + public/assets/icons/simple-icons/reactrouter.svg
   + public/assets/icons/simple-icons/resend.svg
 
-CE QUI A ÉTÉ CORRIGÉ
-1. Images des services et du process invisibles :
-   - les vignettes étaient en loading="lazy" dans un bloc masqué (display:none) : le navigateur ne les chargeait jamais ;
-     elles se chargent maintenant tout de suite (main.js) ;
-   - lib/cloudinary.js cherchait seulement dans « akatech/… » alors que « npm run cloudinary:sync » envoie dans
-     « elvis-portfolio/images/… » : il essaie maintenant le nouveau dossier, puis l'ancien, puis le fichier local ;
-   - lib/cloudinaryVersions.js (copie lue par le site statique) était périmée : elle est maintenant régénérée par
-     scripts/sync-founder-versions.mjs, lancé automatiquement avant « npm run dev » / « build » et après « cloudinary:sync ».
-2. Section projets : la slide active joue son .webm (Cloudinary, repli local), les autres restent en image ; pas de
-   vidéo sur mobile ni en repli statique. Un .webm est utilisé s'il figure dans cloudinaryVersions.js.
-3. Page projet (slug) : même expérience qu'AKATech Studio (portable + téléphone, chiffres clés, problème / solution,
-   fonctionnalités, résultat, logos des technos, projet précédent / suivant). Fichier : js/project-page.js.
-4. Footer plein écran comme Appdesktop (rideau épinglé, carte 3D, lettres qui se dispersent, faisceaux) : js/fx-footer.js.
-5. Barre du haut transparente ; texte « AKATECH » retiré (le logo reste) ; badge « Disponible maintenant » et sticker
-   « Sites dès 200 000 FCFA » retirés du hero.
-6. Centrage : les sections « .wrap.sec » perdaient leur marge latérale (padding: X 0 écrasait celui de .wrap) et se collaient
-   à gauche ; corrigé, et hero + en-têtes de section centrés. Débordement horizontal mobile corrigé (titres longs).
+AJOUTS DE CETTE VERSION — MOBILE (≤ 900 px)
+1. Bouton « Devis gratuit » fixe en bas de l'écran : supprimé (main.js + style.css).
+2. Section projets : même slider WebGL / parallaxe qu'au PC, à l'échelle du téléphone (fx-projects.js).
+   Chaque projet est une carte ajustée sans recadrage dans ≈ 78 % de la largeur × 74 % de la hauteur visibles, avec
+   l'image « responsive » du projet (aperçu PC à défaut). La fiche sous le slider se limite au titre. Jamais de vidéo.
+3. Avis : un seul avis visible, défilement automatique toutes les 4 s en boucle, pastilles cliquables ; le glissement du
+   doigt met le défilement en pause 4 s (main.js > initReviews, style.css).
+4. Pile d'images du hero qui défile en arrière-plan : retirée sur mobile, page d'un projet comprise (fx-spotlight.js ne la
+   construit plus sous 900 px ; style.css la masque). Sur PC elle reste telle quelle, page projet comprise.
+5. Correctif : le repli local de cette bande d'images recevait la mauvaise URL depuis la version précédente.
+
+RAPPEL — VERSION PRÉCÉDENTE
+Images services / process (chargement + dossiers Cloudinary + versions), webm dans la section projets, page projet
+(slug) comme AKATech Studio avec logos des technos, footer plein écran, barre transparente, hero sans badge ni sticker,
+portfolio centré. Les .webm doivent être sur Cloudinary (« npm run cloudinary:sync »).
 
 Non testé ici : « next build » du projet complet (seul le site statique a été exécuté, avec des images de substitution).
 Le fichier .env n'est pas dans ce zip.

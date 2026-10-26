@@ -22,7 +22,7 @@ function buildFooter({ D, esc }) {
       <canvas class="ft-beams" aria-hidden="true"></canvas>
       <div class="ft-band"><div class="ft-inner">
         <div class="ft-float"><div class="fts-card">
-          <div class="fts-grid">
+          <div class="fts-grid" translate="no">
             <div class="fts-row fts-row--name">${scatterWord('M’Bollo', 'fts-word--bright')}${scatterWord('Aka', 'fts-word--bright')}</div>
             <div class="fts-row">${scatterWord('dev', 'fts-word--muted')}${scatterWord('web', 'fts-word--muted')}</div>
             <div class="fts-row fts-row--logo">${scatterWord('CEO', 'fts-word--muted')}

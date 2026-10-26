@@ -801,7 +801,7 @@ const ABOUT = {
 // ─── Formulaire de contact → API Resend ──────────────────────────
 const CONTACT_FORM = {
   types: ['Site vitrine', 'E-commerce', 'Application web / SaaS', 'Fiche Google', 'Autre'],
-  waIntro: "Bonjour M'Bollo, je viens de votre portfolio.",
+  waIntro: "Bonjour M'Bollo, je souhaite en savoir plus sur vos services et discuter de mon projet avec vous.",
   note: 'Votre demande sera envoyée par e-mail. Aucun engagement.',
 }
 

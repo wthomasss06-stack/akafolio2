@@ -74,6 +74,153 @@ function initTheme() {
   })
 }
 
+/* ───────────── Mode tir ───────────── */
+function initShootMode() {
+  let active = false
+  const hiddenWords = new Map()
+  const effects = new Set()
+
+  const setActive = (value) => {
+    active = value
+    document.body.classList.toggle('shoot-active', active)
+    $$('[data-shoot-toggle]').forEach((button) => {
+      button.setAttribute('aria-pressed', String(active))
+      button.setAttribute('aria-label', active ? 'Désactiver le mode tir' : 'Activer le mode tir')
+      button.title = active ? 'Désactiver le mode tir' : 'Activer le mode tir'
+    })
+    if (active) return
+
+    hiddenWords.forEach((word, placeholder) => {
+      if (placeholder.isConnected) placeholder.replaceWith(document.createTextNode(word))
+    })
+    hiddenWords.clear()
+    effects.forEach((effect) => {
+      effect.getAnimations().forEach((animation) => animation.cancel())
+      effect.remove()
+    })
+    effects.clear()
+  }
+
+  const addEffect = (className, x, y) => {
+    const effect = document.createElement('span')
+    effect.className = className
+    effect.style.left = `${x}px`
+    effect.style.top = `${y}px`
+    document.body.appendChild(effect)
+    effects.add(effect)
+    return effect
+  }
+
+  const impact = (x, y, large = false) => {
+    const ring = addEffect(`shoot-impact${large ? ' shoot-impact--large' : ''}`, x, y)
+    ring.addEventListener('animationend', () => { effects.delete(ring); ring.remove() }, { once: true })
+
+    for (let i = 0; i < (large ? 14 : 8); i += 1) {
+      const spark = addEffect('shoot-spark', x, y)
+      const angle = (i / (large ? 14 : 8)) * Math.PI * 2
+      const distance = (large ? 72 : 42) + Math.random() * 34
+      spark.style.setProperty('--shoot-x', `${Math.cos(angle) * distance}px`)
+      spark.style.setProperty('--shoot-y', `${Math.sin(angle) * distance}px`)
+      spark.addEventListener('animationend', () => { effects.delete(spark); spark.remove() }, { once: true })
+    }
+  }
+
+  const dropWordAtPoint = (target, x, y) => {
+    const range = document.caretRangeFromPoint?.(x, y)
+    let textNode = range?.startContainer
+    let offset = range?.startOffset
+    if (!textNode || typeof offset !== 'number') return
+    if (textNode.nodeType === Node.ELEMENT_NODE) {
+      const child = textNode.childNodes[offset] || textNode.childNodes[offset - 1]
+      if (!child) return
+      const walker = document.createTreeWalker(child, NodeFilter.SHOW_TEXT)
+      const childText = child.nodeType === Node.TEXT_NODE ? child : walker.nextNode()
+      if (!childText) return
+      offset = childText === textNode.childNodes[offset] ? 0 : childText.textContent.length
+      textNode = childText
+    }
+    if (textNode.nodeType !== Node.TEXT_NODE || !target.contains(textNode)) return
+
+    const text = textNode.textContent
+    const word = [...text.matchAll(/\S+/g)].find((match) => offset >= match.index && offset <= match.index + match[0].length)
+    if (!word) return
+
+    const wordRange = document.createRange()
+    wordRange.setStart(textNode, word.index)
+    wordRange.setEnd(textNode, word.index + word[0].length)
+    const bounds = wordRange.getBoundingClientRect()
+    if (!bounds.width || !bounds.height) return
+
+    const prefix = textNode.splitText(word.index)
+    prefix.splitText(word[0].length)
+    const placeholder = document.createElement('span')
+    placeholder.className = 'shoot-word-placeholder'
+    placeholder.textContent = word[0]
+    prefix.parentNode.replaceChild(placeholder, prefix)
+    hiddenWords.set(placeholder, word[0])
+
+    const style = getComputedStyle(target)
+    const piece = document.createElement('span')
+    piece.className = 'shoot-falling-word'
+    piece.textContent = word[0]
+    piece.style.left = `${bounds.left}px`
+    piece.style.top = `${bounds.top}px`
+    piece.style.fontFamily = style.fontFamily
+    piece.style.fontSize = style.fontSize
+    piece.style.fontWeight = style.fontWeight
+    piece.style.color = style.color
+    document.body.appendChild(piece)
+    effects.add(piece)
+
+    const direction = Math.random() > 0.5 ? 1 : -1
+    const animation = piece.animate([
+      { transform: 'translateY(0) rotate(0)', opacity: 1 },
+      { transform: `translate(${direction * (8 + Math.random() * 28)}px, ${100 + Math.random() * 220}px) rotate(${direction * (8 + Math.random() * 34)}deg)`, opacity: 0 },
+    ], { duration: 700 + Math.random() * 350, easing: 'cubic-bezier(.45,0,.9,.5)' })
+    animation.onfinish = () => { effects.delete(piece); piece.remove() }
+  }
+
+  const fire = (event) => {
+    if (!active || event.target.closest('a, button, input, select, textarea, summary, .theme-switch, .aka-language-toggle')) return
+    const { clientX: x, clientY: y } = event
+    const bullet = addEffect('shoot-bullet', window.innerWidth / 2, window.innerHeight + 20)
+    const flight = bullet.animate([
+      { left: `${window.innerWidth / 2}px`, top: `${window.innerHeight + 20}px` },
+      { left: `${x}px`, top: `${y}px` },
+    ], { duration: 180, easing: 'ease-in' })
+    flight.onfinish = () => {
+      effects.delete(bullet)
+      bullet.remove()
+      if (!active) return
+      const hit = document.elementFromPoint(x, y)
+      const image = hit?.closest('img')
+      const textTarget = hit?.closest('h1, h2, h3, p, li, blockquote, b, strong, .skill, .hero-stat span, .stats span, .proc-n, .svc-n, .sec-num, .plan-price, .tl .d, .tl .t, .tl .c, .proc-title, .svc-title, .pc-title, .rev-quote')
+      impact(x, y, Boolean(image))
+      if (image) {
+        image.classList.remove('shoot-image-hit')
+        void image.offsetWidth
+        image.classList.add('shoot-image-hit')
+        image.addEventListener('animationend', () => image.classList.remove('shoot-image-hit'), { once: true })
+      } else if (textTarget && $('#main').contains(textTarget)) {
+        dropWordAtPoint(textTarget, x, y)
+      }
+    }
+  }
+
+  $$('[data-shoot-toggle]').forEach((button) => {
+    button.addEventListener('click', () => {
+      setActive(!active)
+      if (button.classList.contains('shoot-toggle--menu')) {
+        $('.burger').click()
+      }
+    })
+  })
+  window.addEventListener('click', fire)
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && active) setActive(false)
+  })
+}
+
 /* ───────────── Barre de navigation + menu mobile ───────────── */
 function renderBar() {
   const navItems = D.NAV.filter((n) => n.id !== 'tarifs')
@@ -84,6 +231,9 @@ function renderBar() {
     <div class="bar-right">
       ${window.PF_LANG.html()}
       ${renderToggle()}
+      <button class="shoot-toggle" type="button" data-shoot-toggle aria-pressed="false" aria-label="Activer le mode tir" title="Activer le mode tir">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/></svg>
+      </button>
       <a class="btn btn--sm nav-cta" href="#${D.NAV_CTA.target}" data-go="${D.NAV_CTA.target}">${esc(D.NAV_CTA.label)}</a>
       <button class="burger" aria-label="${esc(D.UI.menuOpen)}" aria-expanded="false" aria-controls="menu"><span></span></button>
     </div>`
@@ -99,6 +249,7 @@ function renderBar() {
       (C.linkedin ? contact(C.linkedin, LINKEDIN, 'LinkedIn') : '') +
       contact(`mailto:${C.email}`, MAIL, C.email, false) +
     `</div><div class="menu-lang">${window.PF_LANG.html()}</div></div>` +
+    `<button class="shoot-toggle shoot-toggle--menu" type="button" data-shoot-toggle aria-pressed="false" aria-label="Activer le mode tir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/></svg><span>Mode tir</span></button>` +
     `<a class="btn" href="#${D.NAV_CTA.target}" data-go="${D.NAV_CTA.target}">${esc(D.NAV_CTA.label)}</a>`
   document.body.appendChild(menu)
   window.PF_LANG.sync()
@@ -107,6 +258,7 @@ function renderBar() {
   burger.addEventListener('click', () => setMenu(!menu.classList.contains('open')))
   menu.addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false) })
   addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false) })
+  initShootMode()
   // Sur mobile la barre garde le bouton devis du menu : on le cache pour laisser la place au toggle.
   if (matchMedia('(max-width: 900px)').matches) $('.nav-cta').style.display = 'none'
   matchMedia('(max-width: 900px)').addEventListener('change', (e) => { $('.nav-cta').style.display = e.matches ? 'none' : ''; if (!e.matches) setMenu(false) })

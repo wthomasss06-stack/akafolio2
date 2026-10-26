@@ -7,6 +7,8 @@ window.CLOUDINARY_VERSIONS = {
   "/assets/images/Windows_XP_Background__2001_.webp": 1790320424,
   "/assets/images/about-1.webp": 1790320137,
   "/assets/images/akatechh.png": 1790320139,
+  "/assets/images/devices/laptop-frame.webp": 1792911422,
+  "/assets/images/devices/phone-frame.webp": 1792911425,
   "/assets/images/favicon.png": 1790320141,
   "/assets/images/faviconB.png": 1790320142,
   "/assets/images/founder-akatech/hero.webp": 1792827228,

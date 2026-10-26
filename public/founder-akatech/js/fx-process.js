@@ -1,8 +1,24 @@
 // js/fx-process.js — Process : image qui suit le curseur au survol d'une ligne (TRES_MINIMALISM.html).
-// Souris : l'image flotte, en niveaux de gris, et suit le curseur. Tactile : un appui déplie la ligne et son image.
+// Souris : l'image flotte en couleur. Tactile : un appui déplie la ligne et son image.
 // Clavier : Entrée / Espace déplie la ligne (tous appareils).
 (() => {
 'use strict'
+const setPreview = (float, value, number) => {
+  if (!value) {
+    float.replaceChildren(Object.assign(document.createElement('b'), { textContent: number }))
+    float.classList.remove('has-img')
+    return
+  }
+  const [src, ...fallbacks] = window.PF_CLOUD.mediaSources(value, 900)
+  const image = document.createElement('img')
+  image.alt = ''
+  image.loading = 'eager'
+  if (fallbacks.length) image.dataset.fb = fallbacks.filter(Boolean).join('|')
+  image.src = src
+  float.replaceChildren(image)
+  float.classList.add('has-img')
+}
+
 function initProcess({ $, $$, finePointer, reduce }) {
   const list = $('.proc-list')
   if (!list) return
@@ -37,13 +53,9 @@ function initProcess({ $, $$, finePointer, reduce }) {
     if (g && !reduce) g.to(float, { opacity: on ? 1 : 0, scale: on ? 1 : 0.8, duration: 0.4, ease: 'power3.out', overwrite: 'auto' })
     else float.style.opacity = on ? 1 : 0
   }
-
   rows.forEach((row) => {
     row.addEventListener('mouseenter', () => {
-      const image = row.dataset.img
-      float.style.backgroundImage = image ? `url("${image}")` : 'none'
-      float.innerHTML = image ? '' : `<b>${row.dataset.n}</b>`
-      float.classList.toggle('has-img', !!image)
+      setPreview(float, row.dataset.img, row.dataset.n)
       show(true)
     })
     row.addEventListener('mouseleave', () => show(false))
@@ -86,10 +98,8 @@ function initServices({ $, $$, finePointer, reduce }) {
   }
   rows.forEach((row) => {
     row.addEventListener('mouseenter', () => {
-      const image = row.dataset.img
-      float.style.backgroundImage = image ? `url("${image}")` : 'none'
-      float.innerHTML = image ? '' : `<b>${row.dataset.n}</b>`
-      float.classList.toggle('has-img', !!image); show(true)
+      setPreview(float, row.dataset.img, row.dataset.n)
+      show(true)
     })
     row.addEventListener('mouseleave', () => show(false))
   })

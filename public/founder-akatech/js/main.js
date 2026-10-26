@@ -92,14 +92,14 @@ function renderBar() {
   const C = D.CONTACT
   const MAIL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>'
   const LINKEDIN = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9.75h4V21H3V9.75Zm6.5 0h3.8v1.54h.06c.53-1 1.82-2.04 3.75-2.04 4 0 4.74 2.63 4.74 6.05V21h-4v-4.9c0-1.17-.02-2.67-1.63-2.67-1.63 0-1.88 1.27-1.88 2.58V21h-4V9.75Z"/></svg>'
-  const contact = (href, icon, label, ext = true) => `<a class="menu-contact__link" href="${esc(href)}"${ext ? ' target="_blank" rel="noopener"' : ''}><span class="menu-contact__ico">${icon}</span><span class="menu-contact__txt">${esc(label)}</span></a>`
+  const contact = (href, icon, label, ext = true) => `<a class="menu-contact__link" href="${esc(href)}" aria-label="${esc(label)}" title="${esc(label)}"${ext ? ' target="_blank" rel="noopener"' : ''}><span class="menu-contact__ico">${icon}</span></a>`
   menu.innerHTML = navItems.map((n) => `<a href="#${n.id}" data-go="${n.id}">${esc(n.label)}</a>`).join('') +
-    `<a class="btn" href="#${D.NAV_CTA.target}" data-go="${D.NAV_CTA.target}">${esc(D.NAV_CTA.label)}</a>` +
-    `<div class="menu-contact" translate="no">` +
+    `<div class="menu-quick-links"><div class="menu-contact" translate="no">` +
       contact(waUrl(D.CONTACT_FORM.waIntro), ICON.wa, 'WhatsApp') +
       (C.linkedin ? contact(C.linkedin, LINKEDIN, 'LinkedIn') : '') +
       contact(`mailto:${C.email}`, MAIL, C.email, false) +
-    `</div><div class="menu-lang">${window.PF_LANG.html()}</div>`
+    `</div><div class="menu-lang">${window.PF_LANG.html()}</div></div>` +
+    `<a class="btn" href="#${D.NAV_CTA.target}" data-go="${D.NAV_CTA.target}">${esc(D.NAV_CTA.label)}</a>`
   document.body.appendChild(menu)
   window.PF_LANG.sync()
   const burger = $('.burger')
@@ -168,7 +168,7 @@ function renderProjects() {
 function renderServices() {
   $('#services').innerHTML = `<div class="wrap sec">${secHead('services', 2)}
     <div class="svc-list">${D.SERVICES.map((s) => `
-      <article class="svc-row" role="button" tabindex="0" data-n="${esc(s.n)}" aria-expanded="false">
+      <article class="svc-row" role="button" tabindex="0" data-n="${esc(s.n)}" data-img="${esc(s.img)}" aria-expanded="false">
         <span class="svc-n">[ ${esc(s.n)} ]</span>
         <div class="svc-main"><h3 class="svc-title">${esc(s.title)}</h3><p class="svc-sub">${esc(s.sub)}</p><p class="svc-desc">${esc(s.desc)}</p><ul class="svc-feat">${s.features.map((f) => `<li>${esc(f)}</li>`).join('')}</ul><a class="btn btn--sm svc-cta" href="${esc(waUrl(D.UI.waService(s.title)))}" target="_blank" rel="noopener">${esc(D.UI.requestQuote)} ${ICON.arrow}</a></div>
         <div class="svc-thumb">${img(s.img, `${D.UI.projectAlt} — ${s.title}`, { w: 900, eager: true })}</div>
@@ -294,10 +294,9 @@ function renderFooter() {
 }
 
 
-/* ───────────── Avis : sur mobile, un avis à la fois, défilement automatique toutes les 4 s ───────────── */
+/* ───────────── Avis : un avis à la fois, défilement automatique toutes les 4 s ───────────── */
 function initReviews() {
   const grid = $('#avis .rev-grid'); if (!grid) return
-  const mq = matchMedia('(max-width: 900px)')
   const slides = [...grid.children]
   if (slides.length < 2) return
   const dots = document.createElement('div')
@@ -328,11 +327,10 @@ function initReviews() {
   grid.addEventListener('pointerdown', touched, { passive: true })
   grid.addEventListener('touchstart', touched, { passive: true })
   buttons.forEach((b, i) => b.addEventListener('click', () => { touched(); go(i) }))
-  const tick = () => { if (mq.matches && inView && !document.hidden && Date.now() >= resumeAt) go(idx + 1) }
+  const tick = () => { if (inView && !document.hidden && Date.now() >= resumeAt) go(idx + 1) }
   new IntersectionObserver(([e]) => { inView = e.isIntersecting }, { threshold: .35 }).observe(grid)
   timer = setInterval(tick, 4000)
   mark()
-  mq.addEventListener?.('change', () => { if (!mq.matches) grid.scrollTo({ left: 0, behavior: 'auto' }) })
   return () => clearInterval(timer)
 }
 

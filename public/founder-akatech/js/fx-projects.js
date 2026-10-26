@@ -123,8 +123,8 @@ function start(root, { D, $, $$ }, makeStatic) {
   let pos = 0, last = 0, distAmt = 0, distTarget = 0, dir = 0, dirTarget = 0, peak = 0, active = -1, visible = false
   const vel = [0, 0, 0, 0, 0]
 
-  /* Vidéo : seule la slide active joue son .webm (une lecture à la fois), si le fichier est sur Cloudinary ;
-     sinon, ou si la vidéo échoue, l'image reste affichée. Jamais de vidéo en repli statique / mobile. */
+  /* Les vidéos des projets jouent ensemble sur desktop ; l'image reste le repli en cas d'échec.
+     Le slider statique et la version mobile conservent les images. */
   const { hasVideo, videoSources, localOf } = window.PF_CLOUD
   const videoPathOf = (p) => { const m = /\/assets\/images\/projects\/([^/]+)\.(?:webp|png|jpe?g)$/i.exec(localOf(p.img) || ''); return m ? `/assets/images/projects/${m[1]}.webm` : '' }
   const vstate = meshes.map(() => null)
@@ -149,7 +149,7 @@ function start(root, { D, $, $$ }, makeStatic) {
       video.src = st.srcs.shift()
     }
     st.video.play().then(() => {
-      if (active !== i || st.failed) return
+      if (st.failed) return
       if (!st.tex) { st.tex = new THREE.VideoTexture(st.video); st.tex.generateMipmaps = false; st.tex.minFilter = THREE.LinearFilter }
       const m = meshes[i]; m.userData.videoOn = true; m.material.map = st.tex; m.material.color.set(0xffffff); m.material.needsUpdate = true
     }).catch(() => {})
@@ -177,7 +177,8 @@ function start(root, { D, $, $$ }, makeStatic) {
   })
   new IntersectionObserver(([e]) => {
     visible = e.isIntersecting
-    if (visible) startVideo(active); else vstate[active]?.video.pause()
+    if (visible) meshes.forEach((_, i) => startVideo(i))
+    else vstate.forEach((st) => st?.video.pause())
   }, { rootMargin: '100px' }).observe(root)
 
   canvas.addEventListener('pointerdown', (e) => {
@@ -243,11 +244,10 @@ function start(root, { D, $, $$ }, makeStatic) {
     })
 
     if (bi !== active) {
-      stopVideo(active)
       active = bi
-      startVideo(bi)
       cards.forEach((c, i) => c.classList.toggle('is-on', i === bi))
       canvas.setAttribute('aria-label', `${D.UI.viewProject} : ${D.PROJECTS[bi]?.title || ''}`)
+      if (visible) meshes.forEach((_, i) => startVideo(i))
     }
     renderer.render(scene, camera)
   }

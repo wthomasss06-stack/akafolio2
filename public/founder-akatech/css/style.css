@@ -116,7 +116,7 @@ ul, ol { list-style: none; }
 .bar .brand, .bar .nav a { text-shadow: 0 0 14px var(--bg), 0 0 4px var(--bg); }  /* lisible sur le contenu qui défile dessous */
 .bar.is-hidden { transform: translateY(-100%); }
 .brand { display: inline-flex; align-items: center; gap: .45rem; font-family: var(--f-display); font-weight: 900; font-style: italic; text-transform: uppercase; font-size: 1.9rem; line-height: 1; letter-spacing: -.01em; }
-.brand img { width: 32px; height: 32px; object-fit: contain; flex: 0 0 auto; }
+.brand img { width: 48px; height: 48px; object-fit: contain; flex: 0 0 auto; }
 .brand i { font-style: normal; color: var(--accent); }
 .nav { display: flex; align-items: center; gap: clamp(.9rem, 2.2vw, 2rem); }
 .nav a { font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; padding: .6rem .1rem; border-bottom: 3px solid transparent; transition: border-color .2s, color .2s; }
@@ -302,13 +302,15 @@ section { position: relative; }
 .proc-desc { font-size: .84rem; color: var(--muted); }
 .proc-thumb { display: none; }
 .proc-float { position: fixed; left: 0; top: 0; width: 350px; height: 450px; z-index: 90; pointer-events: none; opacity: 0; transform: translate(-50%, -50%) scale(.8); border: 3px solid var(--line-strong); box-shadow: 8px 8px 0 var(--accent); background: var(--accent) center / cover no-repeat; display: grid; place-items: center; overflow: hidden; }
-.proc-float.has-img { filter: grayscale(100%); }
+.proc-float > img, .svc-float > img { width: 100%; height: 100%; object-fit: cover; }
 .proc-float b { font-family: var(--f-display); font-weight: 900; font-style: italic; font-size: 9rem; line-height: 1; color: var(--on-accent); }
 
 /* ───────────────────────── Avis ───────────────────────── */
-.rev-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.6rem; }
+.rev-grid { display: flex; gap: 1.6rem; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.rev-grid::-webkit-scrollbar { display: none; }
 .rev { position: relative; display: flex; flex-direction: column; gap: 1.2rem; background: var(--card); border: 3px solid var(--line-strong); box-shadow: 6px 6px 0 var(--shadow); padding: 2rem 1.6rem 1.5rem; }
-.rev:first-child { background: linear-gradient(135deg, var(--accent-2), var(--accent)); color: var(--on-accent); grid-column: span 2; box-shadow: 8px 8px 0 var(--shadow); }
+.rev-grid .rev { flex: 0 0 100%; min-width: 0; scroll-snap-align: center; }
+.rev:first-child { background: linear-gradient(135deg, var(--accent-2), var(--accent)); color: var(--on-accent); box-shadow: 8px 8px 0 var(--shadow); }
 .rev::before { content: '“'; position: absolute; top: -.2rem; left: 1.1rem; font-family: var(--f-display); font-weight: 900; font-size: 6rem; line-height: 1; color: var(--accent-text); }
 .rev:first-child::before { color: var(--on-accent); opacity: .5; }
 .rev blockquote { font-size: .95rem; line-height: 1.7; padding-top: 2.2rem; }
@@ -341,7 +343,7 @@ section { position: relative; }
 .about-actions { display: flex; flex-wrap: wrap; gap: 1rem; }
 
 /* ───────────────────────── FAQ ───────────────────────── */
-.faq-list { border-top: 3px solid var(--line-strong); max-width: 920px; }
+.faq-list { border-top: 3px solid var(--line-strong); max-width: 920px; margin-inline: auto; }
 .faq-list details { border-bottom: 3px solid var(--line-strong); background: var(--bg); }
 .faq-list summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; padding: 1.4rem .3rem; font-family: var(--f-display); font-weight: 900; font-style: italic; text-transform: uppercase; font-size: clamp(1.4rem, 2.6vw, 2.1rem); line-height: 1.05; }
 .faq-list summary::-webkit-details-marker { display: none; }
@@ -350,7 +352,7 @@ section { position: relative; }
 .faq-list details > p { padding: 0 .3rem 1.6rem; max-width: 64ch; color: var(--muted); font-size: .9rem; }
 
 /* ───────────────────────── Contact ───────────────────────── */
-#contact .form { max-width: 52rem; }
+#contact .form { max-width: 52rem; margin-inline: auto; }
 .form { display: flex; flex-direction: column; gap: 1.1rem; background: var(--card); border: 3px solid var(--line-strong); box-shadow: 10px 10px 0 var(--accent); padding: clamp(1.4rem, 3vw, 2.2rem); }
 .field { display: flex; flex-direction: column; gap: .4rem; }
 .field label { font-size: .75rem; font-weight: 700; }
@@ -388,8 +390,7 @@ section { position: relative; }
 
 /* ───────────────────────── Responsive ───────────────────────── */
 @media (max-width: 1100px) {
-  .svc-grid, .plans, .rev-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .rev:first-child { grid-column: span 2; }
+  .svc-grid, .plans { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 900px) {
   .nav { display: none; }
@@ -406,8 +407,7 @@ section { position: relative; }
   .foot-in { flex-direction: column; }
 }
 @media (max-width: 640px) {
-  .svc-grid, .plans, .rev-grid { grid-template-columns: minmax(0, 1fr); }
-  .rev:first-child { grid-column: auto; }
+  .svc-grid, .plans { grid-template-columns: minmax(0, 1fr); }
   .hero { padding-top: calc(var(--bar-h) + 1.6rem); }
   .btn { font-size: 1.2rem; }
   .hero-cta .row .btn { flex: 1 1 100%; }
@@ -492,7 +492,6 @@ section { position: relative; }
 .svc-row.open .svc-cta { margin-top:.6rem; }
 .svc-thumb { display:none; }
 .svc-float { position:fixed; left:0; top:0; width:min(350px,35vw); height:min(430px,55vh); z-index:90; pointer-events:none; opacity:0; transform:translate(-50%,-50%) scale(.8); border:3px solid var(--line-strong); box-shadow:8px 8px 0 var(--accent); background:var(--accent) center/cover no-repeat; overflow:hidden; }
-.svc-float.has-img { filter:grayscale(100%); }
 .svc-float b { display:grid; height:100%; place-items:center; font:italic 900 8rem/1 var(--f-display); color:var(--on-accent); }
 @media(max-width:900px) { .svc-row { grid-template-columns:3.2rem minmax(0,1fr); gap:1rem; } .svc-thumb { display:block; grid-column:2; max-height:0; overflow:hidden; border:0 solid var(--line-strong); transition:max-height .5s cubic-bezier(.22,1,.36,1); } .svc-thumb img { width:100%; aspect-ratio:16/9; object-fit:cover; } .svc-row.open .svc-thumb { max-height:420px; border-width:3px; } }
 @media(hover:none) { .svc-row:hover { padding-left:0; color:var(--text); } .svc-float { display:none; } }
@@ -543,15 +542,12 @@ section { position: relative; }
   .ps--gl .pc-title { font-size: clamp(1.7rem, 8vw, 2.4rem); }
   .ps--gl .pc-actions { margin-top: 0; }
   /* Avis : un seul avis visible, défilement automatique toutes les 4 s (js/main.js > initReviews) */
-  .rev-grid { position: relative; display: flex; gap: 1rem; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none;
-    margin-inline: calc(var(--pad) * -1); padding: .6rem var(--pad) 1.4rem; }
-  .rev-grid::-webkit-scrollbar { display: none; }
-  .rev-grid .rev { flex: 0 0 86%; grid-column: auto; scroll-snap-align: center; opacity: 1 !important; transform: none !important; }
-  .rev-dots { display: flex; justify-content: center; gap: .5rem; margin-top: .2rem; }
-  .rev-dots button { width: 10px; height: 10px; padding: 0; border: 2px solid var(--line-strong); border-radius: 50%; background: transparent; cursor: pointer; transition: background .25s, transform .25s; }
-  .rev-dots button[aria-current='true'] { background: var(--accent); transform: scale(1.25); }
+  .rev-grid { position: relative; gap: 1rem; padding: .6rem 0 1.4rem; }
+  .rev-grid .rev { opacity: 1 !important; transform: none !important; }
 }
-@media (min-width: 901px) { .rev-dots { display: none; } }
+.rev-dots { display: flex; justify-content: center; gap: .5rem; margin-top: .2rem; }
+.rev-dots button { width: 10px; height: 10px; padding: 0; border: 2px solid var(--line-strong); border-radius: 50%; background: transparent; cursor: pointer; transition: background .25s, transform .25s; }
+.rev-dots button[aria-current='true'] { background: var(--accent); transform: scale(1.25); }
 
 /* ───── Sélecteur de langue (js/lang-toggle.js) et contacts du menu hamburger ───── */
 .aka-language-toggle select {
@@ -566,15 +562,22 @@ section { position: relative; }
 .aka-language-toggle select option { color: #111; background: #fff; }
 @media (max-width: 900px) { .bar-right .aka-language-toggle { display: none; } }   /* sur mobile : dans le menu hamburger */
 
-.menu-contact { display: grid; gap: .8rem; margin-top: 1.8rem; }
+.menu-quick-links { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 1.8rem; }
+.menu-contact { display: flex; justify-content: center; gap: .7rem; }
 .menu .menu-contact__link {
-  display: flex; align-items: center; gap: .9rem; margin: 0; padding: .85rem 1.15rem;
-  font: 700 .95rem/1.2 var(--f-mono); font-style: normal; text-transform: none; letter-spacing: 0;
-  border: 3px solid var(--line-strong); border-radius: 999px; background: var(--card); color: var(--text);
-  overflow-wrap: anywhere; transition: color .2s, transform .2s;
+  display: grid; place-items: center; flex: 0 0 56px; width: 56px; height: 56px; margin: 0; padding: 0;
+  border: 2px solid var(--accent); border-radius: 50%; background: transparent; color: var(--accent);
+  transition: background-color .2s, transform .2s;
 }
-.menu .menu-contact__link:hover, .menu .menu-contact__link:active { color: var(--accent-text); transform: translateY(-2px); }
-.menu-contact__ico { display: grid; place-items: center; flex: 0 0 auto; width: 26px; height: 26px; color: var(--accent-text); }
-.menu-contact__ico svg { width: 22px; height: 22px; }
-.menu-lang { display: flex; margin-top: 1.4rem; padding-bottom: 1.5rem; }
+.menu .menu-contact__link:hover, .menu .menu-contact__link:active { background: var(--accent); color: var(--on-accent); transform: translateY(-2px); }
+.menu-contact__ico { display: grid; place-items: center; width: 26px; height: 26px; color: inherit; }
+.menu-contact__ico svg { width: 24px; height: 24px; }
+.menu-lang { display: flex; justify-content: center; }
 .menu-lang .aka-language-toggle select { font-size: .9rem; padding: .8rem 2.2rem .8rem 1.2rem; }
+.menu > .btn { align-self: center; width: min(100%, 320px); margin-top: 1.2rem; }
+@media (max-width: 400px) {
+  .menu-quick-links { gap: .5rem; }
+  .menu-contact { gap: .45rem; }
+  .menu .menu-contact__link { flex-basis: 48px; width: 48px; height: 48px; }
+  .menu-lang .aka-language-toggle select { font-size: .8rem; padding: .7rem 1.7rem .7rem .8rem; }
+}

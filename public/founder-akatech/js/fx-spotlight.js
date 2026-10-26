@@ -1,11 +1,10 @@
 // js/fx-spotlight.js — la bande d'images qui suit le curseur (effet « Magnetic Spotlight »).
 //
 // • Toutes les images .webp des projets (SPOTLIGHT_IMAGES) défilent en boucle dans une bande fixe.
-// • La bande glisse vers la hauteur du curseur avec de l'inertie, dans le HERO seulement
-//   (au-delà, la section Projets prend le relais avec son slider).
+// • La bande suit le curseur avec de l'inertie dans le hero ou la page projet.
 // • Les titres marqués .wake se décalent dans le sillage de la bande (la vitesse de la bande les pousse).
 // • Les titres .bl sont en mix-blend-mode: difference : leur couleur s'inverse sur les images.
-// Sans souris (téléphone, tablette) : bande décorative dans le hero seulement. Mouvement réduit : bande immobile.
+// Mobile : effet désactivé. Mouvement réduit : bande immobile.
 (() => {
 'use strict'
 const { mediaSources } = window.PF_CLOUD
@@ -22,7 +21,10 @@ const CONFIG = {
 function initSpotlight({ D, reduce, finePointer, $, $$ }) {
   const root = $('#spot')
   const images = D.SPOTLIGHT_IMAGES
-  if (!root || !images.length) return
+  const hero = $('#accueil')
+  const project = $('.pd')
+  const scope = hero || project
+  if (!root || !images.length || !scope) return
   // Mobile : pas de pile d'images en arrière-plan (hero ni page projet) — masquée en CSS, jamais construite
   if (matchMedia('(max-width: 900px)').matches) { root.remove(); return }
 
@@ -40,7 +42,6 @@ function initSpotlight({ D, reduce, finePointer, $, $$ }) {
   root.style.setProperty('--spot-dur', `${setW / CONFIG.speed}s`)
 
   const H = root.offsetHeight || tile + 20
-  const hero = $('#accueil')
   const restY = () => innerHeight * CONFIG.restY
   let targetY = restY(), curY = targetY, prevY = curY, vel = 0
   const apply = () => { root.style.transform = `translate3d(0, ${(curY - H / 2).toFixed(1)}px, 0)` }
@@ -48,18 +49,17 @@ function initSpotlight({ D, reduce, finePointer, $, $$ }) {
 
   /* Sans souris : bande décorative visible seulement tant que le hero est à l'écran */
   if (!finePointer) {
-    new IntersectionObserver(([e]) => root.classList.toggle('is-off', !e.isIntersecting), { threshold: 0.15 }).observe(hero)
+    new IntersectionObserver(([e]) => root.classList.toggle('is-off', !e.isIntersecting), { threshold: 0.15 }).observe(scope)
     return
   }
   if (reduce) return
 
-  /* Hauteur visée = celle du curseur ; la bande ne vit que dans le hero : elle se masque dès que
-     SA position sort de #accueil (la règle est « seulement dans le hero »). */
+  /* La bande reste limitée au hero ou à la page projet, selon la page courante. */
   let pointerSeen = false, pending = false
   const refreshHide = () => {
     pending = false
     const el = document.elementFromPoint(innerWidth / 2, targetY)
-    root.classList.toggle('is-off', !(el && el.closest('#accueil')))
+    root.classList.toggle('is-off', !el?.closest(hero ? '#accueil' : '.pd'))
   }
   const schedule = () => { if (!pending) { pending = true; requestAnimationFrame(refreshHide) } }
   addEventListener('pointermove', (e) => {

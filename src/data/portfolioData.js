@@ -242,8 +242,8 @@ export const PROJECTS = [
   },
 ]
 // ─── Tarifs ─────────────────────────────────────────────────────
-// Aligné sur data.js (PRICING, site AKATech, 2026-09-16) : mêmes 4 onglets
-// (vitrine, ecommerce, saas, gbp), paliers, prix, délais et contenus.
+// Prix et délais alignés sur data.js (PRICING) ; les lignes de comparaison
+// gardent leur format local pour les composants du portfolio.
 // L'ancien onglet « portfolio » (100 000 / 175 000 / 275 000 FCFA) est retiré,
 // comme dans data.js : le portfolio se vend désormais via Site Vitrine.
 // Chaque row doit avoir autant de cells que de plans (Appdesktop filtre sur
@@ -252,9 +252,9 @@ export const PRICING_TABS = [
   {
     key: 'vitrine', label: 'Site Vitrine',
     plans: [
-      { title: 'Landing', price: '150 000 FCFA', delivery: '5 à 7 jours' },
-      { title: 'Starter', price: '250 000 FCFA', delivery: '7 à 10 jours', isPopular: true },
-      { title: 'Premium', price: '550 000 FCFA', delivery: '10 à 14 jours' },
+      { title: 'Landing', price: '200 000 FCFA', delivery: '10 à 15 jours' },
+      { title: 'Starter', price: '350 000 FCFA', delivery: '2 à 3 semaines', isPopular: true },
+      { title: 'Premium', price: '750 000 FCFA', delivery: '3 à 5 semaines' },
     ],
     rows: [
       { label: 'Nombre de pages', cells: ['1 page (présentation, services, CTA)', '4 à 6 pages', '10 à 15 pages'] },
@@ -275,9 +275,9 @@ export const PRICING_TABS = [
   {
     key: 'ecommerce', label: 'E-commerce',
     plans: [
-      { title: 'Starter', price: '450 000 FCFA', delivery: '1 mois à 1 mois 2 semaines' },
-      { title: 'Pro', price: '750 000 FCFA', delivery: '1 mois à 1 mois 2 semaines', isPopular: true },
-      { title: 'Elite', price: '1 500 000 FCFA', delivery: '1 mois à 1 mois 2 semaines' }, // 1 200 000 → 1 500 000 (data.js, sept. 2026)
+      { title: 'Starter', price: '650 000 FCFA', delivery: '3 à 5 semaines' },
+      { title: 'Pro', price: '1 100 000 FCFA', delivery: '4 à 7 semaines', isPopular: true },
+      { title: 'Elite', price: '2 000 000 FCFA', delivery: '6 à 10 semaines' },
     ],
     rows: [
       { label: 'Produits', cells: ["Jusqu'à 50", '200–500', 'Illimités'] },
@@ -302,15 +302,13 @@ export const PRICING_TABS = [
   },
   {
     key: 'saas', label: 'App Web / SaaS',
-    // 3 archétypes en fourchettes (data.js, étude de marché sept. 2026) à la place
-    // de l'ancien palier unique « Sur devis ». Le diagnostic gratuit et le devis
-    // sous 48h (anciennes lignes de l'onglet) sont conservés en fin de liste.
+    // 3 archétypes en fourchettes, alignés sur les tarifs courants de data.js.
     // Milliers des fourchettes séparés par des espaces insécables (\u00a0) : sinon le
     // prix se coupe au milieu d'un nombre (« 1 000 / 000 FCFA ») dans les cartes.
     plans: [
-      { title: 'MVP / Outil métier', price: '600\u00a0000 – 1\u00a0000\u00a0000 FCFA', delivery: '3 à 5 semaines' },
-      { title: 'Plateforme + abonnement', price: '1\u00a0200\u00a0000 – 2\u00a0200\u00a0000 FCFA', delivery: '6 à 10 semaines', isPopular: true },
-      { title: 'Marketplace multi-acteurs', price: '2\u00a0500\u00a0000 – 4\u00a0500\u00a0000 FCFA', delivery: '10 à 16 semaines' },
+      { title: 'MVP / Outil métier', price: '1\u00a0000\u00a0000 – 1\u00a0800\u00a0000 FCFA', delivery: '4 à 7 semaines' },
+      { title: 'Plateforme + abonnement', price: '2\u00a0000\u00a0000 – 3\u00a0800\u00a0000 FCFA', delivery: '8 à 12 semaines', isPopular: true },
+      { title: 'Marketplace multi-acteurs', price: '4\u00a0000\u00a0000 – 7\u00a0000\u00a0000 FCFA', delivery: '12 à 20 semaines' },
     ],
     rows: [
       { label: "1 à 2 types d'utilisateurs (utilisateur + admin)", cells: [true, false, false] },
@@ -341,9 +339,9 @@ export const PRICING_TABS = [
   {
     key: 'gbp', label: 'Fiche Google',
     plans: [
-      { title: 'Création', price: '20 000 FCFA', delivery: '1 à 2 jours', isPopular: true, desc: "Vous n'avez pas encore de fiche Google ? Création complète de zéro." },
-      { title: 'Optimisation', price: '12 000 FCFA', delivery: '1 jour', desc: 'Fiche déjà existante ? On corrige et améliore ce qui est en place.' },
-      { title: 'Suivi mensuel', price: '10 000 FCFA/mois', delivery: 'Continu', desc: 'Gestion continue : avis, publications et statistiques chaque mois.' },
+      { title: 'Création', price: '59 000 FCFA', delivery: '2 à 7 jours', isPopular: true, desc: "Vous n'avez pas encore de fiche Google ? Création complète de zéro." },
+      { title: 'Optimisation', price: '29 000 FCFA', delivery: '1 à 3 jours', desc: 'Fiche déjà existante ? On corrige et améliore ce qui est en place.' },
+      { title: 'Suivi mensuel', price: '9 000 FCFA/mois', delivery: 'Continu', desc: 'Gestion continue : avis, publications et statistiques chaque mois.' },
     ],
     rows: [
       { label: 'Création de la fiche (de zéro)', cells: [true, false, false] },
@@ -478,54 +476,64 @@ PRICING_TABS.forEach(tab => {
 })
 
 // ─── Services ────────────────────────────────────────────────────
-// Aligné sur data.js (SERVICES, site AKATech, 2026-09-16) : mêmes 6 offres, même
-// ordre. « API & Backend » n'y figure plus (retiré du catalogue) ; IA Chatbot et
-// Paiement en ligne y sont ajoutés. Champs propres au portfolio : `sub`, `icon`
-// (clé de LI_ICONS dans Appmobile.jsx — une clé inconnue n'affiche rien), `desc`
-// condensée (cartes : 3 lignes max) et 3 features (les 3 premières de data.js ;
-// liste limitée à ~78 px). `img` : uniquement des visuels déjà présents dans
-// cloudinaryVersions.js — ceux de data.js pour l'IA et le paiement n'y sont pas
-// (aucun des 3 portfolios ne lit service.img aujourd'hui).
+// Les offres, prix, délais, descriptions et points clés suivent data.js.
+// Les noms d'icônes sont ceux pris en charge par LI_ICONS dans Appmobile.jsx.
 export const SERVICES = [
   {
     n: '01', icon: 'globe', title: 'Conception de Site Web',
-    sub: 'Votre présence en ligne professionnelle',
-    desc: 'Création de sites web modernes, responsive et optimisés pour convertir vos visiteurs en clients.',
+    price: 'À partir de 200 000 FCFA', delivery: '10-15 jours',
+    sub: 'À partir de 200 000 FCFA · 10-15 jours',
+    desc: "Création de sites web modernes, responsive et optimisés pour convertir vos visiteurs en clients. Du portfolio à la plateforme e-commerce, chaque page est conçue avec soin.",
     img: cld('/assets/images/service/creation de site web.webp'),
-    features: ['Design sur-mesure', 'SEO optimisé', 'Formulaire de contact'],
+    features: ['Design sur-mesure', 'SEO optimisé', 'Formulaire de contact', 'Hébergement 1 an offert', 'Formation incluse'],
   },
   {
-    n: '02', icon: 'chart-bar', title: 'Cartes Interactives & Dashboards',
-    sub: 'Cartes Mapbox et visualisation de données',
-    desc: 'Intégration de cartes interactives Mapbox / Leaflet et de dashboards de visualisation de données.',
+    n: '02', icon: 'code', title: 'Cartes Interactives & Dashboards',
+    price: 'Sur devis', delivery: '7-14 jours',
+    sub: 'Sur devis · 7-14 jours',
+    desc: 'Intégration de cartes interactives Mapbox / Leaflet et de dashboards de visualisation de données. Vos données brutes deviennent des interfaces lisibles et actionnables.',
     img: cld('/assets/images/service/dasbord.webp'),
-    features: ['Cartes Mapbox / Leaflet', 'Dashboards data temps réel', 'Filtres et exports'],
+    features: ['Cartes Mapbox / Leaflet', 'Dashboards data temps réel', 'Filtres et exports', 'Graphiques interactifs', 'API de données'],
   },
   {
-    n: '03', icon: 'tools', title: 'Maintenance & Support',
-    sub: 'Votre projet performant, sécurisé et à jour',
-    desc: 'Suivi technique, corrections de bugs, mises à jour de sécurité et améliorations continues.',
-    img: cld('/assets/images/service/maintenence.webp'),
-    features: ['Mises à jour régulières', 'Corrections de bugs', 'Sauvegardes automatiques'],
+    n: '03', icon: 'search', title: 'Optimisation SEO',
+    price: 'À partir de 20 000 FCFA/mois', delivery: 'Contrat mensuel',
+    sub: 'À partir de 20 000 FCFA/mois · Contrat mensuel',
+    desc: "Audit technique, recherche de mots-clés, optimisation des pages et de la vitesse pour améliorer votre positionnement sur Google. Vous gagnez en visibilité, AKATech s'occupe du reste.",
+    img: cld('/assets/images/service/seo.webp'),
+    features: ['Audit SEO technique', 'Recherche de mots-clés', 'Optimisation des pages (on-page)', 'Vitesse & performance mobile', 'Rapport mensuel de positionnement'],
   },
   {
     n: '04', icon: 'map-marked-alt', title: 'Fiche Google My Business',
-    sub: 'Soyez visible sur Google Maps et la recherche locale',
-    desc: 'Création ou optimisation de votre fiche Google et suivi mensuel : avis, publications et statistiques.',
+    price: 'À partir de 59 000 FCFA', delivery: '2-7 jours',
+    sub: 'À partir de 59 000 FCFA · 2-7 jours',
+    desc: "Création ou optimisation de votre fiche Google (NAP, catégories, photos, description SEO local) et suivi mensuel : réponse aux avis, publications et statistiques.",
     img: cld('/assets/images/service/fiche-google.webp'),
-    features: ['Création ou optimisation', 'SEO local (NAP)', 'Photos & description'],
+    features: ['Création ou optimisation', 'SEO local (NAP)', 'Photos & description', 'Suivi mensuel & avis', 'Statistiques de fiche'],
   },
   {
-    n: '05', icon: 'comment-dots', title: 'Intégration IA Chatbot',
-    sub: 'Un assistant qui guide vos visiteurs 24h/24',
-    desc: 'Un chatbot conversationnel intégré à votre site pour interagir avec vos visiteurs et les guider.',
-    features: ['Assistant conversationnel sur-mesure', 'Qualification automatique des visiteurs', 'Réponses sur vos services et tarifs'],
+    n: '05', icon: 'lightbulb', title: 'Intégration IA Chatbot',
+    price: 'Sur devis', delivery: '7-14 jours',
+    sub: 'Sur devis · 7-14 jours',
+    desc: "Un chatbot conversationnel intégré à votre site pour interagir avec vos visiteurs et les guider — le même type d'assistant que celui d'akatech.vercel.app, pensé pour augmenter la productivité de votre business.",
+    img: cld('/assets/images/service/ia.webp'),
+    features: ['Assistant conversationnel sur-mesure', 'Qualification automatique des visiteurs', 'Réponses sur vos services et tarifs', 'Capture de leads 24h/24', 'Intégration WhatsApp possible'],
   },
   {
     n: '06', icon: 'credit-card', title: 'Intégration de Paiement en Ligne',
-    sub: 'Encaissez en ligne sans friction',
-    desc: 'Intégration de paiement sur votre site : Mobile Money (Orange Money, MTN MoMo, Wave) et carte bancaire.',
-    features: ['Orange Money / MTN MoMo / Wave', 'Carte bancaire (selon besoin)', 'Suivi des transactions'],
+    price: 'Sur devis', delivery: '5-10 jours',
+    sub: 'Sur devis · 5-10 jours',
+    desc: 'Intégration de solutions de paiement directement sur votre site — Mobile Money (Orange Money, MTN MoMo, Wave) et carte bancaire selon vos besoins — pour encaisser sans friction.',
+    img: cld('/assets/images/service/peiement.webp'),
+    features: ['Orange Money / MTN MoMo / Wave', 'Carte bancaire (selon besoin)', 'Suivi des transactions', 'Notifications de paiement', 'Sécurisation des flux'],
+  },
+  {
+    n: '07', icon: 'eye', title: 'Vidéos IA pour le marketing',
+    price: 'Sur devis', delivery: 'Selon le projet',
+    sub: 'Sur devis · Selon le projet',
+    desc: "Création de vidéos générées par IA pour vos réseaux sociaux, publicités et pages de vente : scénario, visuels, voix et montage. Des contenus pensés pour capter l'attention, gagner en engagement et soutenir vos ventes.",
+    img: cld('/assets/images/service/videos-ia-marketing.webp'),
+    features: ['Vidéos générées par IA', 'Scripts & scénarios marketing', 'Voix off & sous-titres', 'Formats réseaux sociaux & publicités', 'Montage et révisions incluses'],
   },
 ]
 

@@ -2675,8 +2675,8 @@ function ServicesSection() {
           <div className="svc-header">
             <SectionHeading num="03" title="Services" sub="Ce que je peux faire pour vous" subAs="h2" style={{ marginBottom: '.8rem' }} />
             <NeonFlickerText className="about-text svc-header-text">
-              Six offres complémentaires, de la conception au support continu —
-              pour un projet qui reste performant dans la durée.
+              Sept services, de la création web au contenu vidéo IA —
+              pour accompagner votre visibilité et vos outils numériques.
             </NeonFlickerText>
           </div>
         </div>

@@ -194,7 +194,7 @@ function initShootMode() {
       if (!active) return
       const hit = document.elementFromPoint(x, y)
       const image = hit?.closest('img')
-      const textTarget = hit?.closest('h1, h2, h3, p, li, blockquote, b, strong, .skill, .hero-stat span, .stats span, .proc-n, .svc-n, .sec-num, .plan-price, .tl .d, .tl .t, .tl .c, .proc-title, .svc-title, .pc-title, .rev-quote')
+      const textTarget = hit?.closest('h1, h2, h3, p, li, blockquote, b, strong, .skill, .hero-stat span, .stats span, .proc-n, .svc-n, .sec-num, .plan-price, .tl .d, .tl .t, .tl .c, .proc-title, .svc-title, .pc-title, .rev-quote, .ticker-track span')
       impact(x, y, Boolean(image))
       if (image) {
         image.classList.remove('shoot-image-hit')

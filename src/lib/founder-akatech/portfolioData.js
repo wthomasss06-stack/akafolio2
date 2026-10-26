@@ -530,7 +530,7 @@ const SERVICES = [
   },
   {
     n: '03', icon: "Search", title: "Optimisation SEO",
-    sub: "À partir de 20\u00a0000\u00a0FCFA/mois · Contrat mensuel",
+    sub: "Sur devis · Contrat mensuel",
     desc: "Audit technique, recherche de mots-clés, optimisation des pages et de la vitesse pour améliorer votre positionnement sur Google. Vous gagnez en visibilité, AKATech s’occupe du reste.",
     img: cld("/assets/images/service/seo.webp"),
     features: ["Audit SEO technique", "Recherche de mots-clés", "Optimisation des pages (on-page)", "Vitesse & performance mobile", "Rapport mensuel de positionnement"],

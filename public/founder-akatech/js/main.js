@@ -272,19 +272,51 @@ function renderContact() {
         <div class="field"><label for="f-contact">${esc(D.UI.formContact)}</label><input id="f-contact" name="contact" autocomplete="tel" required></div>
         <div class="field"><label for="f-type">${esc(D.UI.formNeed)}</label><select id="f-type" name="type">${F.types.map((t) => `<option>${esc(t)}</option>`).join('')}</select></div>
         <div class="field"><label for="f-msg">${esc(D.UI.formProject)}</label><textarea id="f-msg" name="msg" required></textarea></div>
-        <p class="form-err" id="form-err" role="alert"></p>
-        <button class="btn" type="submit">${ICON.wa} ${esc(D.UI.formSend)}</button>
+        <p class="form-err" id="form-err" role="alert" aria-live="polite"></p>
+        <button class="btn" type="submit">${esc(D.UI.formSend)}</button>
         <p class="form-note">${esc(F.note)}</p>
       </form>
     </div>`
-  $('#form').addEventListener('submit', (e) => {
+  $('#form').addEventListener('submit', async (e) => {
     e.preventDefault()
     const f = new FormData(e.target), v = (k) => String(f.get(k) || '').trim()
     if (!v('name') || !v('contact') || !v('msg')) { $('#form-err').textContent = D.UI.formError; return }
-    $('#form-err').textContent = ''
-    const L = D.UI.formLabels
-    const text = `${F.waIntro}\n${L.name} : ${v('name')}\n${L.contact} : ${v('contact')}\n${L.need} : ${v('type')}\n\n${v('msg')}`
-    window.open(waUrl(text), '_blank', 'noopener')
+    const button = $('#form button[type="submit"]')
+    const error = $('#form-err')
+    const contact = v('contact')
+    const isEmail = contact.includes('@')
+    button.disabled = true
+    button.textContent = D.UI.formSending
+    error.textContent = ''
+    error.classList.remove('form-success')
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: v('name'),
+          email: isEmail ? contact : '',
+          whatsapp: isEmail ? '' : contact,
+          preferredContact: isEmail ? 'email' : 'whatsapp',
+          projectType: v('type'),
+          message: v('msg'),
+          company: '',
+        }),
+      })
+      const result = await response.json()
+      if (!response.ok) {
+        const fieldError = result.fieldErrors && Object.values(result.fieldErrors)[0]
+        throw new Error(fieldError || result.error || D.UI.formSendError)
+      }
+      error.textContent = D.UI.formSent
+      error.classList.add('form-success')
+      e.target.reset()
+    } catch (err) {
+      error.textContent = err instanceof Error ? err.message : D.UI.formSendError
+    } finally {
+      button.disabled = false
+      button.textContent = D.UI.formSend
+    }
   })
 }
 

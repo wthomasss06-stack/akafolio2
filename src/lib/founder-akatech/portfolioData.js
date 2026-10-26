@@ -798,11 +798,11 @@ const ABOUT = {
   timelineCount: 4,
 }
 
-// ─── Formulaire de contact → WhatsApp ───────────────────────────
+// ─── Formulaire de contact → API Resend ──────────────────────────
 const CONTACT_FORM = {
   types: ['Site vitrine', 'E-commerce', 'Application web / SaaS', 'Fiche Google', 'Autre'],
   waIntro: "Bonjour M'Bollo, je viens de votre portfolio.",
-  note: 'Le message s’ouvre dans WhatsApp, prêt à envoyer. Aucun engagement.',
+  note: 'Votre demande sera envoyée par e-mail. Aucun engagement.',
 }
 
 // ─── Pied de page ───────────────────────────────────────────────
@@ -839,7 +839,10 @@ const UI = {
   formContact: 'WhatsApp ou email',
   formNeed: 'Votre besoin',
   formProject: 'Votre projet',
-  formSend: 'Envoyer sur WhatsApp',
+  formSend: 'Envoyer le message',
+  formSending: 'Envoi en cours…',
+  formSent: 'Votre message a bien été envoyé. Merci !',
+  formSendError: 'Échec de l’envoi. Réessayez ou contactez-moi directement.',
   formError: 'Merci de remplir votre nom, votre contact et votre projet.',
   formLabels: { name: 'Nom', contact: 'Contact', need: 'Besoin' },
   waProject: (title, rubrique) => `Bonjour, j'ai vu « ${title} » sur votre portfolio. J'aimerais un projet similaire (${rubrique}).`,

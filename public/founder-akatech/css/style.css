@@ -362,6 +362,8 @@ section { position: relative; }
 .form .btn { align-self: stretch; }
 .form-note { font-size: .74rem; color: var(--muted); }
 .form-err { font-size: .78rem; font-weight: 700; color: var(--accent-text); min-height: 1.2em; }
+.form-err.form-success { color: #268a54; }
+.form button:disabled { cursor: wait; opacity: .7; }
 
 /* ───────────────────────── Footer (orange, comme TRES_MINIMALISM) ───────────────────────── */
 .foot { position: relative; background: var(--accent); color: var(--on-accent); padding: 40px var(--pad); font-family: var(--f-mono); }

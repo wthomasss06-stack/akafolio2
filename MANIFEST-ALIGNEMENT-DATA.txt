@@ -1,0 +1,22 @@
+Portfolio Elvis — alignement sur la nouvelle data.js
+ZIP différentiel — à dézipper à la racine du projet (racine de elvis-portfolio-nextjs), en écrasant.
+Alignement sur la nouvelle data.js (oct. 2026) : SEO sur devis, assistant métier (chatbot), maintenance, palier « Projet complexe », acompte 50/50 ou 40/30/30, hébergement offert vitrine/e-commerce.
+
+MODIFIÉS (11)
+  ~ README.md
+  ~ src/Appdesktop.jsx
+  ~ src/Appmobile.jsx
+  ~ src/akatech/pages/Services.jsx
+  ~ src/app mobile/App2mobile.jsx
+  ~ src/app mobile/style2mobile.css
+  ~ src/app/page.js
+  ~ src/data/portfolioData.js
+  ~ src/lib/founder-akatech/portfolioData.js
+  ~ src/styledesktop.css
+  ~ src/useSEO.jsx
+
+NOUVEAUX : aucun.
+À SUPPRIMER : rien.
+EXCLUS PAR SÉCURITÉ : .env, .env.local, app/.env (non inclus).
+
+À VÉRIFIER APRÈS DÉZIPPAGE : npm run build ; section Tarifs (onglets SaaS à 4 offres et Maintenance) sur desktop et mobile.

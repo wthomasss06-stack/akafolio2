@@ -69,9 +69,11 @@ export default function Page() {
 
         <h2>Tarifs (à partir de)</h2>
         <ul>
-          <li>Site Vitrine — à partir de 150 000 FCFA</li>
-          <li>Boutique E-commerce — à partir de 450 000 FCFA</li>
-          <li>Application Web / SaaS — sur devis, après diagnostic gratuit</li>
+          <li>Site Vitrine — à partir de 200 000 FCFA</li>
+          <li>Boutique E-commerce — à partir de 650 000 FCFA</li>
+          <li>Application Web / SaaS — de 1 000 000 à 12 000 000 FCFA selon le projet (MVP, plateforme, marketplace, projet complexe), après diagnostic gratuit</li>
+          <li>Maintenance &amp; évolutions — de 10 000 à 115 000 FCFA/mois selon le projet, projet complexe sur devis</li>
+          <li>Optimisation SEO — sur devis</li>
         </ul>
 
         <p>Contact : wthomasss06@gmail.com · WhatsApp +225 01 42 50 77 50</p>

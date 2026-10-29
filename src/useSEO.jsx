@@ -22,7 +22,7 @@ export const SEO_CONFIG = {
   default: {
     title: "M'Bollo Aka — Développeur Web Full Stack à Abidjan | AKATech Studio.",
     description:
-      "M'Bollo aka, développeur web full stack à Abidjan (Côte d'Ivoire) : sites vitrines, e-commerce, applications React/Django/Flask. Devis rapide, livraison sous 3 à 14 jours, nom de domaine et hébergement offerts 1 an.",
+      "M'Bollo aka, développeur web full stack à Abidjan (Côte d'Ivoire) : sites vitrines, e-commerce, applications React/Django/Flask. Devis rapide, livraison selon le pack, nom de domaine offert 1 an.",
     keywords:
       "développeur web Abidjan, développeur full stack Côte d'Ivoire, créer un site web Abidjan, développeur React Django, AKATech Studio, agence web Abidjan, création site e-commerce Côte d'Ivoire",
     url: 'https://mbolloaka-dev.vercel.app/',
@@ -128,7 +128,7 @@ export const STRUCTURED_DATA = {
       '@type': 'Country',
       name: "Côte d'Ivoire",
     },
-    priceRange: '150 000 – 1 500 000 FCFA',
+    priceRange: '200 000 – 12 000 000 FCFA',
     telephone: '+225-01-42-50-77-50',
     email: 'wthomasss06@gmail.com',
     openingHoursSpecification: {
@@ -146,7 +146,7 @@ export const STRUCTURED_DATA = {
           itemOffered: {
             '@type': 'Service',
             name: 'Site Vitrine',
-            description: "Site vitrine professionnel — 5 à 14 jours, dès 150 000 FCFA",
+            description: "Site vitrine professionnel — de 10 jours à 5 semaines, dès 200 000 FCFA",
           },
         },
         {
@@ -154,7 +154,7 @@ export const STRUCTURED_DATA = {
           itemOffered: {
             '@type': 'Service',
             name: 'E-commerce',
-            description: "Boutique en ligne Mobile Money — dès 450 000 FCFA",
+            description: "Boutique en ligne Mobile Money — dès 650 000 FCFA",
           },
         },
         {
@@ -162,7 +162,15 @@ export const STRUCTURED_DATA = {
           itemOffered: {
             '@type': 'Service',
             name: 'Application SaaS',
-            description: 'Application web sur devis, Django + React',
+            description: 'Application web, SaaS, marketplace ou projet complexe — de 1 000 000 à 12 000 000 FCFA selon le projet, Django + React',
+          },
+        },
+        {
+          '@type': 'Offer',
+          itemOffered: {
+            '@type': 'Service',
+            name: 'Maintenance & évolutions',
+            description: 'Maintenance mensuelle après la livraison — de 10 000 à 115 000 FCFA/mois selon le projet, projet complexe sur devis',
           },
         },
       ],
@@ -179,7 +187,7 @@ export const STRUCTURED_DATA = {
         name: 'Comment se déroule le paiement de mon site ?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Le paiement se fait en deux fois : 50% à la commande pour démarrer le projet, et les 50% restants à la livraison, juste avant de recevoir les fichiers finaux et les accès.',
+          text: "Pour un projet jusqu'à 2 000 000 FCFA : 50 % à la commande pour démarrer, et 50 % à la livraison, juste avant de recevoir les fichiers finaux et les accès. Pour un projet supérieur à 2 000 000 FCFA, le paiement se fait en trois temps : 40 % à la commande, 30 % à la validation de la pré-version et 30 % à la livraison, après la recette.",
         },
       },
       {
@@ -203,7 +211,7 @@ export const STRUCTURED_DATA = {
         name: 'Quel est le délai pour recevoir mon site ?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Cela dépend du pack choisi : 3 à 5 jours pour un portfolio simple, davantage pour une vitrine, une boutique e-commerce ou une application plus complexe. Le délai exact est précisé dans le devis et démarre dès réception de l\'acompte et de vos contenus.',
+          text: "Cela dépend du pack choisi : 10 à 15 jours pour une landing page, 2 à 5 semaines pour une vitrine, 3 à 10 semaines pour une boutique e-commerce, 4 à 28 semaines pour une application web, un SaaS ou un projet complexe. Le délai exact est précisé dans le devis et démarre dès réception de l'acompte et de vos contenus.",
         },
       },
       {
@@ -243,7 +251,7 @@ export const STRUCTURED_DATA = {
         name: 'Le nom de domaine et l\'hébergement sont-ils vraiment gratuits ?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Oui, la première année est offerte sur tous les packs. Après cette période, vous payez simplement le renouvellement — environ 15 000 à 30 000 FCFA par an selon le domaine — et je vous envoie un rappel avant l\'expiration.',
+          text: "Le nom de domaine est offert la première année sur tous les packs, et l'hébergement l'est aussi sur les packs Site Vitrine et E-commerce. Pour une application web, un SaaS ou un projet complexe, je mets l'hébergement en place à votre nom et les frais d'infrastructure sont facturés par les fournisseurs, au coût réel. Après la première année, le renouvellement du domaine coûte environ 15 000 à 30 000 FCFA par an selon l'extension, et je vous envoie un rappel avant l'expiration.",
         },
       },
       {
@@ -267,7 +275,15 @@ export const STRUCTURED_DATA = {
         name: 'Qui gère mon site après la livraison ?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Vous. Je vous transmets tous les accès — administration, hébergement, nom de domaine — ainsi qu\'un tutoriel simple pour modifier vos textes et images sans dépendre de moi.',
+          text: "Vous. Je vous transmets tous les accès — administration, hébergement, nom de domaine — ainsi qu'un tutoriel simple pour modifier vos textes et images sans dépendre de moi. Si vous préférez ne pas vous en occuper, je propose une offre de maintenance mensuelle : corrections, mises à jour de sécurité, sauvegardes et support.",
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Combien coûte la maintenance après la livraison ?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: "Elle se calcule entre 15 et 20 % du prix du projet par an, payée en mensualités, avec un minimum de 10 000 FCFA par mois : de 10 000 à 15 000 FCFA par mois pour un site vitrine, jusqu'aux projets complexes, chiffrés sur devis. Les frais d'hébergement et de services tiers sont facturés à part par leurs fournisseurs.",
         },
       },
       {
@@ -283,7 +299,7 @@ export const STRUCTURED_DATA = {
         name: 'Mon site a un bug après la livraison, que faites-vous ?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Je corrige gratuitement tout bug lié à mon développement pendant le mois suivant la livraison — inclus dans le pack Premium, possible en option sur les autres packs.',
+          text: "Je corrige gratuitement tout bug lié à mon développement pendant la durée de support incluse dans votre pack (de 1 à 6 mois selon le pack). Ensuite, il peut être pris en charge par l'offre de maintenance mensuelle ou sur devis.",
         },
       },
       {
@@ -291,7 +307,7 @@ export const STRUCTURED_DATA = {
         name: 'Comment commander mon site ?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Trois étapes : on échange sur votre projet et le pack adapté, je vous envoie un devis avec l\'acompte de 50%, puis dès réception du paiement je démarre le développement.',
+          text: 'Trois étapes : on échange sur votre projet et le pack adapté, je vous envoie un devis avec l\'acompte (50 %, ou 40 % pour un projet supérieur à 2 000 000 FCFA), puis dès réception du paiement je démarre le développement.',
         },
       },
     ],

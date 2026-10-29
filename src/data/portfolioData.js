@@ -268,7 +268,7 @@ export const PRICING_TABS = [
       { label: 'Hébergement (1 an)', cells: [true, true, true] },
       { label: 'Support', cells: ['1 mois', '2 mois', '3 mois'] },
       { label: 'Formation', cells: [false, false, '2h'] },
-      { label: 'Maintenance mensuelle', cells: ['20 000 à 40 000/mois', '20 000 à 40 000/mois', '20 000 à 40 000/mois'] },
+      { label: 'Maintenance mensuelle', cells: ['10 000 à 15 000/mois', '10 000 à 15 000/mois', '10 000 à 15 000/mois'] },
       { label: 'Page supp.', cells: ['15 000 à 25 000 FCFA', '15 000 à 25 000 FCFA', '15 000 à 25 000 FCFA'] },
     ],
   },
@@ -297,43 +297,46 @@ export const PRICING_TABS = [
       { label: 'Hébergement (1 an)', cells: [true, true, true] },
       { label: 'Support', cells: ['1 mois', '3 mois', '6 mois'] },
       { label: 'Formation', cells: [false, 'Admin', 'Équipe'] },
-      { label: 'Maintenance mensuelle', cells: ['20 000 à 40 000/mois', '20 000 à 40 000/mois', '20 000 à 40 000/mois'] },
+      { label: 'Maintenance mensuelle', cells: ['15 000 à 35 000/mois', '15 000 à 35 000/mois', '15 000 à 35 000/mois'] },
     ],
   },
   {
     key: 'saas', label: 'App Web / SaaS',
-    // 3 archétypes en fourchettes, alignés sur les tarifs courants de data.js.
+    // 4 archétypes en fourchettes (« Projet complexe » ajouté en oct. 2026, comme dans data.js), alignés sur les tarifs courants de data.js.
     // Milliers des fourchettes séparés par des espaces insécables (\u00a0) : sinon le
     // prix se coupe au milieu d'un nombre (« 1 000 / 000 FCFA ») dans les cartes.
     plans: [
       { title: 'MVP / Outil métier', price: '1\u00a0000\u00a0000 – 1\u00a0800\u00a0000 FCFA', delivery: '4 à 7 semaines' },
       { title: 'Plateforme + abonnement', price: '2\u00a0000\u00a0000 – 3\u00a0800\u00a0000 FCFA', delivery: '8 à 12 semaines', isPopular: true },
       { title: 'Marketplace multi-acteurs', price: '4\u00a0000\u00a0000 – 7\u00a0000\u00a0000 FCFA', delivery: '12 à 20 semaines' },
+      { title: 'Projet complexe', price: '7\u00a0000\u00a0000 – 12\u00a0000\u00a0000 FCFA', delivery: '16 à 28 semaines' },
     ],
     rows: [
-      { label: "1 à 2 types d'utilisateurs (utilisateur + admin)", cells: [true, false, false] },
-      { label: 'Authentification simple', cells: [true, false, false] },
-      { label: 'Tableau de bord basique', cells: [true, false, false] },
-      { label: '1 workflow métier principal automatisé', cells: [true, false, false] },
-      { label: 'Export de données (PDF, Excel)', cells: [true, false, false] },
-      { label: 'Comptes utilisateurs avec rôles (client / admin)', cells: [false, true, false] },
-      { label: 'Paiement récurrent + Mobile Money', cells: [false, true, false] },
-      { label: 'Dashboard utilisateur + back-office admin', cells: [false, true, false] },
-      { label: 'Notifications (email, WhatsApp)', cells: [false, true, false] },
-      { label: 'Intégrations tierces (paiement, emailing)', cells: [false, true, false] },
-      { label: "Plusieurs types d'utilisateurs (client, vendeur/prestataire, admin)", cells: [false, false, true] },
-      { label: 'Rôles et permissions avancés, multi-tenant si besoin', cells: [false, false, true] },
-      { label: 'Paiement avec répartition entre acteurs', cells: [false, false, true] },
-      { label: 'Géolocalisation / suivi temps réel si pertinent', cells: [false, false, true] },
-      { label: 'Notifications multi-canal temps réel', cells: [false, false, true] },
-      { label: 'Dashboard analytics avancé', cells: [false, false, true] },
-      { label: 'API pour intégrations futures', cells: [false, false, true] },
-      { label: 'Nom de domaine offert (1 an)', cells: [true, true, true] },
-      { label: 'Hébergement inclus (1 an)', cells: [true, true, true] },
-      { label: 'Support', cells: ['1 mois', '3 mois', '6 mois'] },
-      { label: 'Formation', cells: [false, 'Admin', 'Équipe'] },
-      { label: 'Diagnostic gratuit de votre besoin', cells: [true, true, true] },
-      { label: 'Devis détaillé sous 48h', cells: [true, true, true] },
+      { label: "1 à 2 types d'utilisateurs (utilisateur + admin)", cells: [true, false, false, false] },
+      { label: 'Authentification simple', cells: [true, false, false, false] },
+      { label: 'Tableau de bord basique', cells: [true, false, false, false] },
+      { label: '1 workflow métier principal automatisé', cells: [true, false, false, false] },
+      { label: 'Export de données (PDF, Excel)', cells: [true, false, false, false] },
+      { label: 'Comptes utilisateurs avec rôles (client / admin)', cells: [false, true, false, false] },
+      { label: 'Paiement récurrent + Mobile Money', cells: [false, true, false, false] },
+      { label: 'Dashboard utilisateur + back-office admin', cells: [false, true, false, false] },
+      { label: 'Notifications (email, WhatsApp)', cells: [false, true, false, false] },
+      { label: 'Intégrations tierces (paiement, emailing)', cells: [false, true, false, false] },
+      { label: "Plusieurs types d'utilisateurs (client, vendeur/prestataire, admin)", cells: [false, false, true, true] },
+      { label: 'Rôles et permissions avancés, multi-tenant si besoin', cells: [false, false, true, true] },
+      { label: 'Suivi des encaissements et reversements entre acteurs', cells: [false, false, true, true] },
+      { label: 'Géolocalisation / suivi temps réel si pertinent', cells: [false, false, true, true] },
+      { label: 'Notifications multi-canal temps réel', cells: [false, false, true, true] },
+      { label: 'Dashboard analytics avancé', cells: [false, false, true, true] },
+      { label: 'API pour intégrations futures', cells: [false, false, true, true] },
+      { label: 'Modules métier sur mesure (livreurs, reversements, abonnements…)', cells: [false, false, false, true] },
+      { label: 'Assistant métier IA avec garde-fous', cells: [false, false, false, true] },
+      { label: 'Nom de domaine offert (1 an)', cells: [true, true, true, true] },
+      { label: "Hébergement mis en place (infra à votre charge)", cells: [true, true, true, true] },
+      { label: 'Support', cells: ['1 mois', '3 mois', '6 mois', '6 mois'] },
+      { label: 'Formation', cells: [false, 'Admin', 'Équipe', 'Équipe'] },
+      { label: 'Diagnostic gratuit de votre besoin', cells: [true, true, true, true] },
+      { label: 'Devis détaillé sous 48h', cells: [true, true, true, true] },
     ],
   },
   {
@@ -356,6 +359,31 @@ export const PRICING_TABS = [
       { label: 'Réponse aux avis clients', cells: [false, false, true] },
       { label: 'Posts Google réguliers', cells: [false, false, true] },
       { label: 'Suivi statistiques de fiche', cells: [false, false, true] },
+    ],
+  },
+  {
+    key: 'maintenance', label: 'Maintenance',
+    // Règle data.js : 15 à 20 % du prix du projet par an, en mensualités (minimum
+    // 10 000 FCFA/mois). Prix = formule Essentielle – formule Avancée. Hébergement et
+    // services tiers facturés à part par leurs fournisseurs.
+    plans: [
+      { title: 'Site Vitrine', price: '10\u00a0000 – 15\u00a0000 FCFA/mois', delivery: 'Contrat mensuel', desc: 'Essentielle 10\u00a0000 · Avancée 15\u00a0000 FCFA/mois.' },
+      { title: 'E-commerce', price: '15\u00a0000 – 35\u00a0000 FCFA/mois', delivery: 'Contrat mensuel', desc: 'Essentielle 15\u00a0000 · Avancée 35\u00a0000 FCFA/mois.' },
+      { title: 'MVP / Outil métier', price: '15\u00a0000 – 30\u00a0000 FCFA/mois', delivery: 'Contrat mensuel', desc: 'Essentielle 15\u00a0000 · Avancée 30\u00a0000 FCFA/mois.' },
+      { title: 'Plateforme + abonnement', price: '40\u00a0000 – 60\u00a0000 FCFA/mois', delivery: 'Contrat mensuel', desc: 'Essentielle 40\u00a0000 · Avancée 60\u00a0000 FCFA/mois.' },
+      { title: 'Marketplace multi-acteurs', price: '75\u00a0000 – 115\u00a0000 FCFA/mois', delivery: 'Contrat mensuel', desc: 'Essentielle 75\u00a0000 · Avancée 115\u00a0000 FCFA/mois.' },
+      { title: 'Projet complexe', price: 'Sur devis', delivery: 'Contrat mensuel', desc: 'Formules chiffrées selon le projet. Repère : 15 à 20 % du prix du projet par an.' },
+    ],
+    rows: [
+      { label: 'Corrections et mises à jour de sécurité', cells: [true, true, true, true, true, true] },
+      { label: 'Sauvegardes contrôlées', cells: [true, true, true, true, true, true] },
+      { label: 'Test de restauration', cells: [false, false, false, true, true, true] },
+      { label: 'Supervision / suivi des erreurs', cells: [false, 'Avancée', false, 'Avancée', 'Avancée', 'Avancée'] },
+      { label: 'Évolutions mineures', cells: [false, false, 'Avancée', 'Avancée', 'Avancée', 'Avancée'] },
+      { label: 'Support', cells: ['E-mail / WhatsApp', 'Prioritaire (Avancée)', false, false, '48 h / 24 h', '48 h / 24 h'] },
+      { label: 'Rapport mensuel', cells: [false, false, false, true, true, true] },
+      { label: 'Réunion trimestrielle', cells: [false, false, false, false, false, 'Avancée'] },
+      { label: 'Hébergement et services tiers', cells: ['Facturés à part', 'Facturés à part', 'Facturés à part', 'Facturés à part', 'Facturés à part', 'Facturés à part'] },
     ],
   },
 ]
@@ -497,8 +525,8 @@ export const SERVICES = [
   },
   {
     n: '03', icon: 'search', title: 'Optimisation SEO',
-    price: 'À partir de 20 000 FCFA/mois', delivery: 'Contrat mensuel',
-    sub: 'À partir de 20 000 FCFA/mois · Contrat mensuel',
+    price: 'Sur devis', delivery: 'Contrat mensuel',
+    sub: 'Sur devis · Contrat mensuel',
     desc: "Audit technique, recherche de mots-clés, optimisation des pages et de la vitesse pour améliorer votre positionnement sur Google. Vous gagnez en visibilité, AKATech s'occupe du reste.",
     img: cld('/assets/images/service/seo.webp'),
     features: ['Audit SEO technique', 'Recherche de mots-clés', 'Optimisation des pages (on-page)', 'Vitesse & performance mobile', 'Rapport mensuel de positionnement'],
@@ -515,9 +543,9 @@ export const SERVICES = [
     n: '05', icon: 'lightbulb', title: 'Intégration IA Chatbot',
     price: 'Sur devis', delivery: '7-14 jours',
     sub: 'Sur devis · 7-14 jours',
-    desc: "Un chatbot conversationnel intégré à votre site pour interagir avec vos visiteurs et les guider — le même type d'assistant que celui d'akatech.vercel.app, pensé pour augmenter la productivité de votre business.",
+    desc: "Un assistant métier conversationnel — ce que nous appelons « chatbot » — intégré à votre site ou à votre application. Il connaît votre activité, répond à vos visiteurs et à vos clients, qualifie les demandes et peut préparer des actions (recherche, suivi, brouillon) que la personne confirme toujours. Même famille d'assistant que celui d'akatech.vercel.app, pensé pour augmenter la productivité de votre business.",
     img: cld('/assets/images/service/ia.webp'),
-    features: ['Assistant conversationnel sur-mesure', 'Qualification automatique des visiteurs', 'Réponses sur vos services et tarifs', 'Capture de leads 24h/24', 'Intégration WhatsApp possible'],
+    features: ['Assistant métier sur-mesure', 'Réponses sur vos services, tarifs et données', 'Qualification automatique des visiteurs', 'Actions confirmées par la personne', 'Capture de leads 24h/24'],
   },
   {
     n: '06', icon: 'credit-card', title: 'Intégration de Paiement en Ligne',
@@ -550,10 +578,10 @@ export const SERVICES_MOBILE_COPY = SERVICES.map(({ n, title, sub, desc, feature
 export const PROCESS_STEPS = [
   { n: '01', title: 'Brief & découverte', tag: '1 à 2 jours', desc: 'Nous échangeons sur votre projet, vos objectifs et vos besoins. Premier échange gratuit et sans engagement.', img: cld('/assets/images/process/prise de contact.webp'), imgAlt: 'Brief et découverte' },
   { n: '02', title: 'Devis & contrat', tag: '1 jour', desc: 'Nous définissons le périmètre, le prix et le délai, puis validons le projet ensemble.', img: cld('/assets/images/process/devis et condition.webp'), imgAlt: 'Devis et contrat' },
-  { n: '03', title: 'Acompte & contenus', tag: 'Feu vert', desc: "Vous versez 50 % d'acompte et transmettez les éléments nécessaires (logo, informations, visuels...). Le délai démarre lorsque l'acompte et les contenus sont reçus.", img: cld('/assets/images/process/acompte.webp'), imgAlt: 'Acompte et contenus' },
+  { n: '03', title: 'Acompte & contenus', tag: 'Feu vert', desc: "Vous versez l'acompte (50 %, ou 40 % pour un projet supérieur à 2 000 000 FCFA) et transmettez les éléments nécessaires (logo, informations, visuels...). Le délai démarre lorsque l'acompte et les contenus sont reçus.", img: cld('/assets/images/process/acompte.webp'), imgAlt: 'Acompte et contenus' },
   { n: '04', title: 'Conception & développement', tag: 'Délai annoncé', desc: 'Nous concevons et développons votre projet conformément au devis.', img: cld('/assets/images/process/creation du site.webp'), imgAlt: 'Conception et développement' },
-  { n: '05', title: 'Prévisualisation & validation', tag: '1 à 2 jours', desc: 'Vous recevez un lien de prévisualisation, testez le projet, et nous effectuons les corrections mineures incluses.', img: cld('/assets/images/process/livraison.webp'), imgAlt: 'Prévisualisation et validation' },
-  { n: '06', title: 'Livraison & suivi', tag: 'Projet livré', desc: 'Après paiement du solde, le projet est mis en ligne et les accès sont transmis. La période de garantie/support commence ensuite.', img: cld('/assets/images/process/mise en ligne.webp'), imgAlt: 'Livraison et suivi' },
+  { n: '05', title: 'Prévisualisation & validation', tag: '1 à 2 jours', desc: 'Vous recevez un lien de prévisualisation, testez le projet, et nous effectuons les corrections mineures incluses. Pour un projet supérieur à 2 000 000 FCFA, une deuxième tranche de 30 % est due à la validation de la pré-version.', img: cld('/assets/images/process/livraison.webp'), imgAlt: 'Prévisualisation et validation' },
+  { n: '06', title: 'Livraison & suivi', tag: 'Projet livré', desc: 'Après recette et paiement du solde, le projet est mis en ligne et les accès sont transmis. La période de garantie/support commence ensuite.', img: cld('/assets/images/process/mise en ligne.webp'), imgAlt: 'Livraison et suivi' },
 ]
 
 // Version App.jsx : 14 questions orientées process de commande.
@@ -562,12 +590,13 @@ export const PROCESS_STEPS = [
 // par cette version lors de la migration Win95.
 // ─── FAQ ────────────────────────────────────────────────────────
 export const FAQ_ITEMS = [
-  { q: 'Comment se déroule le paiement de mon site ?', a: "Le paiement se fait en deux fois : 50% à la commande pour démarrer le projet, et les 50% restants à la livraison, juste avant de recevoir les fichiers finaux et les accès." },
-  { q: 'Quel est le délai pour recevoir mon site ?', a: "Cela dépend du pack choisi : 3 à 5 jours pour un portfolio simple, davantage pour une vitrine, une boutique e-commerce ou une application plus complexe. Le délai exact est précisé dans le devis et démarre dès réception de l'acompte et de vos contenus." },
+  { q: 'Comment se déroule le paiement de mon site ?', a: "Pour un projet jusqu'à 2 000 000 FCFA : 50 % à la commande pour démarrer, et 50 % à la livraison, juste avant de recevoir les fichiers finaux et les accès. Pour un projet supérieur à 2 000 000 FCFA, le paiement se fait en trois temps : 40 % à la commande, 30 % à la validation de la pré-version et 30 % à la livraison, après la recette." },
+  { q: 'Quel est le délai pour recevoir mon site ?', a: "Cela dépend du pack choisi : 10 à 15 jours pour une landing page, 2 à 5 semaines pour une vitrine, 3 à 10 semaines pour une boutique e-commerce, 4 à 28 semaines pour une application web, un SaaS ou un projet complexe. Le délai exact est précisé dans le devis et démarre dès réception de l'acompte et de vos contenus." },
   { q: "Puis-je voir mon site avant qu'il soit en ligne ?", a: "Oui, toujours. Vous recevez un lien de prévisualisation pour tester le site, faire vos retours et demander des ajustements avant la mise en ligne officielle." },
-  { q: "Le nom de domaine et l'hébergement sont-ils vraiment gratuits ?", a: "Oui, la première année est offerte sur tous les packs. Après cette période, vous payez simplement le renouvellement — environ 15 000 à 30 000 FCFA par an selon le domaine — et je vous envoie un rappel avant l'expiration." },
+  { q: "Le nom de domaine et l'hébergement sont-ils vraiment gratuits ?", a: "Le nom de domaine est offert la première année sur tous les packs, et l'hébergement l'est aussi sur les packs Site Vitrine et E-commerce. Pour une application web, un SaaS ou un projet complexe, je mets l'hébergement en place à votre nom et les frais d'infrastructure sont facturés par les fournisseurs, au coût réel. Après la première année, le renouvellement du domaine coûte environ 15 000 à 30 000 FCFA par an selon l'extension, et je vous envoie un rappel avant l'expiration." },
   { q: 'Quels contenus dois-je fournir ?', a: "Votre logo, vos photos, vos textes de présentation et vos informations de contact. Plus ces éléments arrivent vite, plus le développement avance rapidement." },
-  { q: 'Qui gère mon site après la livraison ?', a: "Vous. Je vous transmets tous les accès — administration, hébergement, nom de domaine — ainsi qu'un tutoriel simple pour modifier vos textes et images sans dépendre de moi." },
+  { q: 'Qui gère mon site après la livraison ?', a: "Vous. Je vous transmets tous les accès — administration, hébergement, nom de domaine — ainsi qu'un tutoriel simple pour modifier vos textes et images sans dépendre de moi. Si vous préférez ne pas vous en occuper, je propose une offre de maintenance mensuelle : corrections, mises à jour de sécurité, sauvegardes et support." },
+  { q: 'Combien coûte la maintenance après la livraison ?', a: "Elle se calcule entre 15 et 20 % du prix du projet par an, payée en mensualités, avec un minimum de 10 000 FCFA par mois : de 10 000 à 15 000 FCFA par mois pour un site vitrine, jusqu'aux projets complexes, chiffrés sur devis. Les frais d'hébergement et de services tiers sont facturés à part par leurs fournisseurs." },
 ]
 
 // ─── BLOG / LinkedIn ──────────────────────────────────────────

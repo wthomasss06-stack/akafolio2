@@ -2844,7 +2844,7 @@ function PricingSection() {
       </div>
 
       {/* ── Cartes ── */}
-      <div className={`prc-grid${tab.plans.length === 1 ? ' prc-grid--single' : ''}`} key={currentTab}>
+      <div className={`prc-grid${tab.plans.length === 1 ? ' prc-grid--single' : ''}${tab.plans.length === 4 ? ' prc-grid--four' : ''}`} key={currentTab}>
         {tab.plans.map((plan, ci) => (
           <div key={ci} className={`prc-card${plan.isPopular ? ' prc-card--pop' : ''}`}>
 
@@ -2917,7 +2917,7 @@ function PricingSection() {
                 if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY, behavior: 'smooth' })
               }}
             >
-              <HoverFadeText>{tab.key === 'saas' ? 'Demander un devis gratuit' : 'Démarrer le projet'}</HoverFadeText>
+              <HoverFadeText>{(tab.key === 'saas' || tab.key === 'maintenance') ? 'Demander un devis gratuit' : 'Démarrer le projet'}</HoverFadeText>
               <span className="btn-arr" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg></span>
             </a>
 

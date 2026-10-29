@@ -2087,6 +2087,11 @@
      grid-template-columns: 1fr;
      max-width: 420px;
    }
+   /* 4 offres (ex. App Web / SaaS) : grille 2×2 plutôt que 3 + 1 orpheline */
+   .prc-grid--four {
+     grid-template-columns: repeat(2, 1fr);
+     max-width: 760px;
+   }
    @keyframes priceIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
 
    /* ── Carte base ── */

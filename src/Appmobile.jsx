@@ -2179,7 +2179,7 @@ const PortfolioPricingFeature = AnimPricingFeature;
 
 const LUCIDE_TAB_ICONS = { Globe: SvgGlobe, ShoppingCart: SvgShoppingCart, Cpu: SvgCpu, Star: SvgStar };
 const ANIM_TAB_ICONS = { Globe: () => <PricingAnimIcon type="globe" size={15} />, ShoppingCart: () => <PricingAnimIcon type="cart" size={15} />, Cpu: () => <PricingAnimIcon type="code" size={15} />, Star: () => <PricingAnimIcon type="star" size={15} />, GMap: () => <PricingAnimIcon type="map" size={15} /> };
-const TAB_SUBTITLES = { vitrine: "Pour présenter votre activité avec élégance.", ecommerce: "Pour vendre en ligne et gérer vos commandes.", saas: "Pour des applications web complètes sur-mesure.", gbp: "Pour être visible sur Google Maps & la recherche locale." };
+const TAB_SUBTITLES = { vitrine: "Pour présenter votre activité avec élégance.", ecommerce: "Pour vendre en ligne et gérer vos commandes.", saas: "Pour des applications web complètes sur-mesure.", gbp: "Pour être visible sur Google Maps & la recherche locale.", maintenance: "Pour garder votre projet à jour, sécurisé et sauvegardé." };
 
 const PricingTabs = ({ dark }) => {
   const [activeTab, setActiveTab] = useState(0); const [animKey, setAnimKey] = useState(0);

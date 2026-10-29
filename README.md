@@ -382,16 +382,16 @@ Pensé pour **Vercel** :
 
 ## Services & tarifs
 
-> Le Portfolio n'a plus de grille dédiée : il applique désormais la grille Site Vitrine (voir `PRICING` dans `lib/data.js`).
+> Le Portfolio n'a plus de grille dédiée : il applique la grille Site Vitrine. Les grilles ci-dessous sont alignées sur `PRICING` (`akatech/lib/data.js`) — dernière mise à jour : oct. 2026.
 
 <details>
 <summary><b>Site vitrine</b></summary>
 
 | Plan | Prix | Délai |
 |---|---|---|
-| Landing | 150 000 FCFA | 5–7 jours |
-| Starter | 250 000 FCFA | 7–10 jours |
-| Premium | 550 000 FCFA | 10–14 jours |
+| Landing | 200 000 FCFA | 10 à 15 jours |
+| Starter | 350 000 FCFA | 2 à 3 semaines |
+| Premium | 750 000 FCFA | 3 à 5 semaines |
 
 </details>
 
@@ -400,9 +400,9 @@ Pensé pour **Vercel** :
 
 | Plan | Prix | Délai |
 |---|---|---|
-| Starter | 450 000 FCFA | 1 mois à 1 mois 2 semaines |
-| Pro | 750 000 FCFA | 1 mois à 1 mois 2 semaines |
-| Elite | 1 500 000 FCFA | 1 mois à 1 mois 2 semaines |
+| Starter | 650 000 FCFA | 3 à 5 semaines |
+| Pro | 1 100 000 FCFA | 4 à 7 semaines |
+| Elite | 2 000 000 FCFA | 6 à 10 semaines |
 
 </details>
 
@@ -411,9 +411,10 @@ Pensé pour **Vercel** :
 
 | Plan | Prix | Délai |
 |---|---|---|
-| MVP / Outil métier | 600 000 – 1 000 000 FCFA | 3 à 5 semaines |
-| Plateforme + abonnement | 1 200 000 – 2 200 000 FCFA | 6 à 10 semaines |
-| Marketplace multi-acteurs | 2 500 000 – 4 500 000 FCFA | 10 à 16 semaines |
+| MVP / Outil métier | 1 000 000 – 1 800 000 FCFA | 4 à 7 semaines |
+| Plateforme + abonnement | 2 000 000 – 3 800 000 FCFA | 8 à 12 semaines |
+| Marketplace multi-acteurs | 4 000 000 – 7 000 000 FCFA | 12 à 20 semaines |
+| Projet complexe | 7 000 000 – 12 000 000 FCFA | 16 à 28 semaines |
 
 </details>
 
@@ -422,13 +423,31 @@ Pensé pour **Vercel** :
 
 | Plan | Prix | Délai |
 |---|---|---|
-| Création | 20 000 FCFA | 1–2 jours |
-| Optimisation | 12 000 FCFA | 1 jour |
-| Suivi mensuel | 10 000 FCFA/mois | Continu |
+| Création | 59 000 FCFA | 2 à 7 jours |
+| Optimisation | 29 000 FCFA | 1 à 3 jours |
+| Suivi mensuel | 9 000 FCFA/mois | Continu |
 
 </details>
 
-> Nom de domaine + hébergement offerts la 1ère année sur tous les plans (hors Fiche Google et SaaS).
+<details>
+<summary><b>Maintenance & évolutions</b></summary>
+
+Règle : 15 à 20 % du prix du projet par an, en mensualités (minimum 10 000 FCFA/mois). Prix = formule Essentielle – formule Avancée. Hébergement et services tiers facturés à part.
+
+| Projet | Maintenance |
+|---|---|
+| Site vitrine | 10 000 – 15 000 FCFA/mois |
+| E-commerce | 15 000 – 35 000 FCFA/mois |
+| MVP / Outil métier | 15 000 – 30 000 FCFA/mois |
+| Plateforme + abonnement | 40 000 – 60 000 FCFA/mois |
+| Marketplace multi-acteurs | 75 000 – 115 000 FCFA/mois |
+| Projet complexe | Sur devis |
+
+</details>
+
+> Nom de domaine offert la 1ère année sur tous les plans. Hébergement offert la 1ère année sur Site vitrine et E-commerce uniquement ; pour une application SaaS, l'infrastructure est mise en place au nom du client et facturée au coût réel.
+> Paiement : projet ≤ 2 000 000 FCFA → 50 % à la commande, 50 % à la livraison ; projet > 2 000 000 FCFA → 40 % à la commande, 30 % à la validation de la pré-version, 30 % à la livraison.
+> Optimisation SEO : sur devis.
 > Paiements acceptés : Orange Money · MTN Mobile Money · Wave
 
 ---

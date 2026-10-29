@@ -104,8 +104,8 @@ export default function Services({ onNext, onNavigate }) {
             </ul>
 
             <LuxuryAction
-              label={tab.key === 'saas' ? 'Demander un devis' : 'Démarrer'}
-              cycle={tab.key === 'saas'
+              label={(tab.key === 'saas' || tab.key === 'maintenance') ? 'Demander un devis' : 'Démarrer'}
+              cycle={(tab.key === 'saas' || tab.key === 'maintenance')
                 ? ['Demander un devis', 'Parlons budget', 'Recevoir une estimation', 'Demander un devis']
                 : ['Démarrer', 'Lancer le projet', 'Passer à l’action', 'Démarrer']}
               onClick={() => onNavigate('contact')}

@@ -1,6 +1,5 @@
-Portfolio Elvis — alignement sur la nouvelle data.js
-ZIP différentiel — à dézipper à la racine du projet (racine de elvis-portfolio-nextjs), en écrasant.
-Alignement sur la nouvelle data.js (oct. 2026) : SEO sur devis, assistant métier (chatbot), maintenance, palier « Projet complexe », acompte 50/50 ou 40/30/30, hébergement offert vitrine/e-commerce.
+Portfolio Elvis — alignement data.js + projet Vazi Express + images (remplace les ZIP 2 et 3)
+ZIP différentiel cumulatif — à dézipper à la racine du projet (racine de elvis-portfolio-nextjs), en écrasant.
 
 MODIFIÉS (11)
   ~ README.md
@@ -15,8 +14,14 @@ MODIFIÉS (11)
   ~ src/styledesktop.css
   ~ src/useSEO.jsx
 
-NOUVEAUX : aucun.
+NOUVEAUX (2)
+  + public/assets/images/projects/vazi-express-preview.webp
+  + public/assets/images/projects/vazi-express-responsive.webp
+
 À SUPPRIMER : rien.
 EXCLUS PAR SÉCURITÉ : .env, .env.local, app/.env (non inclus).
 
-À VÉRIFIER APRÈS DÉZIPPAGE : npm run build ; section Tarifs (onglets SaaS à 4 offres et Maintenance) sur desktop et mobile.
+PROJET VAZI EXPRESS (id 25, catégorie « en-cours »)
+  • Images incluses (WebP) : public/assets/images/projects/vazi-express-preview.webp et vazi-express-responsive.webp.
+  • Il reste à les envoyer sur Cloudinary : npm run cloudinary:sync
+  • url: '#' : le bouton « voir le projet » reste désactivé jusqu'au lancement.

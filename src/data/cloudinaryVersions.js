@@ -133,6 +133,8 @@ export const CLOUDINARY_VERSIONS = {
   "/assets/images/projects/universitelesanges-preview.webm": 1790320416,
   "/assets/images/projects/universitelesanges-preview.webp": 1790320417,
   "/assets/images/projects/universitelesanges.webp": 1790320418,
+  "/assets/images/projects/vazi-express-preview.webp": 1793552716,
+  "/assets/images/projects/vazi-express-responsive.webp": 1793552728,
   "/assets/images/qrcodeCV.webp": 1790320419,
   "/assets/images/service/api.webp": 1792834429,
   "/assets/images/service/creation de site web.webp": 1792834431,

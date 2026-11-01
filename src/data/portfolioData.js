@@ -240,6 +240,13 @@ export const PROJECTS = [
     features: ["Mode kiosque 100% offline (Dexie/IndexedDB)", "3 rôles : Patron, Gérant, Agent", "Formulaires adaptables par secteur d'activité", "Signature à l'écran", "Synchronisation automatique au retour du réseau"],
     result: "V1.2 fonctionnelle et déployée : registre, kiosque offline, dashboard avec export CSV, PWA installable, mode sombre ; niveau 2 REKOLLECTE+ (clients, ressources, réservations, paiements, rappels) en recette."
   },
+  {
+    id: 25, title: 'Vazi Express', sub: 'Livraison de Colis à Moto', cat: 'en-cours', img: cld('/assets/images/projects/vazi-express-preview.webp'), responsive: cld('/assets/images/projects/vazi-express-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600', tech: ['React 19', 'Vite', 'NestJS', 'PostgreSQL (Prisma)', 'Redis / BullMQ', 'Socket.IO', 'Mapbox', 'Expo'], url: '#', desc: "Plateforme de livraison de colis à moto pensée pour Abidjan : demande de course, prix verrouillé avant confirmation, suivi en direct, code de remise et photo de preuve. Espaces client, livreur et administration ; application mobile Expo en préparation.", year: '2026',
+    problem: "À Abidjan, envoyer un colis par un livreur à moto se règle souvent au cas par cas : prix flou négocié à la dernière minute, colis perdu de vue en route, livreur que l'on ne connaît pas et aucune preuve que le destinataire l'a bien reçu.",
+    solution: "Plateforme web React et API NestJS : le prix est calculé par le serveur sur la distance routière puis verrouillé avant confirmation, la course est proposée aux livreurs proches en temps réel, et la remise est validée par un code à 6 chiffres et une photo, avec reçu PNG généré côté serveur.",
+    features: ["Prix calculé sur la distance routière, verrouillé avant confirmation", "Attribution aux livreurs proches en temps réel, suivi en direct", "Candidature livreur : pièce d'identité, selfie, validation par l'admin", "Remise validée par code à 6 chiffres et photo, reçu PNG", "Console admin : indicateurs, livraisons, incidents, modération", "Paiement en espèces à la remise (aucun paiement en ligne)"],
+    result: "Code web et API livrés et testés en local ; migration en staging, recette terrain et pilote à Abidjan restent à faire. Application Expo présente dans le dépôt, non validée sur appareils. Aucun lancement n'est annoncé."
+  },
 ]
 // ─── Tarifs ─────────────────────────────────────────────────────
 // Prix et délais alignés sur data.js (PRICING) ; les lignes de comparaison

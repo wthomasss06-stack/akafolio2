@@ -1,0 +1,9 @@
+Portfolio — lot du 15/11/2026
+=============================
+public/llms.txt : le llms-1 fourni, mis à jour (pas réécrit).
+  - Rôle : fondateur d'AKATech Studio + Chief Technology Officer (CTO) de Redianice (structure distincte).
+  - Tarifs alignés sur la grille actuelle (Site vitrine 200 000 / 350 000 / 750 000 ; E-commerce
+    650 000 / 1 100 000 / 2 000 000 ; App web & SaaS 4 niveaux ; Google Business Profile 59 000 / 29 000 / 9 000 par mois),
+    modalités de paiement, domaine, hébergement et maintenance.
+  - Catégorie « Portfolio & Présentation Individuelle » retirée : elle n'existe plus dans la grille (fusionnée dans Site vitrine).
+  - Projets : ShopCI (Next.js 16, URL shopci-v2), Nexura, Karnet, ProTech POS, REKOLLECTE, ChapChap Bara, Anyama Proxy ajoutés ; Vazi Express signalé « en développement ».

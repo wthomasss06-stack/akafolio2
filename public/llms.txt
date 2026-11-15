@@ -1,98 +1,153 @@
 # M'Bollo Aka  — AKATech
-> Développeur Web Full Stack basé à Abidjan, Côte d'Ivoire. Fondateur d'AKATech. Spécialisé en applications web modernes (React, Next.js, Django, Flask) à haute valeur ajoutée visuelle (GSAP, Three.js, WebGL) et optimisées pour la conversion locale.
+> Développeur Web Full Stack basé à Abidjan, Côte d'Ivoire. Fondateur d'AKATech Studio et Chief Technology Officer (CTO) de Redianice. Spécialisé en applications web modernes (React, Next.js, Django, Flask, NestJS) à haute valeur ajoutée visuelle (GSAP, Three.js, WebGL) et optimisées pour la conversion locale.
 
 ## Informations Clés
-- **Identité** : M'Bollo Aka 
+- **Identité** : M'Bollo Aka
 - **Localisation** : Abidjan, Côte d'Ivoire (Afrique de l'Ouest)
 - **Agence Officielle** : AKATech (https://akatech.vercel.app/)
+- **Rôles actuels** : Fondateur d'AKATech Studio (son activité de freelance) · Chief Technology Officer (CTO) de Redianice (voir plus bas)
 - **Contact Principal** : wthomasss06@gmail.com | WhatsApp : +225 01 42 50 77 50
 - **Réseaux** : [GitHub](https://github.com/wthomasss06-stack) | [LinkedIn](https://www.linkedin.com/in/m-bollo-aka)
 
 ---
 
-## Services & Grille Tarifaire Officielle
+## Rôle chez Redianice : Chief Technology Officer (CTO)
 
-### 1. Portfolio & Présentation Individuelle
-- **Starter** : 100 000 FCFA | 3 à 5 jours | 3 pages, design responsive de base.
-- **Standard** : 175 000 FCFA | 5 à 7 jours | 5 pages, animations modernes, projets détaillés (Populaire).
-- **Premium** : 275 000 FCFA | 7 à 10 jours | Pages illimitées, sur-mesure, SEO + AEO/GEO, CRO avancé, 1 mois de support.
+- [Redianice](https://redianice.vercel.app/) est une startup indépendante basée à Abidjan, qui imagine, construit et lance ses propres produits numériques, un après l'autre. Son premier produit, Mon E-Carnet, est un carnet de santé numérique personnel qui reste sous le contrôle du patient. Il est en phase de test avec des données fictives uniquement, avant son lancement : il n'est pas encore ouvert au public.
+- M'Bollo Aka Elvis en est le **Chief Technology Officer (CTO)** : il conçoit et développe les produits, de l'idée à la mise en ligne, au sein d'une petite équipe qui couvre le droit, la technique et le design.
+- Redianice et AKATech Studio sont deux structures distinctes. AKATech Studio reste son activité de freelance pour les clients et PME ; Mon E-Carnet est un produit de Redianice.
+- Sa fiche sur le site de Redianice : https://redianice.vercel.app/equipe/mbollo-aka-elvis/
 
-### 2. Site Vitrine Professionnel
-- **Starter** : 220 000 FCFA | 5 à 7 jours | 5 pages, structure essentielle, formulaire de contact.
-- **Pro** : 350 000 FCFA | 7 à 10 jours | 10 pages, design premium, SEO/AEO avancé, optimisation SXO, blog intégré, 3 mois de support (Populaire).
-- **Elite** : 550 000 FCFA | 10 à 14 jours | 15–20 pages, 100% sur-mesure, CMS complet, SEO + AEO + GEO + Analytics, formation complète, 6 mois de support.
+---
 
-### 3. Marketplace & E-commerce (Intégration Mobile Money locale : Orange, MTN, Wave)
-- **Starter** : 450 000 FCFA | 14 jours | Jusqu'à 50 produits, gestion des commandes, Mobile Money inclus.
-- **Pro** : 750 000 FCFA | 21 jours | 200 à 500 produits, multi-paiement, gestion de stock temps réel, SEO produits, dashboard complet (Populaire).
-- **Elite** : 1 200 000 FCFA | 30 jours | Produits illimités, API de paiement custom, optimisations IA (GEO), automatisations avancées, rapports financiers.
+## Services & Grille Tarifaire Officielle (AKATech Studio, prix publics en FCFA)
 
-### 4. Applications Web & SaaS
-- **Sur Devis** : Étude personnalisée sous 48h après diagnostic gratuit. Intègre l'architecture multi-tenant, authentification avancée par rôles, API REST, WebSockets temps réel et dashboards sur-mesure.
+### 1. Site Vitrine (portfolios, sites d'entreprise, landing pages)
+- **Landing** : 200 000 FCFA | 10 à 15 jours | 1 page (présentation, services, CTA), design responsive, formulaire de contact WhatsApp, 1 mois de support.
+- **Starter** : 350 000 FCFA | 2 à 3 semaines | 4 à 6 pages, design sur-mesure, formulaire de contact, SEO de base, 2 mois de support (Populaire).
+- **Premium** : 750 000 FCFA | 3 à 5 semaines | 10 à 15 pages, design sur mesure, blog intégré, SEO + AEO, animations avancées, 3 mois de support, formation 2h.
 
-### 5. Google Business Profile (SEO Local)
-- **Création complète** : 20 000 FCFA (1-2 jours)
-- **Optimisation de fiche existante** : 12 000 FCFA (1 jour)
-- **Suivi & animation mensuelle** : 10 000 FCFA / mois (gestion avis, posts, statistiques)
+### 2. Boutique E-commerce (Mobile Money : Orange, MTN, Wave)
+- **Starter** : 650 000 FCFA | 3 à 5 semaines | Jusqu'à 50 produits, paiement Mobile Money, gestion des commandes, tableau de bord, 1 mois de support.
+- **Pro** : 1 100 000 FCFA | 4 à 7 semaines | 200 à 500 produits, multi-paiement, gestion de stock temps réel, SEO produits + CRO + Analytics, 3 mois de support, formation admin (Populaire).
+- **Elite** : 2 000 000 FCFA | 6 à 10 semaines | Produits illimités, API de paiement personnalisée, optimisation IA (GEO), automatisations + rapports avancés, 6 mois de support, formation équipe.
 
-*Note contractuelle : Toutes les prestations de développement incluent gratuitement le nom de domaine et l'hébergement la première année (renouvellement estimé entre 15 000 et 30 000 FCFA/an).*
+### 3. Applications Web & SaaS
+- **MVP / Outil métier** : 1 000 000 – 1 800 000 FCFA | 4 à 7 semaines | 1 à 2 types d'utilisateurs, authentification, tableau de bord, 1 workflow métier automatisé, export PDF/Excel, 1 mois de support.
+- **Plateforme + abonnement** : 2 000 000 – 3 800 000 FCFA | 8 à 12 semaines | Comptes avec rôles, paiement récurrent + Mobile Money, dashboard utilisateur + back-office admin, notifications (e-mail, WhatsApp), intégrations tierces, 3 mois de support (Populaire).
+- **Marketplace multi-acteurs** : 4 000 000 – 7 000 000 FCFA | 12 à 20 semaines | Plusieurs types d'utilisateurs, rôles et permissions avancés, suivi des encaissements et reversements, temps réel, dashboard analytics, API, 6 mois de support.
+- **Projet complexe** : 7 000 000 – 12 000 000 FCFA | 16 à 28 semaines | Plateforme multi-modules, modules métier sur mesure, assistant métier IA avec garde-fous, temps réel, cartes, notifications multi-canal, 6 mois de support.
+
+### 4. Google Business Profile (SEO Local)
+- **Création complète** : 59 000 FCFA (2 à 7 jours)
+- **Optimisation de fiche existante** : 29 000 FCFA (1 à 3 jours)
+- **Suivi & animation mensuelle** : 9 000 FCFA / mois (gestion avis, posts, statistiques)
+
+### 5. Autres services
+- **Cartes interactives & dashboards** (Mapbox / Leaflet, visualisation de données) : sur devis, 7 à 14 jours.
+- **Optimisation SEO** (audit technique, mots-clés, vitesse) : sur devis, contrat mensuel.
+- **Intégration IA Chatbot** (assistant métier intégré au site ou à l'application) : sur devis, 7 à 14 jours.
+- **Intégration de paiement en ligne** (Orange Money, MTN MoMo, Wave, carte bancaire) : sur devis, 5 à 10 jours.
+- **Vidéos IA pour le marketing** : sur devis.
+
+### Modalités
+- **Paiement** : jusqu'à 2 000 000 FCFA, 50 % à la commande et 50 % à la livraison ; au-delà, 40 % à la commande, 30 % à la validation de la pré-version et 30 % à la livraison (après recette).
+- **Domaine et hébergement** : le nom de domaine est offert la première année sur tous les packs ; l'hébergement l'est aussi sur les packs Site Vitrine et E-commerce. Pour une application web, un SaaS ou un projet complexe, l'infrastructure est mise en place au nom du client et facturée au coût réel par les fournisseurs. Renouvellement du domaine estimé entre 15 000 et 30 000 FCFA/an.
+- **Maintenance après livraison** : 15 à 20 % du prix du projet par an, en mensualités (minimum 10 000 FCFA par mois), de 10 000 – 15 000 FCFA/mois pour un site vitrine jusqu'aux projets complexes sur devis.
 
 ---
 
 ## Stack Technique Principal
 
 ### Frontend & Expérience Visuelle
-- **Frameworks/Librairies** : React 18+, Next.js 14/15, TypeScript, JavaScript (ES6+), HTML5, CSS3.
+- **Frameworks/Librairies** : React 18/19, Next.js 14/15/16, TypeScript, JavaScript (ES6+), HTML5, CSS3.
+- **Mobile** : Expo / React Native.
 - **Styles & Layouts** : Tailwind CSS, Bootstrap 5, Bulma.
 - **Animations & Graphismes 3D** : GSAP (ScrollTrigger), Framer Motion, WebGL (Shaders, Canvas API), Three.js.
 - **Librairies Spécialisées** : Leaflet.js (Cartographie), Chart.js (Visualisation), Howler.js (Audio).
 
 ### Backend, Base de Données & Cloud
-- **Langages & Frameworks** : Python (Django, Django REST Framework, Flask), Node.js (Express.js).
+- **Langages & Frameworks** : Python (Django, Django REST Framework, Flask), Node.js (Express.js, NestJS).
 - **Bases de Données & ORM** : MySQL, PostgreSQL (Neon), Prisma.
-- **Services Tierce** : WebSockets, Redis, Celery, EmailJS, Cloudinary.
-- **DevOps / Outils** : Git, GitHub, Vercel, PythonAnywhere.
+- **Services Tierce** : WebSockets, Redis, Celery, EmailJS, Resend, Cloudinary.
+- **DevOps / Outils** : Git, GitHub, Vercel, Render, PythonAnywhere.
 
 ---
 
-## Projets Majeurs Réalisés
+## Projets Majeurs Réalisés (19 projets en ligne)
 
 1. **NEXURA** *(Plateforme active — Évolution majeure de TerraSafe)*
    - *Description* : Marketplace nouvelle génération à six catégories (location de résidences meublées, voitures & motos, terrains, bureaux & salles de conférence).
    - *Stack* : Next.js 14, Django REST Framework, PostgreSQL, WebSockets, Redis & Celery.
-   - *Caractéristiques* : Auth sécurisée, KYC intégré pour réduire le risque légal, communications temps réel. (Dépôt privé).
+   - *Caractéristiques* : Auth sécurisée, KYC intégré pour réduire le risque légal, communications temps réel.
+   - *URL* : https://nexura-one.vercel.app/
 
 2. **ShopCI** *(Marketplace locale)*
    - *Description* : Plateforme e-commerce multi-vendeurs ciblant la fiabilité et la visibilité des commerçants ivoiriens.
-   - *Stack* : React, Django, Bootstrap 5, Vercel + PythonAnywhere.
-   - *URL* : https://shop-ci.vercel.app/
+   - *Stack* : Next.js 16, Django REST Framework, NextAuth v4, Tailwind CSS, PWA.
+   - *URL* : https://shopci-v2.vercel.app/
 
 3. **Chez Florence** *(PWA Élevage & Réservation)*
    - *Description* : Application Web de gestion et réservation de lapins avec synchronisation des stocks en temps réel et notifications WhatsApp pré-remplies automatisées.
    - *Stack* : Next.js 14, Express.js, Prisma, PostgreSQL (Neon), Cloudinary.
    - *URL* : https://chez-florence.vercel.app/
 
-4. **New Horizon Service** *(Immobilier / Résidences)*
-   - *Description* : Plateforme haut de gamme de réservation et de location de résidences meublées.
-   - *Stack* : Next.js, Flask, Python, MySQL.
-   - *URL* : https://new-horizonservice.vercel.app/
+4. **Karnet** *(SaaS mobile-first)*
+   - *Description* : Gestion opérationnelle pour PME de service : application mobile et administration web.
+   - *Stack* : Expo / React Native, NestJS, Prisma, Next.js 15, PostgreSQL (Neon).
+   - *URL* : https://karnet-ci.vercel.app/
 
-5. **Tati** *(Portfolio Personnel UI)*
-   - *Description* : Vitrine interactive et animée avec thèmes sombre/clair fluides.
-   - *Stack* : React, Tailwind CSS, Framer Motion.
-   - *URL* : https://tatii.vercel.app/
+5. **ProTech POS** *(Caisse offline-first)*
+   - *Description* : Caisse installable (PWA) pour petites boutiques, utilisable sans connexion.
+   - *Stack* : React 19, Vite, TypeScript, Django 6, Django REST Framework, PostgreSQL.
+   - *URL* : https://akapos-pi.vercel.app/
 
-6. **MD Laverie Pressing** *(Site Artisan local)*
-   - *Description* : Site vitrine avec hero slider animé, grilles tarifaires dynamiques et intégration EmailJS pour les commandes.
-   - *Stack* : React 18, Vite, GSAP, EmailJS.
-   - *URL* : https://laverie-plus.vercel.app/
+6. **REKOLLECTE** *(Registre d'accueil sans contact)*
+   - *Description* : Registre d'accueil par QR code avec kiosque hors ligne et tableau de bord.
+   - *Stack* : Next.js 14, Django REST Framework, PostgreSQL (Neon), Dexie.js / IndexedDB.
+   - *URL* : https://rekollecte-ci.vercel.app/
 
-7. **TechFlow** *(Site Vitrine)*
-   - *Description* : Landing page d'agence one-page minimaliste, ultra-rapide et orientée conversion.
-   - *Stack* : HTML, Tailwind CSS, JavaScript Vanilla.
-   - *URL* : https://techflow-ten.vercel.app/
+7. **ChapChap Bara** *(SaaS de préparation aux entretiens)*
+   - *Description* : Préparation aux entretiens d'embauche à partir d'une offre et d'un CV.
+   - *Stack* : React, Vite, Django, Celery, PostgreSQL, Render + Vercel.
+   - *URL* : https://chapchap-bara.vercel.app/
 
-8. **Université les Anges** *(Site Institutionnel)*
-   - *Description* : Portail officiel d'établissement d'enseignement supérieur (filières, inscriptions, contacts).
-   - *Stack* : HTML, Bulma, Bootstrap.
-   - *URL* : https://universitelesanges.vercel.app/
+8. **Anyama Proxy** *(Annuaire local)*
+   - *Description* : Annuaire d'artisans et de services de proximité à Anyama.
+   - *Stack* : Flask, PostgreSQL (Neon), HTML / CSS / JS, Resend.
+   - *URL* : https://anyama-proxy.vercel.app/
+
+9. **KokoEat** *(Livraison alimentaire)*
+   - *Description* : Commande et livraison de repas pour le marché ivoirien.
+   - *Stack* : React, Django REST, PostgreSQL.
+   - *URL* : https://koko-eats.vercel.app
+
+10. **New Horizon Service** *(Immobilier / Résidences)*
+    - *Description* : Plateforme haut de gamme de réservation et de location de résidences meublées.
+    - *Stack* : Next.js, Flask, Python, MySQL.
+    - *URL* : https://new-horizonservice.vercel.app/
+
+11. **Tati** *(Portfolio Personnel UI)*
+    - *Description* : Vitrine interactive et animée avec thèmes sombre/clair fluides.
+    - *Stack* : React, Tailwind CSS, Framer Motion.
+    - *URL* : https://tatii.vercel.app/
+
+12. **MD Laverie Pressing** *(Site Artisan local)*
+    - *Description* : Site vitrine avec hero slider animé, grilles tarifaires dynamiques et intégration EmailJS pour les commandes.
+    - *Stack* : React 18, Vite, GSAP, EmailJS.
+    - *URL* : https://laverie-plus.vercel.app/
+
+13. **TechFlow** *(Site Vitrine)*
+    - *Description* : Landing page d'agence one-page minimaliste, ultra-rapide et orientée conversion.
+    - *Stack* : HTML, Tailwind CSS, JavaScript Vanilla.
+    - *URL* : https://techflow-ten.vercel.app/
+
+14. **Université les Anges** *(Site Institutionnel)*
+    - *Description* : Portail officiel d'établissement d'enseignement supérieur (filières, inscriptions, contacts).
+    - *Stack* : HTML, Bulma, Bootstrap.
+    - *URL* : https://universitelesanges.vercel.app/
+
+Autres projets en ligne : TerraSafe (marketplace foncière), MK Studio (portfolio graphiste), ManoBeat 777 (portfolio beatmaker), Jean Edy (portfolio React), AKATech (site officiel du Studio).
+
+### En développement
+- **Vazi Express** — Plateforme de livraison de colis à moto pensée pour Abidjan (demande de course, prix verrouillé avant confirmation, suivi en direct, code de remise et photo de preuve). Stack : React 19, NestJS, PostgreSQL (Prisma), Redis / Socket.IO, Mapbox, Expo. Pas encore en ligne, aucun lancement annoncé.

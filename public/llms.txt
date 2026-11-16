@@ -74,7 +74,7 @@
 
 ---
 
-## Projets Majeurs Réalisés (19 projets en ligne)
+## Projets Majeurs Réalisés (20 projets en ligne)
 
 1. **NEXURA** *(Plateforme active — Évolution majeure de TerraSafe)*
    - *Description* : Marketplace nouvelle génération à six catégories (location de résidences meublées, voitures & motos, terrains, bureaux & salles de conférence).
@@ -142,7 +142,12 @@
     - *Stack* : HTML, Tailwind CSS, JavaScript Vanilla.
     - *URL* : https://techflow-ten.vercel.app/
 
-14. **Université les Anges** *(Site Institutionnel)*
+14. **Redianice** *(Site vitrine de startup — son projet le plus récent)*
+    - *Description* : Site vitrine de Redianice, startup indépendante d'Abidjan dont il est le CTO : équipe, méthode et premier produit, Mon E-Carnet (en phase de test, données fictives uniquement). Hero animé en WebGL, objets 3D, fiches d'équipe, formulaire de contact serverless.
+    - *Stack* : HTML / CSS / JavaScript, GSAP, ScrollTrigger, Lenis, WebGL, Vercel, Resend.
+    - *URL* : https://redianice.vercel.app/
+
+15. **Université les Anges** *(Site Institutionnel)*
     - *Description* : Portail officiel d'établissement d'enseignement supérieur (filières, inscriptions, contacts).
     - *Stack* : HTML, Bulma, Bootstrap.
     - *URL* : https://universitelesanges.vercel.app/

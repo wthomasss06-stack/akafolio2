@@ -119,6 +119,8 @@ export const CLOUDINARY_VERSIONS = {
   "/assets/images/projects/pos-responsive.webp": 1790320370,
   "/assets/images/projects/r3ns3ngn3m3nt-preview.webp": 1790320371,
   "/assets/images/projects/r3ns3ngn3m3nt-responsive.webp": 1790320372,
+  "/assets/images/projects/redianice-preview.webp": 1794799643,
+  "/assets/images/projects/redianice-responsive.webp": 1794799644,
   "/assets/images/projects/shopci--preview.webp": 1790320373,
   "/assets/images/projects/shopci-responsive.webp": 1790320374,
   "/assets/images/projects/tati-preview.webm": 1790320382,

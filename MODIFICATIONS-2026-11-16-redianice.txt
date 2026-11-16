@@ -1,0 +1,20 @@
+Portfolio — ajout de Redianice (16/11/2026)
+===========================================
+Redianice devient le projet n° 26 (catégorie « en-ligne », 20 projets en ligne au total).
+
+MODIFIÉS
+  src/data/portfolioData.js                  entrée id 26 (fiche complète : problème, solution, fonctions, résultat)
+  src/lib/founder-akatech/portfolioData.js   même entrée + rubrique « Site vitrine »
+  src/Appdesktop.jsx                         projets vedettes : ProTech POS, Anyama Proxy, REKOLLECTE, Redianice
+  src/app mobile/App2mobile.jsx              idem
+  src/Appmobile.jsx                          « Dernières réalisations » : ids 22, 23, 24, 26
+  README.md                                  ligne du tableau des projets
+  public/llms.txt                            llms-1 : 20 projets en ligne, fiche Redianice
+NOUVEAUX
+  public/assets/images/projects/redianice-preview.webp     (capture ordinateur, 1583 × 744)
+  public/assets/images/projects/redianice-responsive.webp  (capture mobile, 720 × 1600)
+
+À SAVOIR
+  - Les 4 projets vedettes sont maintenant les 4 plus récents : Karnet en sort, Redianice entre.
+  - Les images passent par cld() comme celles de Vazi Express : si ton helper src/lib/cloudinary.js
+    sert les images depuis Cloudinary, téléverse aussi ces deux fichiers (même nom, même dossier).

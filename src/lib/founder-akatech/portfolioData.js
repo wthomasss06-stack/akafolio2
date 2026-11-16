@@ -258,6 +258,13 @@ const PROJECTS = [
     features: ["Prix calculé sur la distance routière, verrouillé avant confirmation", "Attribution aux livreurs proches en temps réel, suivi en direct", "Candidature livreur : pièce d’identité, selfie, validation par l’admin", "Remise validée par code à 6 chiffres et photo, reçu PNG", "Console admin : indicateurs, livraisons, incidents, modération", "Paiement en espèces à la remise (aucun paiement en ligne)"],
     result: "Code web et API livrés et testés en local ; migration en staging, recette terrain et pilote à Abidjan restent à faire. Application Expo présente dans le dépôt, non validée sur appareils. Aucun lancement n’est annoncé."
   },
+  {
+    id: 26, title: 'Redianice', sub: 'Site Vitrine de Startup', cat: 'en-ligne', img: cld('/assets/images/projects/redianice-preview.webp'), responsive: cld('/assets/images/projects/redianice-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1547658719-da2b51169166?w=600', tech: ['HTML / CSS / JavaScript', 'GSAP', 'ScrollTrigger', 'Lenis', 'WebGL', 'Vercel', 'Resend'], url: 'https://redianice.vercel.app/', desc: "Site vitrine de Redianice, startup indépendante d’Abidjan qui conçoit et lance ses propres produits numériques. Il présente l’équipe, la méthode et le premier produit, Mon E-Carnet : hero animé en WebGL, objets 3D qui suivent le défilement, fiches d’équipe et formulaire de contact sécurisé.", year: '2026',
+    problem: "Redianice, startup à ses débuts, n’avait aucune présence en ligne pour présenter son équipe, sa démarche et son premier produit, Mon E-Carnet, sans exposer la moindre donnée réelle.",
+    solution: "Site statique rapide, sans étape de compilation : accueil en sections (à propos, méthode, approche, premier produit, équipe, questions fréquentes), fiches individuelles de l’équipe, page dédiée à Mon E-Carnet et formulaire de contact traité par une fonction serverless avec envoi par e-mail (Resend). Animations GSAP, défilement Lenis, fond du hero en WebGL.",
+    features: ["Hero animé : fond WebGL et objets 3D qui flottent selon le défilement", "Filigrane « redianice » en contour pointillé dessiné sur canvas, objets déplaçables dans le pied de page", "Fiches individuelles de l’équipe avec traînée d’objets au curseur", "Page dédiée à Mon E-Carnet avec galerie WebGL de captures (données fictives uniquement)", "Formulaire de contact : fonction serverless Vercel et envoi par e-mail via Resend", "Données structurées (organisation, FAQ), plan du site et fichiers llms.txt"],
+    result: "Site en ligne pour jeunes entreprises qui veulent se présenter avec une image soignée."
+  },
 ]
 
 const PROJECT_PREVIEW_VIDEOS = new Set([
@@ -794,6 +801,7 @@ const PROJECT_RUBRIQUES = {
   11: 'E-commerce', 12: 'Réservation', 13: 'Site vitrine', 14: 'Site vitrine', 15: 'Plateforme',
   16: 'Plateforme', 17: 'Site vitrine', 18: 'Site vitrine', 19: 'E-commerce', 20: 'Application web',
   21: 'Application web', 22: 'POS & caisse', 23: 'Plateforme', 24: 'Application web',
+  26: 'Site vitrine',
 }
 
 // ─── Images qui suivent le curseur : tous les .webp des projets, sans doublon ───

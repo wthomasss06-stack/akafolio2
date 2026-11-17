@@ -88,141 +88,141 @@ export const PROJECTS = [
   {
     id: 1, title: 'ShopCI', sub: 'Marketplace E-commerce', cat: 'en-ligne', img: cld('/assets/images/projects/shopci--preview.webp'), responsive: cld('/assets/images/projects/shopci-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=600', tech: ['Next.js 16', 'Django REST Framework', 'NextAuth v4', 'Tailwind CSS', 'PWA'], url: 'https://shopci-v2.vercel.app/', desc: "Marketplace multi-vendeurs ivoirienne type Amazon : catalogue, panier, commandes, livraison géolocalisée avec preuve photo et paiement à la livraison, PWA installable.", year: '2026',
     private: true,
-    problem: "Les vendeurs locaux n'avaient pas de vitrine fiable pour regrouper leurs produits, et les acheteurs hésitaient à commander sans garantie.",
-    solution: "Une place de marché en ligne où chaque vendeur gère sa boutique et ses commandes. L'acheteur suit sa livraison jusqu'à la réception, avec une photo de preuve, et paie à la livraison. Il se connecte en un clic avec son compte Google.",
+    problem: "L'absence d'un point de vente commun obligeait les vendeurs à multiplier les canaux de présentation et les acheteurs à demander les informations une par une. Cette organisation rendait le parcours moins fluide, du choix du produit jusqu'à la réception.",
+    solution: "L'expérience rassemble donc les étapes essentielles dans un même espace : découverte des articles, choix, commande et suivi. Chaque vendeur conserve la maîtrise de sa boutique, tandis que l'acheteur dispose d'un parcours plus lisible.",
     features: ["Catalogue, panier et commandes multi-vendeurs", "Livraison géolocalisée avec preuve photo et confirmation de réception", "Authentification Google uniquement, avec onboarding acheteur/vendeur", "Tableaux de bord acheteur et vendeur séparés", "PWA installable (Chrome/Android et iOS)"],
-    result: "Estimation : un vendeur met un produit en vente en quelques minutes, contre plusieurs heures avant."
+    result: "Les visiteurs peuvent découvrir les articles et suivre une commande sans devoir chercher les informations auprès de plusieurs interlocuteurs. Le paiement par Mobile Money n'est pas encore intégré : il est prévu comme évolution future."
   },
   {
     id: 2, title: 'TechFlow', sub: 'Site Vitrine Professionnel', cat: 'en-ligne', img: cld('/assets/images/projects/techflow-preview.webp'), responsive: cld('/assets/images/projects/techflow.webp'), imgFb: 'https://images.unsplash.com/photo-1547658719-da2b51169166?w=600', tech: ['HTML / Tailwind CSS', 'JavaScript', 'Vercel'], url: 'https://techflow-ten.vercel.app/', desc: 'Site vitrine moderne destiné à présenter une activité technologique de manière claire et professionnelle.', year: '2024',
-    problem: "Le client n'avait aucune présence en ligne pour présenter son activité technologique de façon crédible.",
-    solution: "Un site d'une seule page, rapide et agréable à lire, qui présente l'offre et rassure le visiteur dès les premières secondes.",
+    problem: "Sans présentation centralisée, un prospect devait se fier aux informations qu'il pouvait obtenir au cas par cas. Il devenait plus difficile de comprendre rapidement l'activité, les services proposés et la manière de prendre contact.",
+    solution: "La page donne une place claire à l'activité, à son offre et aux informations utiles. La navigation accompagne le visiteur dans sa découverte, sans multiplier les détours ni le noyer sous des détails inutiles.",
     features: ["Design moderne responsive (mobile, tablette, desktop)", "Mode sombre/clair", "Carousel de projets", "Pages Services, À propos, Contact, FAQ, Blog", "SEO optimisé"],
-    result: "Estimation : site livré en moins d'une semaine, prêt à être partagé en prospection commerciale."
+    result: "L'entreprise dispose d'une adresse à partager dans ses échanges professionnels. Les futurs clients peuvent découvrir l'offre à leur rythme avant de prendre contact."
   },
   {
     id: 3, title: 'TerraSafe', sub: 'Marketplace Foncière', cat: 'en-ligne', img: cld('/assets/images/projects/terrasafe-preview.webp'), responsive: cld('/assets/images/projects/terrasafe.webp'), imgFb: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600', tech: ['Python/Flask', 'MySQL', 'JavaScript', 'Bootstrap 5'], url: 'https://wthomassss06.pythonanywhere.com', desc: "Plateforme foncière visant à réduire les risques d'arnaques liées à la vente de terrains. Backend sécurisé avec recherche avancée.", year: '2024',
-    problem: "Les arnaques sont fréquentes dans la vente de terrains : les annonces et les vendeurs ne sont pas vérifiés.",
-    solution: "Une plateforme où les annonces de terrains sont présentées de façon claire, avec une recherche précise et des comptes sécurisés pour les vendeurs et les acheteurs.",
-    result: "Cette première plateforme a fait ses preuves : elle a servi de base à NEXURA, une plateforme plus complète."
+    problem: "Les annonces foncières peuvent manquer de détails homogènes, et il n'est pas toujours facile de distinguer une offre sérieuse d'une annonce peu fiable. Pour un acheteur, ce manque de repères complique les premières vérifications.",
+    solution: "Le projet rassemble les annonces de terrains dans un espace dédié. Les informations sont présentées de façon plus structurée, avec une recherche par critères et des espaces distincts pour les vendeurs et les acheteurs.",
+    result: "TerraSafe a constitué une première étape dans la réflexion autour de la confiance immobilière. Cette expérience a nourri la conception de NEXURA, qui étend l'approche à plusieurs catégories de biens."
   },
   {
     id: 4, title: 'Chap-chapMAP', sub: 'Navigation Intelligente', cat: 'demo', img: cld('/assets/images/projects/chapchapmap-preview.webp'), responsive: cld('/assets/images/projects/chapchapmap.webp'), imgFb: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=600', tech: ['JavaScript', 'Leaflet.js', 'OSRM API', 'Geolocation API'], url: '/demos/chap-chapMAP.html', github: 'https://github.com/wthomasss06-stack/akafolio2/blob/main/public/demos/chap-chapMAP.html', desc: "Application de cartographie intelligente permettant de localiser un utilisateur en temps réel et de calculer des itinéraires optimisés.", year: '2023',
-    problem: "Se déplacer efficacement à Abidjan sans application de navigation locale fiable.",
-    solution: "Une carte interactive qui repère l'utilisateur en direct et calcule le meilleur itinéraire.",
+    problem: "Lorsqu'une personne ne connaît pas bien un quartier, retrouver une adresse ou choisir un chemin peut demander plusieurs recherches. Le manque de repères est particulièrement gênant lorsqu'on souhaite préparer un déplacement dans une ville étendue.",
+    solution: "La carte permet de rechercher un lieu, de visualiser sa position et de consulter un itinéraire. Les informations géographiques sont présentées de manière visuelle pour que l'utilisateur comprenne plus facilement où il se trouve et où il doit aller.",
     features: ["Géolocalisation en temps réel de l'utilisateur", "Calcul d'itinéraire optimisé (API OSRM)", "Carte interactive Leaflet.js", "Recherche de point d'intérêt"],
-    result: "Démonstration qui prouve que la localisation en direct et le calcul d'itinéraires fonctionnent en conditions réelles."
+    result: "Le projet propose une démonstration concrète de navigation cartographique. Il montre comment une carte peut rendre la recherche d'adresses et la préparation d'un trajet plus accessibles."
   },
   {
     id: 5, title: 'ElvisMarket', sub: 'Interface E-commerce', cat: 'demo', img: cld('/assets/images/projects/elvismarket-preview.webp'), responsive: cld('/assets/images/projects/elvismarket.webp'), imgFb: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=600', tech: ['HTML + JS vanilla', 'Tailwind CSS', 'LocalStorage'], url: '/demos/projet2.html', github: 'https://github.com/wthomasss06-stack/akafolio2/blob/main/public/demos/projet2.html', desc: "Interface e-commerce développée pour expérimenter la gestion d'état, le panier dynamique et l'optimisation de l'UX.", year: '2023',
-    problem: "Avant de se lancer dans de gros projets de vente en ligne, il fallait s'entraîner à construire un panier qui réagit instantanément, avec des outils simples.",
-    solution: "Une boutique en ligne complète, légère et rapide, dont le panier garde en mémoire les achats de l'utilisateur.",
+    problem: "Pour une boutique, présenter des articles ne suffit pas : le visiteur doit aussi pouvoir sélectionner ce qui l'intéresse et retrouver facilement son choix pendant sa visite. Sans panier, la découverte reste limitée à une simple consultation du catalogue.",
+    solution: "La boutique propose un catalogue de produits et un panier qui conserve les articles sélectionnés. Le visiteur peut ainsi parcourir les produits, ajouter ses choix et revoir sa sélection avant de poursuivre son parcours.",
     features: ["Panier dynamique persistant (LocalStorage)", "Catalogue produits filtrable", "Tunnel d'achat complet simulé", "Aucune dépendance framework"],
-    result: "Projet d'entraînement dont l'interface a directement servi de base à ShopCI et TechFlow."
+    result: "Cette réalisation illustre les principales étapes d'une expérience de boutique en ligne, de la découverte des articles à la préparation du panier. Elle sert de démonstration pour présenter un parcours d'achat clair."
   },
   {
     id: 6, title: 'MonCashJour', sub: 'Gestion de Ventes', cat: 'demo', img: cld('/assets/images/projects/moncashjour-preview.webp'), responsive: cld('/assets/images/projects/moncashjour.webp'), imgFb: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=600', tech: ['HTML + JS vanilla', 'Tailwind CSS', 'Chart.js'], url: '/demos/projet1.html', github: 'https://github.com/wthomasss06-stack/akafolio2/blob/main/public/demos/projet1.html', desc: 'Application de gestion de ventes quotidiennes destinée aux petits commerçants.', year: '2023',
-    problem: "Les petits commerçants n'ont pas d'outil simple pour suivre leurs ventes journalières.",
-    solution: "Une application pour noter ses ventes du jour et les voir en graphiques, pensée pour être rapide à utiliser en boutique.",
+    problem: "Quand les ventes sont notées de manière dispersée, il devient difficile pour un petit commerçant de savoir rapidement ce qui a été vendu dans la journée. Retrouver les montants ou comparer les journées demande alors des efforts supplémentaires.",
+    solution: "L'outil permet de saisir les ventes au fil de la journée et de consulter un aperçu visuel de leur évolution. Les informations sont réunies dans un espace simple, pensé pour une utilisation rapide pendant l'activité.",
     features: ["Saisie rapide des ventes du jour", "Visualisation des tendances (Chart.js)", "Historique des ventes par période", "Pensé pour un usage terrain, sans configuration complexe"],
-    result: "Estimation : saisie et suivi des ventes du jour en moins de 2 minutes pour un commerçant."
+    result: "Le commerçant peut retrouver plus facilement le résumé de sa journée et observer l'évolution de ses ventes. Les graphiques rendent les informations plus faciles à parcourir qu'une succession de notes."
   },
   {
     id: 7, title: 'LivreurTrack Pro', sub: 'Suivi Logistique', cat: 'demo', img: cld('/assets/images/projects/livreurtrack-preview.webp'), responsive: cld('/assets/images/projects/livreurtrack.webp'), imgFb: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600', tech: ['JavaScript', 'Bootstrap 5', 'LocalStorage', 'Camera API'], url: '/demos/projet3.html', github: 'https://github.com/wthomasss06-stack/akafolio2/blob/main/public/demos/projet3.html', desc: "Système de suivi logistique simulant un workflow réel de livraison, avec validation par photo et suivi d'étapes.", year: '2023',
-    problem: "Les livraisons locales manquent de suivi : pas de preuve de dépôt, pas d'étapes visibles.",
-    solution: "Un système de suivi de livraison avec photo de preuve à la remise et statut de la livraison visible en direct.",
+    problem: "Lorsqu'une livraison est en cours, le client peut manquer d'informations sur son avancement. Sans étapes clairement visibles ni confirmation de remise, il est difficile de savoir si le colis a bien suivi son parcours jusqu'au destinataire.",
+    solution: "Le service présente les différentes étapes de la livraison et permet d'associer une photo à la confirmation de remise. Le suivi donne ainsi au client des repères pendant l'acheminement et une trace au moment de la réception.",
     features: ["Suivi d'étapes de livraison en direct", "Validation par photo (Camera API)", "Statuts de livraison simulés de bout en bout", "Interface responsive Bootstrap"],
-    result: "Simulation d'une vraie livraison, de la prise en charge du colis jusqu'à la preuve de remise."
+    result: "Le parcours du colis devient plus transparent, depuis sa prise en charge jusqu'à sa remise. La confirmation visuelle aide à clôturer la livraison avec une information concrète."
   },
   {
     id: 8, title: 'LinkedIn Banner Pro', sub: 'Générateur SaaS', cat: 'en-cours', img: cld('/assets/images/projects/linkedin-banner-preview.webp'), responsive: cld('/assets/images/projects/linkedin-banner.webp'), imgFb: 'https://images.unsplash.com/photo-1558655146-d09347e92766?w=600', tech: ['JavaScript', 'Canvas API', 'Tailwind CSS'], url: '/demos/projet7.html', github: 'https://github.com/wthomasss06-stack/akafolio2/blob/main/public/demos/projet7.html', desc: 'Outil SaaS en cours de développement permettant de générer des bannières LinkedIn professionnelles.', year: '2025',
-    problem: "Créer une bannière LinkedIn pro demande des outils de design payants ou complexes à prendre en main.",
+    problem: "Une bannière LinkedIn contribue à la première impression d'un profil, mais sa création peut être compliquée pour une personne qui ne maîtrise pas les outils graphiques. Les modèles disponibles ne correspondent pas toujours à l'identité recherchée.",
 
-    solution: "Un outil en ligne qui crée une bannière LinkedIn en quelques clics et permet de la télécharger, sans compétence en design.",
-    result: "Projet en cours — objectif : générer une bannière personnalisée en moins de 60 secondes."
+    solution: "L'outil guide la création d'une bannière personnalisée directement en ligne. Le visiteur peut composer son visuel, ajuster sa présentation et récupérer le résultat sans devoir apprendre à utiliser un logiciel de graphisme complet.",
+    result: "La création d'une bannière professionnelle devient plus accessible, même sans expérience particulière en design. Chacun peut obtenir un visuel adapté à son profil et le télécharger pour l'utiliser."
   },
   {
     id: 9, title: 'Tati', sub: 'Portfolio & Vitrine Moderne', cat: 'en-ligne', img: cld('/assets/images/projects/tati-preview.webp'), responsive: cld('/assets/images/projects/tati.webp'), imgFb: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600', tech: ['React', 'Tailwind CSS', 'Framer Motion', 'Vercel'], url: 'https://tatii.vercel.app/', desc: 'Portfolio personnel double fonction avec animations fluides, thème sombre/clair, design 100% responsive.', year: '2024',
     github: 'https://github.com/wthomasss06-stack/tatii',
-    problem: "Besoin d'un portfolio personnel qui sorte des modèles classiques, avec une vraie identité visuelle.",
-    solution: "Un portfolio fait sur mesure, avec des animations soignées de bout en bout et un mode clair ou sombre.",
+    problem: "Un portfolio standard peut présenter des informations, mais il ne traduit pas toujours la personnalité, le parcours ou l'univers de la personne qu'il représente. Une présentation trop générique risque de rendre les réalisations moins mémorables.",
+    solution: "Le portfolio a été conçu autour d'une identité visuelle propre, avec une navigation fluide et une mise en valeur du parcours. Les choix graphiques accompagnent le contenu au lieu de le masquer.",
     features: ["Thème sombre/clair", "Animations Framer Motion", "Design 100% responsive", "Double fonction : portfolio + vitrine"],
-    result: "Livré et en ligne : utilisé au quotidien comme vitrine professionnelle."
+    result: "La personne dispose d'une vitrine personnelle cohérente pour présenter son profil et ses réalisations. Le visiteur peut découvrir son univers et parcourir les informations essentielles dans une présentation soignée."
   },
   {
     id: 10, title: 'MK', sub: 'Portfolio Graphiste Client', cat: 'en-ligne', img: cld('/assets/images/projects/mk-preview.webp'), responsive: cld('/assets/images/projects/mk.webp'), imgFb: 'https://images.unsplash.com/photo-1555421689-491a97ff2040?w=600', tech: ['React', 'Tailwind CSS', 'Framer Motion', 'Vercel'], url: 'https://mory01ff.vercel.app/', desc: 'Portfolio professionnel sur-mesure pour un client graphiste. Galerie immersive, animations soignées.', year: '2024',
-    problem: "Un graphiste avait besoin d'une galerie en ligne qui met ses créations en valeur, sans les noyer dans un modèle standard.",
-    solution: "Un portfolio sur mesure avec une galerie immersive et des animations pensées pour mettre le visuel en avant.",
+    problem: "Pour un graphiste, les créations sont au cœur de la présentation. Une galerie trop ordinaire ou trop chargée peut détourner l'attention des visuels et ne pas rendre justice au travail présenté.",
+    solution: "Le portfolio privilégie une galerie immersive et une mise en page sur mesure. Chaque création bénéficie d'un espace de présentation qui permet au visiteur de se concentrer sur les images et de découvrir le travail à son rythme.",
     features: ["Galerie immersive de créations", "Animations sur-mesure", "Mise en avant du visuel graphiste", "Design entièrement personnalisé, aucun template"],
-    result: "Livré au client et en ligne : sa vitrine pour présenter ses prestations."
+    result: "Le graphiste dispose d'une galerie en ligne conçue pour présenter ses prestations et ses réalisations. Le site devient un support de présentation plus personnel qu'une simple succession d'images."
   },
   {
     id: 11, title: 'ManoBeat 777', sub: 'Portfolio Beatmaker', cat: 'en-ligne', img: cld('/assets/images/projects/beatstore-preview.webp'), responsive: cld('/assets/images/projects/beatstore.webp'), imgFb: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600', tech: ['React', 'Tailwind CSS', 'Howler.js', 'Vercel'], url: 'https://xxx-x.vercel.app/', desc: "Portfolio d'un beatmaker ivoirien : découvrez et écoutez ses créations directement en ligne.", year: '2025',
-    problem: "Un beatmaker ivoirien n'avait aucun moyen professionnel de faire écouter ses créations en ligne, ni de les vendre sans dépendre d'une plateforme tierce.",
-    solution: "Un site où l'on écoute chaque beat directement, puis où l'on achète via WhatsApp. Pour ajouter un nouveau beat, l'artiste n'a besoin que d'un lien Google Drive.",
+    problem: "Un beatmaker qui partage ses morceaux uniquement par messages ou sur des plateformes externes ne maîtrise pas toujours la façon dont son catalogue est présenté. Les personnes intéressées doivent parfois chercher séparément les extraits, les informations et les modalités d'achat.",
+    solution: "Le site réunit les productions dans un catalogue où chaque visiteur peut écouter les morceaux et consulter leurs informations. Lorsqu'un beat l'intéresse, il peut poursuivre sa demande d'achat directement avec l'artiste sur WhatsApp.",
     features: ["Écoute de 30 secondes avant achat (Howler.js)", "Achat déclenché via WhatsApp, message pré-rempli avec le nom du beat", "Ajout d'un beat depuis le dashboard en collant un lien Google Drive", "Fiche beat : titre, genre, BPM, prix, mood", "Dashboard admin protégé par mot de passe"],
-    result: "Estimation : écoute d'un beat ramenée à un simple clic, et mise en ligne d'un nouveau titre en moins d'une minute pour le beatmaker."
+    result: "Les productions disposent d'un espace dédié, accessible à tout moment. L'écoute se fait sur le site et le contact pour l'achat est plus direct, tandis que l'artiste peut ajouter de nouveaux morceaux à son catalogue."
   },
   {
     id: 12, title: 'New Horizon Service', sub: 'Location de Résidences', cat: 'en-ligne', img: cld('/assets/images/projects/newhorizon-preview.webp'), responsive: cld('/assets/images/projects/newhorizon.webp'), imgFb: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=600', tech: ['Next.js', 'Flask', 'Python', 'MySQL', 'Vercel'], url: 'https://new-horizonservice.vercel.app/', desc: 'Plateforme de location de résidences meublées haut de gamme avec backend Flask sécurisé.', year: '2025',
     github: 'https://github.com/wthomasss06-stack/AllonsSomo',
-    problem: "Les résidences meublées haut de gamme n'avaient pas de plateforme de réservation fiable : les demandes passaient par des appels et le bouche-à-oreille, de façon dispersée.",
-    solution: "Une plateforme où chaque résidence a sa fiche complète : photos, équipements, tarifs et position sur une carte. La réservation se lance directement sur WhatsApp, avec les dates et le tarif déjà remplis. Un espace sécurisé permet de publier et de modifier les annonces.",
+    problem: "Les personnes qui cherchent une résidence meublée ont besoin de comparer les lieux, les équipements, les tarifs et la localisation avant de se décider. Lorsque ces renseignements sont transmis séparément par téléphone ou message, la comparaison devient moins pratique.",
+    solution: "Chaque résidence dispose d'une présentation qui rassemble les photos, les équipements, les tarifs et sa localisation. Le visiteur peut parcourir les offres puis préparer une demande de réservation sur WhatsApp avec les informations utiles déjà renseignées.",
     features: ["Hero carousel animé et recherche par ville et type de bien", "Réservation par WhatsApp avec message pré-rempli (dates, tarif)", "Admin : ajout de résidence avec carte GPS Leaflet, jusqu'à 10 photos", "Tarifs nuit / journée / semaine / mois avec caution automatique (20%)", "Mode clair/sombre persistant"],
-    result: "En ligne : cette plateforme a servi de base avant l'évolution vers NEXURA."
+    result: "Les visiteurs peuvent découvrir les résidences au même endroit et mieux préparer leur demande avant de contacter le service. L'équipe dispose également d'un espace pour publier et mettre à jour ses offres."
   },
   {
     id: 13, title: 'AKATech Studio', sub: 'Agence Digitale Abidjan', cat: 'en-ligne', img: cld('/assets/images/projects/akatech-preview.webp'), responsive: cld('/assets/images/projects/akatech.webp'), imgFb: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=600', tech: ['Next.js 15', 'Framer Motion', 'WebGL Aurora', 'Vercel'], url: 'https://akatech.vercel.app/', desc: "Site officiel de mon agence — AKATech Studio accompagne les entrepreneurs et PME en Côte d'Ivoire.", year: '2025',
     github: 'https://github.com/wthomasss06-stack/akatech-agencenext',
-    problem: "Mon agence n'avait pas de site propre capable de transformer les visiteurs en clients.",
-    solution: "Un site pensé pour convaincre : services, tarifs, méthode de travail, réalisations et prise de contact en quelques clics, avec des animations soignées.",
-    result: "En ligne et rapidement visible sur Google : c'est notre vitrine commerciale principale."
+    problem: "Une agence qui ne présente pas clairement ses services, ses réalisations et sa façon de travailler laisse ses prospects avec des questions importantes. Le visiteur doit pouvoir comprendre ce qui est proposé, à quel besoin cela répond et comment démarrer un projet.",
+    solution: "Le site rassemble les services, les formules, les réalisations et les étapes de collaboration. Des points de contact sont prévus pour permettre au visiteur de poser ses questions ou de demander un devis sans chercher longtemps la bonne information.",
+    result: "AKATech dispose d'une vitrine centrale pour présenter son approche et orienter les prospects. Le visiteur peut se faire une idée des prestations, consulter des exemples et engager une première discussion autour de son besoin."
   },
   {
     id: 14, title: 'Université les Anges', sub: 'Site Institutionnel', cat: 'en-ligne', img: cld('/assets/images/projects/universitelesanges-preview.webp'), responsive: cld('/assets/images/projects/universitelesanges.webp'), imgFb: 'https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=600', tech: ['HTML', 'CSS', 'Bulma', 'Bootstrap', 'Vercel'], url: 'https://universitelesanges.vercel.app/', desc: "Site institutionnel moderne pour l'Université les Anges.", year: '2025',
     github: 'https://github.com/wthomasss06-stack/universite-les-anges',
-    problem: "Une université privée avait besoin d'un site qui inspire confiance aux futurs étudiants et à leurs parents.",
-    solution: "Un site qui présente l'établissement et ses filières de façon claire, avec un contact facile.",
+    problem: "Les futurs étudiants et leurs familles cherchent à comprendre les formations proposées, les conditions d'admission et l'environnement de l'établissement. Lorsque les informations sont difficiles à trouver, il devient plus compliqué de préparer une orientation ou de demander des renseignements.",
+    solution: "Le site présente l'établissement, ses filières et les informations utiles aux futurs étudiants. La navigation organise les contenus par sujets afin que chacun puisse découvrir l'université et trouver plus facilement le moyen de contacter l'administration.",
     features: ["Présentation des filières", "Pages institutionnelles (à propos, contact)", "Design responsive Bulma/Bootstrap"],
-    result: "Livré et en ligne : c'est le point d'entrée officiel de l'établissement."
+    result: "L'université dispose d'un point d'information accessible en ligne. Les familles et les candidats peuvent découvrir l'établissement, parcourir les formations et préparer leurs questions avant une prise de contact."
   },
   {
     id: 15, title: 'NEXURA', sub: 'Marketplace Immobilière & Transactions Sécurisées', cat: 'en-ligne', img: cld('/assets/images/projects/nexura-preview.webp'), responsive: cld('/assets/images/projects/nexura-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600', tech: ['Next.js 14', 'Django REST', 'Python', 'PostgreSQL', 'WebSockets', 'Redis + Celery', 'Cloudinary', 'Mapbox', 'Vercel + Render'], url: 'https://nexura-one.vercel.app/', desc: "Plateforme ivoirienne multi-catégorie pour découvrir, publier, réserver et sécuriser des annonces de terrains, résidences, véhicules, motos et locaux commerciaux.", year: '2025',
     private: true,
-    problem: "Les annonces de logements, véhicules, bureaux et terrains étaient éparpillées, avec un risque élevé d'arnaques, des vendeurs difficiles à vérifier, des paiements peu transparents et aucun suivi fiable des réservations.",
-    solution: "Une plateforme unique où les vendeurs sont vérifiés avant de vendre (pièce d'identité et selfie), où l'on cherche par catégorie, prix et lieu, et où chaque réservation est suivie. Le paiement par Mobile Money est en préparation.",
+    problem: "Les annonces de logements, de véhicules, de bureaux et de terrains sont souvent réparties sur plusieurs canaux. Les acheteurs peuvent avoir du mal à comparer les offres, à identifier les vendeurs et à garder une trace de leurs demandes de réservation.",
+    solution: "NEXURA rassemble plusieurs catégories de biens dans un même espace. Les visiteurs peuvent rechercher selon le type de bien, le prix et la localisation, consulter les annonces et suivre leurs demandes. Les vendeurs font l'objet d'une vérification avant publication ; le paiement Mobile Money reste en préparation.",
     features: ["Multi-catégories : terrains, résidences, véhicules, motos, locaux commerciaux", "KYC progressif CNI + selfie avant toute transaction", "Calendrier de réservation et notifications temps réel (WebSocket)", "Dashboards séparés acheteur / vendeur / admin", "Bon de visite PDF + QR code", "Panel admin à double protection (JWT + clé serveur)"],
-    result: "Les parcours de l'acheteur, du vendeur et de l'administrateur sont en place et testés. Le produit est privé et continue d'évoluer."
+    result: "Les parcours de recherche, de réservation et de gestion sont en place et continuent d'évoluer. Le visiteur bénéficie d'un espace plus organisé pour découvrir les offres. Le paiement par Mobile Money reste une étape à venir."
   },
   {
     id: 16, title: 'KokoEat', sub: 'Marketplace Locale de Restauration & Livraison', cat: 'en-ligne', img: cld('/assets/images/projects/kokoeat-preview.webp'), hoverVideo: cld('/assets/images/projects/kokoeat-preview.webm'), responsive: cld('/assets/images/projects/kokoeat-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600', tech: ['React', 'Vite', 'Django REST', 'Python', 'PostgreSQL', 'WebSockets', 'Redis + Celery', 'Cloudinary', 'Vercel + Render'], url: 'https://koko-eats.vercel.app', desc: "KokoEat aide à découvrir les restaurants locaux et leurs menus, dans les quartiers et les villes couverts, pour choisir entre se rendre sur place ou commander à distance.", year: '2025',
-    problem: "Les restaurants locaux sont difficiles à découvrir : les clients connaissent mal les adresses, et de bons établissements restent invisibles hors de leur quartier.",
-    solution: "Une plateforme qui rassemble les restaurants et leurs menus : on repère une adresse, on consulte le menu, puis on y va ou on commande quand le service est disponible.",
+    problem: "De nombreux restaurants de proximité restent peu visibles auprès des personnes qui ne fréquentent pas déjà leur quartier. Les clients peuvent aussi avoir du mal à retrouver les menus, les adresses et les informations nécessaires pour choisir où manger.",
+    solution: "La plateforme rassemble les restaurants et leurs menus dans un même espace. Le visiteur peut découvrir une adresse, consulter les plats proposés et choisir de s'y rendre ou de commander lorsque ce service est disponible pour le restaurant concerné.",
     features: ["Panier mono-restaurant avec suivi de commande en temps réel", "Paiement Wave et espèces selon les contrats actifs", "Dashboard restaurant : menu, promotions, statistiques, livraison GPS", "Assistant Kôkô IA borné par des règles métier (découverte, suivi de commande)", "Fidélité, vouchers et abonnement client", "PWA installable"],
-    result: "Les clients se rapprochent des restaurants locaux, et ceux-ci gagnent une vitrine au-delà de leur quartier. La couverture s'élargit progressivement : toutes les villes et tous les restaurants ne sont pas encore disponibles."
+    result: "Les établissements disposent d'une vitrine supplémentaire pour faire connaître leur offre au-delà de leur clientèle habituelle. Les visiteurs gagnent un point de départ pratique pour découvrir de nouvelles adresses et consulter leurs menus."
   },
   {
     id: 17, title: 'Jean Edy · Portfolio', sub: 'Portfolio React UI Avancé', cat: 'en-ligne', img: cld('/assets/images/projects/jean-edy-preview.webp'), responsive: cld('/assets/images/projects/jean-edy.webp'), imgFb: 'https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=600', tech: ['React 18', 'Vite', 'GSAP', 'Framer Motion', 'TailwindCSS'], url: 'https://jean-edy-dev.vercel.app/', desc: "Portfolio personnel de Jean Edy — Software Developer basé à Abidjan. et skeuomorphisme complet.", year: '2026',
     private: true,
-    problem: "Un développeur avait besoin d'un portfolio qui montre un haut niveau de finition pour ses candidatures.",
-    solution: "Un portfolio sur mesure à l'identité visuelle très marquée, avec des animations soignées et trois langues : français, anglais et russe.",
+    problem: "Un professionnel a besoin d'une présentation qui donne rapidement une idée de son parcours et de ses compétences, notamment lorsqu'il partage son profil dans le cadre de candidatures. Une vitrine limitée à un simple CV ne permet pas toujours de mettre ses réalisations en contexte.",
+    solution: "Le portfolio propose une présentation personnalisée du parcours et des réalisations, avec une consultation en français, en anglais et en russe. L'identité visuelle accompagne les contenus et donne au visiteur plusieurs façons de découvrir le profil.",
     features: ["Direction artistique skeuomorphisme complète", "Animations GSAP + Framer Motion sur-mesure", "Design entièrement personnalisé, aucun template"],
-    result: "Livré et en ligne. Le projet reste privé, propriété du client."
+    result: "Le professionnel dispose d'un lien unique à partager avec des recruteurs ou des partenaires. La présentation multilingue facilite la découverte de son profil par des interlocuteurs de différents horizons."
   },
   {
     id: 18, title: 'MD Laverie Pressing', sub: 'Site Vitrine Pressing', cat: 'en-ligne', img: cld('/assets/images/projects/laverie-preview.webp'), responsive: cld('/assets/images/projects/laverie.webp'), imgFb: 'https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=600', tech: ['React 18', 'Vite', 'GSAP', 'React Router v6', 'EmailJS'], url: 'https://laverie-plus.vercel.app/', desc: "Site vitrine complet pour MD Laverie Pressing, Abidjan. Hero slider GSAP, grille packs pricing, formulaire contact EmailJS.", year: '2025',
     github: 'https://github.com/wthomasss06-stack/PRESSING',
-    problem: "Un pressing d'Abidjan n'avait aucune présence en ligne pour présenter ses tarifs et être contacté.",
-    solution: "Un site vitrine complet : une présentation animée, des tarifs lisibles et un formulaire pour contacter le pressing et prendre rendez-vous.",
+    problem: "Avant de confier leurs vêtements à un pressing, les clients veulent connaître les prestations, les tarifs et les moyens de contact. Sans informations accessibles, ils doivent appeler ou se déplacer simplement pour obtenir les premiers renseignements.",
+    solution: "Le site présente l'établissement, détaille les services et affiche les tarifs de manière lisible. Un formulaire permet ensuite de poser une question ou de préparer une demande de rendez-vous, directement depuis la vitrine en ligne.",
     features: ["Hero slider animé (GSAP)", "Grille de tarifs des prestations", "Formulaire de contact EmailJS", "Navigation multi-pages (React Router v6)"],
-    result: "Livré et en ligne : les demandes de contact arrivent directement depuis le site."
+    result: "Les visiteurs peuvent consulter les informations essentielles avant de contacter le pressing. L'établissement bénéficie d'une présence en ligne qui facilite la découverte de ses prestations et la prise de contact."
   },
   {
     id: 19, title: 'Chez Florence', sub: 'Vente & Réservation de Lapins', cat: 'en-ligne', img: cld('/assets/images/projects/chez-florence-preview.webp'), responsive: cld('/assets/images/projects/chez-florence-responsive.webp'), responsive2: cld('/assets/images/projects/chez-florence-responsive2.webp'), imgFb: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=600', tech: ['Next.js 14', 'Express.js', 'Prisma', 'PostgreSQL (Neon)', 'Cloudinary'], url: 'https://chez-florence.vercel.app/', github: 'https://github.com/wthomasss06-stack/lapinou', desc: "Plateforme web complète pour vente et réservation de lapins : fiches par race, stock temps réel, réservation en ligne, notifications WhatsApp et administration sécurisée.", year: '2026',
-    problem: "Les sites d'élevage se ressemblaient et ne savaient ni gérer le stock et les réservations en direct, ni transformer les visiteurs en clients.",
-    solution: "Une plateforme où chaque race a sa fiche, où le stock se met à jour tout seul à chaque réservation et où la commande se finalise sur WhatsApp avec un message déjà prêt. Un espace de gestion permet de suivre le stock, les réservations et les ventes.",
+    problem: "Les clients qui souhaitent réserver des animaux ont besoin de connaître les races proposées et les disponibilités réelles. De son côté, l'élevage doit pouvoir suivre les quantités, les demandes et les ventes sans perdre le fil entre les différents échanges.",
+    solution: "Chaque race dispose d'une fiche de présentation avec les informations utiles et les disponibilités. Le visiteur peut préparer sa réservation sur WhatsApp, tandis qu'un espace de gestion permet de suivre les stocks, les demandes et les ventes au même endroit.",
     features: ["Fiches détaillées par race avec galerie photos/vidéos", "Réservation en ligne avec stock synchronisé en temps réel", "Ouverture automatique de WhatsApp avec message pré-rempli", "Dashboard admin : stock, réservations et statistiques de ventes", "Notification email admin à chaque réservation (Resend)", "PWA installable (Android, iPhone, Windows, macOS)"],
-    result: "En ligne : les réservations et le stock sont au même endroit, l'achat est plus rapide et chaque commande alerte l'administrateur. Le site s'installe sur le téléphone comme une application."
+    result: "Les clients savent mieux ce qui est proposé avant de prendre contact. Pour l'élevage, les réservations et les quantités sont plus faciles à suivre, ce qui rend le parcours de demande plus clair pour les deux parties."
   },
   {
     id: 20,
@@ -237,51 +237,51 @@ export const PROJECTS = [
     url: 'https://chapchap-bara.vercel.app/',
     private: true,
     desc: "Plateforme de préparation aux candidatures pour l'Afrique francophone : elle compare une offre d'emploi et un CV, puis fournit un diagnostic explicable et un guide d'entretien lorsque la candidature est défendable.",
-    problem: "Les candidats n'avaient pas de moyen fiable de savoir si leur CV prouvait vraiment ce que demande une offre, sans que celui-ci soit embelli ou inventé.",
-    solution: "On dépose son CV et l'offre d'emploi : le service donne un score de compatibilité, indique les compétences confirmées, partielles ou manquantes, corrige le CV sans rien inventer et prépare un guide de réponses sur mesure pour l'entretien.",
-    result: "Service en ligne : première analyse gratuite, diagnostic clair et expliqué, préparation complète en quelques minutes, sans abonnement obligatoire.",
+    problem: "Face à une offre d'emploi, un candidat peut avoir du mal à distinguer les compétences qu'il possède déjà de celles qui lui manquent. Il peut aussi manquer de repères pour adapter son CV et préparer un entretien sans embellir artificiellement son parcours.",
+    solution: "Le candidat transmet son CV et l'offre qui l'intéresse. Le service met en évidence les points de correspondance, les compétences à renforcer et les améliorations possibles du CV, puis propose un guide pour préparer les échanges en entretien sans inventer d'expérience.",
+    result: "Le candidat obtient une lecture plus structurée de son dossier et des pistes concrètes pour se préparer. Une première analyse gratuite permet de découvrir le service et ses recommandations avant d'aller plus loin.",
   },
   {
     id: 21, title: 'Karnet', sub: 'Gestion Opérationnelle PME (Mobile-First)', cat: 'en-ligne', img: cld('/assets/images/projects/karnet-preview.webp'), responsive: cld('/assets/images/projects/karnet-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600', tech: ['Expo / React Native', 'NestJS', 'Prisma', 'Next.js 15', 'PostgreSQL (Neon)'], url: 'https://karnet-ci.vercel.app/', desc: "Plateforme de gestion opérationnelle (clients, ressources, réservations) pour PME de service, mobile-first : app Expo en CRUD complet et web admin Next.js.", year: '2026',
-    problem: "Les petites entreprises de services gèrent clients, ressources et réservations de façon éparpillée, sans outil adapté au travail sur le terrain.",
-    solution: "Une application mobile pour tout gérer depuis son téléphone, et un espace web pour le responsable : tableau de bord, historique des actions (exportable dans un tableur) et gestion de l'équipe.",
+    problem: "Dans une petite entreprise de services, les rendez-vous, les clients, les ressources et les membres de l'équipe peuvent être suivis dans plusieurs outils ou sur papier. Cette dispersion rend plus difficile la coordination des activités et la consultation de l'historique.",
+    solution: "Karnet réunit les informations essentielles dans un même environnement. Les équipes peuvent utiliser l'application mobile pour les opérations quotidiennes, tandis que le responsable retrouve sur le web les clients, les réservations, les ressources et l'activité de son équipe.",
     features: ["App mobile Expo en CRUD complet (clients, ressources, réservations)", "Web admin : dashboard, journal d'audit avec export CSV, gestion d'équipe", "Auth Google OAuth → JWT maison", "Upload média Cloudinary signé depuis le mobile", "Types Zod partagés entre mobile, web et API"],
-    result: "L'application mobile et l'espace web fonctionnent et ont été vérifiés."
+    result: "Les informations sont plus faciles à retrouver et les responsables disposent d'une vue d'ensemble de l'activité. L'application mobile et l'espace web ont été vérifiés : la solution est déjà fonctionnelle."
   },
   {
     id: 22, title: 'ProTech POS', sub: 'Caisse Offline-First pour Boutiques', cat: 'en-ligne', img: cld('/assets/images/projects/pos-preview.webp'), responsive: cld('/assets/images/projects/pos-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600', tech: ['React 19', 'Vite', 'TypeScript', 'Django 6', 'DRF', 'PostgreSQL', 'PWA'], url: 'https://akapos-pi.vercel.app/', desc: "Caisse (POS) et gestion opérationnelle pour petites boutiques, pensée pour continuer à fonctionner même avec une connexion instable.", year: '2026',
-    problem: "Dans les petites boutiques, une coupure de connexion en pleine vente fait perdre des ventes ou crée des doublons.",
-    solution: "Une caisse qui continue de fonctionner sans internet : chaque vente est enregistrée sur l'appareil, puis envoyée automatiquement dès que la connexion revient, sans doublon.",
+    problem: "Dans une boutique, une interruption d'internet ne devrait pas empêcher le commerçant de continuer à servir ses clients. Lorsque les ventes dépendent entièrement de la connexion, une panne peut interrompre le travail et compliquer la reprise des opérations.",
+    solution: "La caisse permet de poursuivre les ventes même lorsque la connexion est indisponible. Les opérations sont conservées sur l'appareil, puis transmises automatiquement lorsque le réseau revient, afin d'éviter les oublis et les doublons dans le suivi.",
     features: ["Vente enregistrée en local avant tout appel réseau", "Synchronisation par clé d'idempotence : aucune vente perdue ni dupliquée", "PWA installable", "Comptes gérant / caissier distincts"],
-    result: "Première version fonctionnelle, testée de bout en bout."
+    result: "La première version est fonctionnelle et a été testée de bout en bout. Le commerçant peut ainsi continuer son activité pendant une coupure, puis retrouver ses ventes réunies une fois la connexion rétablie."
   },
   {
     id: 23, title: 'Anyama Proxy', sub: "Annuaire Local d'Artisans", cat: 'en-ligne', img: cld('/assets/images/projects/anyama-proxy-preview.webp'), responsive: cld('/assets/images/projects/anyama-proxy-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=600', tech: ['Flask', 'PostgreSQL (Neon)', 'HTML / CSS / JS', 'Resend'], url: 'https://anyama-proxy.vercel.app/', desc: "Annuaire local d'artisans et services à Anyama : recherche par métier et quartier, contact direct WhatsApp/téléphone, inscription sans compte.", year: '2026',
-    problem: "Trouver un artisan à Anyama se faisait de façon dispersée : appels, réseaux sociaux, bouche-à-oreille.",
-    solution: "Un annuaire local où l'on cherche un artisan par métier et par quartier, puis où on le contacte directement par WhatsApp ou par téléphone. Les artisans s'inscrivent sans créer de compte, et chaque fiche est validée avant publication.",
+    problem: "À Anyama, les habitants qui cherchent un artisan ou un service de proximité passent souvent par des recommandations, des appels ou plusieurs publications sur les réseaux sociaux. Il n'est pas toujours facile de trouver rapidement le bon professionnel selon son métier et son quartier.",
+    solution: "L'annuaire rassemble les professionnels par activité et par zone. Le visiteur peut consulter une fiche, découvrir les informations disponibles et contacter directement l'artisan par téléphone ou WhatsApp. Les fiches sont vérifiées avant leur publication.",
     features: ["Recherche par mot-clé, métier et quartier", "Inscription artisan sans création de compte", "Dashboard admin : validation, retraits, avis, actualisation auto toutes les 30s", "Notifications e-mail Resend", "PWA installable, thèmes clair/sombre"],
-    result: "Deuxième version terminée : annuaire public en ligne, avis modérés, possibilité pour un artisan de retirer sa fiche, mode clair et sombre, et installation sur le téléphone comme une application."
+    result: "L'annuaire public est en ligne et facilite la découverte de professionnels locaux. Les avis sont encadrés et un artisan peut demander le retrait de sa fiche, afin de garder une présentation plus maîtrisée des informations publiées."
   },
   {
     id: 24, title: 'REKOLLECTE', sub: 'Registre dAccueil Sans Contact', cat: 'en-ligne', img: cld('/assets/images/projects/r3ns3ngn3m3nt-preview.webp'), responsive: cld('/assets/images/projects/r3ns3ngn3m3nt-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600', tech: ['Next.js 14', 'Django REST Framework', 'PostgreSQL (Neon)', 'Dexie.js / IndexedDB'], url: 'https://rekollecte-ci.vercel.app/', github: 'https://github.com/wthomasss06-stack/REKOLLECTE', desc: "SaaS de registre d'accueil sans contact par QR code pour bureaux, restaurants, hôtels et accès de salle : mode kiosque offline-first, formulaires adaptables par secteur, signature à l'écran.", year: '2026',
-    problem: "Les bureaux, restaurants et hôtels accueillent encore leurs visiteurs avec un cahier papier : lent à consolider, peu confidentiel et impossible à analyser.",
-    solution: "Le visiteur scanne un QR code ou remplit une tablette à l'entrée, même sans internet. Tout est regroupé automatiquement dans un tableau de bord. Trois niveaux d'accès (patron, gérant, agent), plusieurs formulaires et une signature directement sur l'écran.",
+    problem: "Dans de nombreux lieux d'accueil, les visiteurs inscrivent encore leurs informations dans un cahier papier. Les équipes doivent ensuite retrouver les entrées, rassembler les données et consulter l'historique, alors que ces informations peuvent être difficiles à organiser et à protéger.",
+    solution: "REKOLLECTE permet au visiteur de s'enregistrer à l'aide d'un QR code ou d'une tablette à l'accueil, y compris lorsque la connexion internet n'est pas disponible. Les visites sont ensuite regroupées dans un espace de consultation, avec plusieurs niveaux d'accès, des formulaires adaptés et une signature sur écran.",
     features: ["Mode kiosque 100% offline (Dexie/IndexedDB)", "3 rôles : Patron, Gérant, Agent", "Formulaires adaptables par secteur d'activité", "Signature à l'écran", "Synchronisation automatique au retour du réseau"],
-    result: "La première version est en service : registre des visiteurs, tablette d'accueil qui marche sans internet, tableau de bord avec export dans un tableur, mode sombre et installation sur le téléphone. Une version plus complète, REKOLLECTE+ (clients, réservations, paiements, rappels), est en cours de test."
+    result: "La première version est en service : les établissements peuvent enregistrer les visiteurs et consulter les entrées dans un même espace. Les fonctions complémentaires liées aux clients, aux réservations, aux paiements et aux rappels sont en cours de test et pas encore disponibles."
   },
   {
     id: 25, title: 'Vazi Express', sub: 'Livraison de Colis à Moto', cat: 'en-cours', img: cld('/assets/images/projects/vazi-express-preview.webp'), responsive: cld('/assets/images/projects/vazi-express-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600', tech: ['React 19', 'Vite', 'NestJS', 'PostgreSQL (Prisma)', 'Redis / BullMQ', 'Socket.IO', 'Mapbox', 'Expo'], url: '#', desc: "Plateforme de livraison de colis à moto pensée pour Abidjan : demande de course, prix verrouillé avant confirmation, suivi en direct, code de remise et photo de preuve. Espaces client, livreur et administration ; application mobile Expo en préparation.", year: '2026',
-    problem: "À Abidjan, envoyer un colis par un livreur à moto se règle souvent au cas par cas : prix flou négocié à la dernière minute, colis perdu de vue en route, livreur que l'on ne connaît pas et aucune preuve que le destinataire l'a bien reçu.",
-    solution: "On demande une course : le prix est calculé sur la distance routière puis fixé avant confirmation, un livreur proche accepte, et on suit le colis en direct. À l'arrivée, le destinataire donne un code au livreur, qui prend une photo : un reçu est généré.",
+    problem: "À Abidjan, organiser l'envoi d'un colis à moto peut manquer de visibilité : le prix est parfois discuté au dernier moment, le client perd de vue son colis pendant le trajet et la remise n'est pas toujours accompagnée d'une confirmation claire.",
+    solution: "Le parcours prévoit l'annonce d'un prix avant confirmation, l'acceptation de la course par un livreur et le suivi de la livraison. À l'arrivée, un code permet de confirmer la remise et une photo vient compléter la preuve de livraison.",
     features: ["Prix calculé sur la distance routière, verrouillé avant confirmation", "Attribution aux livreurs proches en temps réel, suivi en direct", "Candidature livreur : pièce d'identité, selfie, validation par l'admin", "Remise validée par code à 6 chiffres et photo, reçu PNG", "Console admin : indicateurs, livraisons, incidents, modération", "Paiement en espèces à la remise (aucun paiement en ligne)"],
-    result: "Le service web est prêt et testé en interne ; les essais sur le terrain et le pilote à Abidjan restent à faire. L'application mobile existe mais n'a pas encore été essayée sur de vrais téléphones. Aucun lancement n'est annoncé."
+    result: "Le service web est prêt et a été testé en interne. Les essais sur le terrain et le lancement pilote à Abidjan restent à réaliser : le service n'est donc pas encore ouvert au public."
   },
   {
     id: 26, title: 'Redianice', sub: 'Site Vitrine de Startup', cat: 'en-ligne', img: cld('/assets/images/projects/redianice-preview.webp'), responsive: cld('/assets/images/projects/redianice-responsive.webp'), imgFb: 'https://images.unsplash.com/photo-1547658719-da2b51169166?w=600', tech: ['HTML / CSS / JavaScript', 'GSAP', 'ScrollTrigger', 'Lenis', 'WebGL', 'Vercel', 'Resend'], url: 'https://redianice.vercel.app/', desc: "Site vitrine de Redianice, startup indépendante d'Abidjan qui conçoit et lance ses propres produits numériques. Il présente l'équipe, la méthode et le premier produit, Mon E-Carnet : hero animé en WebGL, objets 3D qui suivent le défilement, fiches d'équipe et formulaire de contact sécurisé.", year: '2026',
-    problem: "Une jeune startup n'avait aucun endroit en ligne pour se présenter, expliquer sa démarche et montrer son premier produit, Mon E-Carnet, sans dévoiler de données réelles.",
-    solution: "Un site clair, rapide et vivant : une présentation de l'équipe et de la méthode, une fiche pour chaque membre, une page dédiée au premier produit et un formulaire pour écrire à l'équipe, avec réponse par e-mail.",
+    problem: "Une jeune startup a besoin d'un espace pour expliquer ce qu'elle construit, présenter les personnes qui portent le projet et donner une première visibilité à ses produits. Sans cette vitrine, les visiteurs disposent de peu de repères pour comprendre sa démarche et entrer en contact avec l'équipe.",
+    solution: "Le site présente l'équipe, sa manière de travailler et son premier produit, Mon E-Carnet. Chaque membre dispose d'une présentation dédiée et une page permet de découvrir le produit à travers des visuels de démonstration, sans exposer de données réelles.",
     features: ["Hero animé : fond WebGL et objets 3D qui flottent selon le défilement", "Filigrane « redianice » en contour pointillé dessiné sur canvas, objets déplaçables dans le pied de page", "Fiches individuelles de l'équipe avec traînée d'objets au curseur", "Page dédiée à Mon E-Carnet avec galerie WebGL de captures (données fictives uniquement)", "Formulaire de contact : fonction serverless Vercel et envoi par e-mail via Resend", "Données structurées (organisation, FAQ), plan du site et fichiers llms.txt"],
-    result: "Site en ligne sur redianice.vercel.app. Mon E-Carnet y est présenté en phase de test, avec des données fictives uniquement : il n'est pas ouvert au public. Réalisé en tant que directeur technique de Redianice."
+    result: "Le site de Redianice est en ligne et donne un premier aperçu de l'équipe et de son travail. Mon E-Carnet y est présenté en phase de test avec des données fictives uniquement ; le produit n'est pas encore ouvert au public."
   },
 ]
 // ─── Tarifs ─────────────────────────────────────────────────────

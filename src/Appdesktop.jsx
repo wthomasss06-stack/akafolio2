@@ -584,6 +584,9 @@ const TECH_ICON_RULES = [
   ['localstorage', '/assets/icons/custom/localstorage.svg'],
   ['osrm', '/assets/icons/custom/osrm-api.svg'],
   ['websocket', '/assets/icons/custom/websockets.svg'],
+  ['lenis', '/assets/icons/custom/lenis.svg'],
+  ['scrolltrigger', '/assets/icons/simple-icons/gsap.svg'],
+  ['socket.io', '/assets/icons/devicon/socketio/socketio-original.svg'],
 ]
 
 function resolveTechIcon(label) {

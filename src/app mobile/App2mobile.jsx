@@ -534,6 +534,16 @@ const AnimIcon = ({ type, size = 15, color = '#FF5500', className = '' }) => {
  fiable, ou si l'icône ne charge pas, on retombe sur le texte — jamais
  d'icône cassée affichée. ════════════════════════════════════════════ */
 const TECH_ICON_RULES = [
+  ['drf', '/assets/icons/devicon/django/django-plain.svg'],
+  ['nestjs', '/assets/icons/devicon/nestjs/nestjs-original.svg'],
+  ['nextauth', '/assets/icons/custom/nextauth.svg'],
+  ['typescript', '/assets/icons/devicon/typescript/typescript-original.svg'],
+  ['mapbox', '/assets/icons/devicon/mapbox/mapbox-original.svg'],
+  ['expo', '/assets/icons/devicon/expo/expo-original.svg'],
+  ['dexie', '/assets/icons/custom/dexie.svg'],
+  ['indexeddb', '/assets/icons/custom/dexie.svg'],
+  ['resend', '/assets/icons/simple-icons/resend.svg'],
+  ['pwa', '/assets/icons/simple-icons/pwa.svg'],
   ['next.js', '/assets/icons/devicon/nextjs/nextjs-original.svg'],
   ['nodejs', '/assets/icons/devicon/nodejs/nodejs-original.svg'],
   ['node.js', '/assets/icons/devicon/nodejs/nodejs-original.svg'],
@@ -574,6 +584,9 @@ const TECH_ICON_RULES = [
   ['localstorage', '/assets/icons/custom/localstorage.svg'],
   ['osrm', '/assets/icons/custom/osrm-api.svg'],
   ['websocket', '/assets/icons/custom/websockets.svg'],
+  ['lenis', '/assets/icons/custom/lenis.svg'],
+  ['scrolltrigger', '/assets/icons/simple-icons/gsap.svg'],
+  ['socket.io', '/assets/icons/devicon/socketio/socketio-original.svg'],
 ]
 
 function resolveTechIcon(label) {

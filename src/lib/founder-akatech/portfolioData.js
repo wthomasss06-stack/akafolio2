@@ -794,8 +794,8 @@ const HERO = {
   badge: 'Disponible maintenant · réponse sous 24 h',
   lines: ["M’Bollo Aka"],
   role: 'Développeur full stack, founder AkaTech',
-  focus: 'Orienté produits, spécialisé Django & React',
-  sub: 'Je transforme vos sites en expériences mémorables. Je crée des solutions web adaptées à vos besoins et à votre croissance : de l’idée à la mise en ligne, avec un seul objectif, que vos visiteurs deviennent vos clients.',
+  focus: '', // ligne orange retirée du hero
+  sub: 'Votre vision. Notre expertise. Des résultats concrets.\n\nNous concevons des expériences web qui séduisent, convainquent et convertissent.',
   ctaPrimary: { label: 'Me contacter', target: 'contact' },
   reassurance: 'Premier échange gratuit et sans engagement',
 }
@@ -861,7 +861,7 @@ const TESTIMONIALS = [
 const ABOUT = {
   photo: '/assets/images/founder-akatech/hero.webp',
   photoAlt: "Portrait de M'Bollo Aka Elvis",
-  heading: "Un développeur qui parle votre langue, pas du jargon.",
+  heading: HERO.role, // même titre que le hero : « Développeur full stack, founder AkaTech »
   paragraphs: [
     "Je conçois des applications pensées pour de vrais usages : sites vitrines, boutiques, dashboards, outils métier et SaaS.",
     "Mon parcours a commencé dans les réseaux et la sécurité informatique (Licence UVCI). Cette base m'a appris à construire avec méthode et à penser la fiabilité.",

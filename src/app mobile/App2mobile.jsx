@@ -1416,12 +1416,12 @@ function Hero() {
         <div className="hv4-corner hv4-corner--left">
 
           <div className="hv4-typed hv4-left-description hv4-rv" style={{ '--d': '.42s' }}>
-            Développeur web orienté produits, spécialisé Django &amp; React.<br />
-            Je construis des applications pensées pour des usages réels.
+            Votre vision. Notre expertise. Des résultats concrets.<br />
+            Nous concevons des expériences web qui séduisent, convainquent et convertissent.
           </div>
 
           {/* Rotating words — cycle-text scramble */}
-          <h3 className="hv4-typed hv4-rv" style={{ '--d': '.56s' }}>
+          <h3 className="hv4-typed hv4-rv" style={{ '--d': '.56s', color: '#ffffff' }}>
             Développeur&nbsp;<span className="hero-word" style={{ color: '#ffffff', display: 'inline-block' }}>
               <span className="sh-cycle-wrap">
                 <span className="sh-cycle-inner" ref={rotating.innerRef}>

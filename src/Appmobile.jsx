@@ -1689,8 +1689,8 @@ const Hero = ({ dark }) => {
             </p>
 
             <p className="hv4-desc hv4-rv" style={{ '--d': '0.56s' }}>
-              Développeur web orienté produits, spécialisé Django &amp; React.<br />
-              Je construis des applications pensées pour des usages réels.
+              Votre vision. Notre expertise. Des résultats concrets.<br />
+              Nous concevons des expériences web qui séduisent, convainquent et convertissent.
             </p>
 
             <div className="hv4-ctas hv4-rv" style={{ '--d': '0.7s' }}>
@@ -1744,7 +1744,7 @@ const Hero = ({ dark }) => {
 };
 
 /* Projets fixes pour la section vitrine mobile — même logique que le desktop */
-const FC_PROJECT_IDS = [21, 23, 24, 26];
+const FC_PROJECT_IDS = [22, 23, 24, 26];
 
 const FeaturedCreation = ({ dark }) => {
   const [ref, vis] = useInView(0.08);

@@ -1,0 +1,16 @@
+Portfolio — description du hero alignée (20/11/2026)
+====================================================
+Base : elvis-portfolio-nextjs_patch2.zip. Nouveau texte (celui des accolades) :
+  « Votre vision. Notre expertise. Des résultats concrets. »
+  « Nous concevons des expériences web qui séduisent, convainquent et convertissent. »
+
+MODIFIÉS
+  src/app mobile/App2mobile.jsx  capture 1 : description du hero remplacée ;
+                                 mot « Développeur » (au-dessus de « Django & Flask ») en blanc (#ffffff)
+  src/Appmobile.jsx              capture 2 : description du hero remplacée
+                                 (ajouté à ce lot : version de ton dernier cumul 7, avec Redianice dans les projets récents)
+  src/Appdesktop.jsx             version ordinateur du design de la capture 1 : même description,
+                                 pour que le site reste cohérent d'un écran à l'autre
+
+NON TOUCHÉ
+  « Développeur » de la capture 2 (Appmobile) reste en gris ; la couleur de la description reste celle du CSS.

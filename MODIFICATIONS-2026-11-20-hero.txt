@@ -1,0 +1,13 @@
+Portfolio — hero et titre « à propos » (20/11/2026)
+==================================================
+Base : elvis-portfolio-nextjs_patch.zip (16 fichiers). Un seul fichier modifié :
+  src/lib/founder-akatech/portfolioData.js
+    HERO.sub    → « Votre vision. Notre expertise. Des résultats concrets. »
+                  puis, après une ligne vide : « Nous concevons des expériences web qui séduisent,
+                  convainquent et convertissent. »                                   (repère 2)
+    HERO.focus  → vide : la ligne orange « Orienté produits, spécialisé Django & React » est retirée (croix rouge)
+    ABOUT.heading → HERO.role, soit « Développeur full stack, founder AkaTech » (même titre que le hero, repère 1)
+
+Si le hero affiche les deux phrases sur une seule ligne : le composant ne respecte pas le saut de ligne,
+ajouter white-space: pre-line sur le paragraphe de la description. Si un espace vide reste à la place de
+la ligne orange : le composant l'affiche sans condition, la garder derrière {HERO.focus && …}.

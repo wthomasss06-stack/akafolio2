@@ -1358,7 +1358,8 @@ function Hero() {
           </p>
 
           <p className="hv5-lede hv4-rv" style={{ '--d': '.34s' }}>
-            Orienté produits, spécialisé Django &amp; React, je construis des applications pensées pour des usages réels.
+            Votre vision. Notre expertise. Des résultats concrets.<br />
+            Nous concevons des expériences web qui séduisent, convainquent et convertissent.
           </p>
 
           <div className="hv5-actions hv4-rv" style={{ '--d': '.46s' }}>
